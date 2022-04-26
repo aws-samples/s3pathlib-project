@@ -142,15 +142,15 @@ Getting Help
 ------------------------------------------------------------------------------
 Please use the ``python-s3pathlib`` tag on Stack Overflow to get help.
 
-Submit a ``I want help`` issue tickets on `GitLab Issues <https://gitlab.aws.dev/aws-data-lab/s3pathlib-project/-/issues>`_
+Submit a ``I want help`` issue tickets on `GitLab Issues <https://github.com/aws-samples/s3pathlib-project/issues/new/choose>`_
+
+
 
 Contributing
-------------
-
-Please see the `Contribution Guidelines <CONTRIBUTING.md>`_.
+------------------------------------------------------------------------------
+Please see the `Contribution Guidelines <https://github.com/aws-samples/s3pathlib-project/blob/main/CONTRIBUTING.rst>`_.
 
 
 Copyright
----------
-
-fsxpathlib is an open source project. See the `LICENSE <LICENSE>`_ file for more information.
+------------------------------------------------------------------------------
+s3pathlib is an open source project. See the `LICENSE <https://github.com/aws-samples/s3pathlib-project/blob/main/LICENSE>`_ file for more information.
