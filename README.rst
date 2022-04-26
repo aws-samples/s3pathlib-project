@@ -142,7 +142,7 @@ Getting Help
 ------------------------------------------------------------------------------
 Please use the ``python-s3pathlib`` tag on Stack Overflow to get help.
 
-Submit a ``I want help`` issue tickets on `GitLab Issues <https://github.com/aws-samples/s3pathlib-project/issues/new/choose>`_
+Submit a ``I want help`` issue tickets on `GitHub Issues <https://github.com/aws-samples/s3pathlib-project/issues/new/choose>`_
 
 
 
