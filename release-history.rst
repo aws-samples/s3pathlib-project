@@ -29,7 +29,7 @@ Release and Version History
 **Miscellaneous**
 
 
-1.0.5 (Planned)
+1.0.5 (2022-02-06)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -43,7 +43,7 @@ Release and Version History
 **Miscellaneous**
 
 
-1.0.4 (Planned)
+1.0.4 (2022-01-25)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 

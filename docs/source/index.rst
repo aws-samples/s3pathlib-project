@@ -8,8 +8,6 @@ Full Table of Content
 .. autotoctree::
     :maxdepth: 1
 
-.. include:: ../../AUTHORS.rst
-
 
 Install
 ------------------------------------------------------------------------------
