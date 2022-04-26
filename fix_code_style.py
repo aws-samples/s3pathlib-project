@@ -4,7 +4,6 @@
 This script provides dev-ops tools for python project development.
 """
 
-from __future__ import print_function
 from pathlib_mate import Path
 from setup import package
 
