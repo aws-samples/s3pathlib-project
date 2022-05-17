@@ -275,7 +275,7 @@ class TestS3Path:
         p1 = p.change()
         assert p1 == p
         assert p1 is not p
-        
+
         p1 = p.change(new_bucket="bkt1")
         assert p1.uri == "s3://bkt1/a/b/c.jpg"
 
@@ -324,6 +324,36 @@ class TestS3Path:
 
         with pytest.raises(ValueError):
             p.change(new_basename="x", new_fname="y", new_ext=".zip")
+
+    def test_to_dir(self):
+        p1 = S3Path("bkt", "a/")
+        p2 = p1.to_dir()
+        assert p2.is_dir()
+        assert p2 == p1
+        assert p2 is not p1
+
+        p3 = S3Path("bkt", "a")
+        p4 = p3.to_dir()
+        assert p4.is_dir()
+        assert p4 == p1
+
+        with pytest.raises(ValueError):
+            _ = S3Path().to_dir()
+
+    def test_to_file(self):
+        p1 = S3Path("bkt", "a")
+        p2 = p1.to_file()
+        assert p2.is_file()
+        assert p2 == p1
+        assert p2 is not p1
+
+        p3 = S3Path("bkt", "a/")
+        p4 = p3.to_file()
+        assert p4.is_file()
+        assert p4 == p1
+
+        with pytest.raises(ValueError):
+            _ = S3Path().to_file()
 
     def test_ensure_object(self):
         with pytest.raises(TypeError):

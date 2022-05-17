@@ -1,5 +1,4 @@
 import os
-import time
 import pytest
 from s3pathlib.aws import context
 from s3pathlib.core import S3Path
@@ -16,12 +15,12 @@ class TestS3Pathlib:
 
     @classmethod
     def setup_class(cls):
+        cls.p.delete_if_exists()
         cls.p.upload_dir(
             local_dir=os.path.join(dir_tests, "test_iter_objects"),
             pattern="**/*.txt",
             overwrite=True,
         )
-        time.sleep(1)
 
     def test_fetcher_methods(self):
         """
@@ -34,6 +33,7 @@ class TestS3Pathlib:
         # case 1
         proxy = self.p.iter_objects()
         assert proxy.one().basename == "README.txt"
+        assert proxy.one().basename == "folder-description.txt"
 
         assert proxy.one_or_none().basename == "1.txt"
         proxy.skip(5)
@@ -50,8 +50,8 @@ class TestS3Pathlib:
         # case 2
         proxy = self.p.iter_objects()
 
-        l = proxy.many(4)
-        assert [p.basename for p in l] == "README.txt,1.txt,2.txt,3.txt".split(",")
+        l = proxy.many(5)
+        assert [p.basename for p in l] == "README.txt,folder-description.txt,1.txt,2.txt,3.txt".split(",")
 
         l = proxy.all()
         assert [p.basename for p in l] == "4.txt,5.txt,6.txt,7.txt,8.txt,9.txt".split(",")
@@ -106,6 +106,18 @@ class TestS3Pathlib:
 
         for p in self.p.iter_objects().filter_by_ext(".txt", ".TXT"):
             assert p.ext.lower() == ".txt"
+
+    def test_iterdir(self):
+        p_list = S3Path(bucket, prefix, "iterproxy/").iterdir().all()
+        assert len(p_list) == 5
+        assert p_list[0].is_dir()
+        assert p_list[-1].is_file()
+
+        p_list = S3Path(bucket, prefix, "iterproxy/fold").iterdir().all()
+        assert len(p_list) == 4
+        assert p_list[0].is_dir()
+        assert p_list[-1].is_file()
+        assert p_list[-1].basename == "folder-description.txt"
 
 
 if __name__ == "__main__":

@@ -129,6 +129,33 @@ class TestS3Path:
         assert p._parts == []
         assert p._is_dir is None
 
+    def test_parents(self):
+        p_list = S3Path("bucket", "folder", "file.txt").parents
+        assert p_list[0].uri == "s3://bucket/folder/"
+        assert len(p_list) == 2
+
+        p_list = S3Path("bucket", "folder", "subfolder/").parents
+        assert p_list[0].uri == "s3://bucket/folder/"
+        assert len(p_list) == 2
+
+        p_list = S3Path("bucket", "folder").parents
+        assert len(p_list) == 1
+
+        p_list = S3Path("bucket", "file.txt").parents
+        assert len(p_list) == 1
+
+        p_list = S3Path("bucket").parents
+        assert len(p_list) == 0
+
+        with pytest.raises(ValueError):
+            _ = S3Path().parents
+
+        with pytest.raises(ValueError):
+            _ = S3Path(
+                "bucket",
+                "folder", "subfolder", "file.txt",
+            ).relative_to(S3Path("bucket")).parents
+
     def test_fname(self):
         assert S3Path("bucket", "file").fname == "file"
 

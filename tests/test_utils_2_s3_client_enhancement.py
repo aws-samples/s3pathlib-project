@@ -226,7 +226,7 @@ class TestS3ClientEnhancement:
                 batch_size=10,
             )
         )
-        assert len(result) == 10
+        assert len(result) == 11
 
         # recursive = False
         result = list(
@@ -241,7 +241,7 @@ class TestS3ClientEnhancement:
                 include_folder=False,
             )
         )
-        assert len(result) == 1
+        assert len(result) == 2
 
         result = list(
             utils.iter_objects(
@@ -395,7 +395,7 @@ class TestS3ClientEnhancement:
             s3_client=s3_client,
             bucket=bucket,
             prefix=utils.smart_join_s3_key(parts=[prefix, "test_delete_dir"], is_dir=True),
-        ) == 10
+        ) == 11
 
         assert utils.calculate_total_size(
             s3_client=s3_client,
