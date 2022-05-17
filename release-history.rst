@@ -4,9 +4,13 @@ Release and Version History
 ==============================================================================
 
 
-1.0.7 (TODO)
+1.0.11 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
+
+- :class:`s3pathlib.aws.Context` object is now singleton.
+- allow ``and_``, ``or_``, ``not_`` in iterproxy filter.
+- add tagging management feature
 
 **Minor Improvements**
 
@@ -15,21 +19,58 @@ Release and Version History
 **Miscellaneous**
 
 
-1.0.6 (Planned)
+1.0.10 (2022-04-30)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Miscellaneous**
+
+- remove the boto session module, now it depends on `boto_session_manager <https://pypi.org/project/boto-session-manager/>`_ library.
+- add compatibility support for smart_open >= 6.0 due to the ``ignore_ext`` arg is removed.
+- for s3 IO feature, you need ``smart_open>=5.1.x``
+
+
+1.0.9 (2022-04-19)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
-- :class:`s3pathlib.aws.Context` object is now singleton
-- allow ``and_``, ``or_``, ``not_`` in iterproxy filter
+- add :meth:`s3pathlib.core.S3Path.boto_ses.BotoSesManager.get_client` method
+
+
+1.0.8 (2022-04-19)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Bugfixes**
+
+-  fix import bug in :mod:`s3pathlib.aws` module
+
+
+1.0.7 (2022-04-17)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Bugfixes**
+
+-  fix import bug in :mod:`s3pathlib.boto_ses` module
+
+
+1.0.6 (2022-04-13)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- add :meth:`s3pathlib.core.S3Path.to_file` method.
+- add :meth:`s3pathlib.core.S3Path.to_dir` method.
+- add :meth:`s3pathlib.core.S3Path.parents` method.
+- add :meth:`s3pathlib.core.S3Path.iterdir` method.
+- add :meth:`s3pathlib.core.S3Path.touch` method.
+- add :meth:`s3pathlib.core.S3Path.mkdir` method.
+- add :class:`s3pathlib.core.S3Path.boto_ses.BotoSesManager` class.
 
 **Minor Improvements**
+
+- add ``bsm`` boto session manager parameter for all method using s3 api.
 
 **Bugfixes**
 
 **Miscellaneous**
 
 
-1.0.5 (2022-02-06)
+1.0.5 (Planned)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -43,7 +84,7 @@ Release and Version History
 **Miscellaneous**
 
 
-1.0.4 (2022-01-25)
+1.0.4 (Planned)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 

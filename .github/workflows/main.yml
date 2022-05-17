@@ -1,0 +1,64 @@
+# comprehensive github action yml reference: https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions
+
+---
+name: CI
+
+on:
+  push: # any push event to main will trigger this
+    branches: ["main"]
+  pull_request: # any pull request to main will trigger this
+    branches: ["main"]
+  workflow_dispatch: # allows you to manually trigger run
+
+jobs:
+  tests:
+    name: "${{ matrix.os }} Python ${{ matrix.python-version }}"
+    runs-on: "${{ matrix.os }}" # for all available VM runtime, see this: https://docs.github.com/en/free-pro-team@latest/actions/reference/specifications-for-github-hosted-runners
+    env: # define environment variables
+      USING_COVERAGE: "3.6,3.7,3.8,3.9,3.10"
+    strategy:
+      matrix:
+        os: ["ubuntu-latest", "windows-latest"]
+#        os: ["ubuntu-latest", ] # for debug only
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+#        python-version: ["3.6", ] # for debug only
+        exclude:
+          - os: windows-latest # this is a useless exclude rules for demonstration use only
+            python-version: 2.7
+    steps:
+      - uses: "actions/checkout@v2" # https://github.com/marketplace/actions/checkout
+      - uses: "actions/setup-python@v2" # https://github.com/marketplace/actions/setup-python
+        with:
+          python-version: "${{ matrix.python-version }}"
+
+      - name: "Install dependencies on MacOS or Linux"
+        if: matrix.os == 'ubuntu-latest' # for condition steps, you should put if at begin, and use single quote for logical expression
+        env:
+          AWS_ACCESS_KEY_ID_FOR_GITHUB_CI: ${{ secrets.AWS_ACCESS_KEY_ID_FOR_GITHUB_CI }}
+          AWS_SECRET_ACCESS_KEY_FOR_GITHUB_CI: ${{ secrets.AWS_SECRET_ACCESS_KEY_FOR_GITHUB_CI }}
+        run: |
+          set -xe
+          python -VV
+          python -m site
+          python -m pip install --upgrade pip setuptools wheel virtualenv codecov
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          pip install -r requirements-test.txt
+          pip install .
+      - name: "Install dependencies on Windows"
+        if: matrix.os == 'windows-latest'
+        env:
+          AWS_ACCESS_KEY_ID_FOR_GITHUB_CI: ${{ secrets.AWS_ACCESS_KEY_ID_FOR_GITHUB_CI }}
+          AWS_SECRET_ACCESS_KEY_FOR_GITHUB_CI: ${{ secrets.AWS_SECRET_ACCESS_KEY_FOR_GITHUB_CI }}
+        run: |
+          python -m site
+          python -m pip install --upgrade pip setuptools wheel virtualenv codecov
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          pip install -r requirements-test.txt
+          pip install .
+      - name: "Run pytest"
+        env:
+          AWS_ACCESS_KEY_ID_FOR_GITHUB_CI: ${{ secrets.AWS_ACCESS_KEY_ID_FOR_GITHUB_CI }}
+          AWS_SECRET_ACCESS_KEY_FOR_GITHUB_CI: ${{ secrets.AWS_SECRET_ACCESS_KEY_FOR_GITHUB_CI }}
+        run: "python -m pytest tests --cov=s3pathlib"
