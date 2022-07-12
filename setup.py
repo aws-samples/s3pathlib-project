@@ -127,8 +127,8 @@ if __name__ == "__main__":
     CLASSIFIERS = [
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: Apache Software License Version 2.0",
-        "Intended Audience :: Amazon Web Service User",
+        "License :: OSI Approved :: Apache Software License",
+        "Intended Audience :: Developers",
         "Natural Language :: English",
         "Operating System :: Microsoft :: Windows",
         "Operating System :: MacOS",
