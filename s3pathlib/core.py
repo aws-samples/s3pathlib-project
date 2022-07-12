@@ -72,6 +72,9 @@ class S3PathIterProxy(IterProxy):
     def all(self) -> List['S3Path']:
         return super(S3PathIterProxy, self).all()
 
+    def skip(self, k: int) -> 'S3PathIterProxy':
+        return super(S3PathIterProxy, self).skip(k=k)
+
     def filter_by_ext(self, *exts: str) -> 'S3PathIterProxy':
         """
         Filter S3 object by file extension. Case is insensitive.
@@ -1373,11 +1376,11 @@ class S3Path:
         raise ``ValueError``.
 
         ``-`` is a syntax sugar for ``relative_to``. See more information at
-        :meth:`~S3Path.__sub__``.
+        :meth:`~S3Path.__sub__`.
 
         The relative path usually works with :meth:`join_path` to form a new
         path. Or you can use the ``/`` syntax sugar as well. See more
-        information at :meth:`~S3Path.__truediv__``.
+        information at :meth:`~S3Path.__truediv__`.
 
         Examples::
 
