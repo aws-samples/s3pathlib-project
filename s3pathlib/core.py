@@ -1355,11 +1355,10 @@ class S3Path:
     def __repr__(self):
         classname = self.__class__.__name__
         if self.is_relpath():
-            key = self.key
             if len(key):
-                return "{}('{}')".format(classname, key)
+                return f"S3RelPath({self.key!r})"
             else:
-                return "{}()".format(classname)
+                return "S3RelPath()"
         else:
             uri = self.uri
             return "{}('{}')".format(classname, uri)
@@ -1371,10 +1370,14 @@ class S3Path:
         """
         Return the relative path to another path. If the operation
         is not possible (because this is not a sub path of the other path),
-        raise ValueError.
+        raise ``ValueError``.
+
+        ``-`` is a syntax sugar for ``relative_to``. See more information at
+        :meth:`~S3Path.__sub__``.
 
         The relative path usually works with :meth:`join_path` to form a new
-        path.
+        path. Or you can use the ``/`` syntax sugar as well. See more
+        information at :meth:`~S3Path.__truediv__``.
 
         Examples::
 
@@ -1389,7 +1392,7 @@ class S3Path:
 
         :param other: other :class:`S3Path` instance.
 
-        :return: an relative path object, which is a special version of S3Path
+        :return: a relative path object, which is a special version of S3Path
 
         .. versionadded:: 1.0.1
         """
