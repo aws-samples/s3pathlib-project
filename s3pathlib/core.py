@@ -373,7 +373,7 @@ class S3Path:
     # --------------------------------------------------------------------------
     #               Objective Oriented Programming Implementation
     # --------------------------------------------------------------------------
-    __OOP_IMPLEMENTATION__ = None
+    __S1_OOP_IMPLEMENTATION__ = None
 
     def __new__(
         cls,
@@ -583,7 +583,7 @@ class S3Path:
     # --------------------------------------------------------------------------
     #                Method that DOESN't need boto3 API call
     # --------------------------------------------------------------------------
-    __ATTRIBUTE_AND_METHOD__ = None
+    __S2_ATTRIBUTE_AND_METHOD__ = None
 
     def to_dict(self) -> dict:
         """
@@ -1449,7 +1449,7 @@ class S3Path:
     # --------------------------------------------------------------------------
     #                   Method that need boto3 API call
     # --------------------------------------------------------------------------
-    __STATELESS_API__ = None
+    __S3_STATELESS_API__ = None
 
     def clear_cache(self) -> None:
         """
@@ -1619,7 +1619,7 @@ class S3Path:
     # --------------------------------------------------------------------------
     #            Method that change the state of S3 bucket / objects
     # --------------------------------------------------------------------------
-    __STATEFUL_API__ = None
+    __S4_STATEFUL_API__ = None
 
     def upload_file(
         self,
