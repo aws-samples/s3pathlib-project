@@ -4,13 +4,26 @@ Release and Version History
 ==============================================================================
 
 
-1.0.11 (TODO)
+1.0.12 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
 - :class:`s3pathlib.aws.Context` object is now singleton.
 - allow ``and_``, ``or_``, ``not_`` in iterproxy filter.
 - add tagging management feature
+
+**Minor Improvements**
+
+**Bugfixes**
+
+**Miscellaneous**
+
+
+1.0.11 (TODO)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- add the ``__truediv__`` operator override. it is a``s3path / part1 / part2`` syntax sugar.
 
 **Minor Improvements**
 

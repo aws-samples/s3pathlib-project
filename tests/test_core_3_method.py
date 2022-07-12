@@ -390,6 +390,42 @@ class TestS3Path:
                 bucket=None, parts=["a", "b"], is_dir=None
             ).ensure_not_relpath()
 
+    def test_divide_operator(
+        self,
+        bucket,
+        directory,
+        file,
+        relpath,
+        void,
+    ):
+        assert bucket / "folder/" == directory
+        assert bucket / "folder" != directory
+        assert bucket / ["folder/", ] == directory
+        assert bucket / ["folder", "/"] == directory
+        assert bucket / ["folder", ] != directory
+
+        assert bucket / "folder" / "file.txt" == file
+        assert bucket / "folder/" / "file.txt" == file
+        assert bucket / "folder/" / "/file.txt" == file
+
+        assert bucket / ["folder", "file.txt"] == file
+        assert bucket / ["folder/", "file.txt"] == file
+        assert bucket / ["folder/", "/file.txt"] == file
+
+        assert bucket / relpath == file
+
+        root = S3Path("bucket")
+        rel1 = S3Path("bucket/folder/").relative_to(S3Path("bucket"))
+        rel2 = S3Path("bucket/folder/file.txt").relative_to(S3Path("bucket/folder/"))
+        assert root / [rel1, rel2] == S3Path("bucket/folder/file.txt")
+        assert root / (rel1 / rel2) == S3Path("bucket/folder/file.txt")
+
+        with pytest.raises(TypeError):  # relpath cannot / non-relpath
+            rel1 / root
+
+        with pytest.raises(TypeError):
+            void / "bucket"
+
 
 if __name__ == "__main__":
     import os
