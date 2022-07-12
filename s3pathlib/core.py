@@ -700,6 +700,8 @@ class S3Path:
             # relative path also work
             >>> S3Path("new-bucket") / (S3Path("bucket/file.txt").relative_to(S3Path("bucket")))
             S3Path('s3://new-bucket/file.txt')
+
+        .. versionadded:: 1.0.11
         """
         if self.is_void():
             raise TypeError("You cannot do ``VoidS3Path / other``!")
@@ -721,6 +723,8 @@ class S3Path:
         """
         A syntax sugar. Basically ``s3path1 - s3path2`` is equal to
         ``s3path2.relative_to(s3path1)``
+
+        .. versionadded:: 1.0.11
         """
         return self.relative_to(other)
 
@@ -1357,9 +1361,14 @@ class S3Path:
 
     def __repr__(self):
         classname = self.__class__.__name__
-        if self.is_relpath():
+
+        if self.is_void():
+            return "S3VoidPath()"
+
+        elif self.is_relpath():
+            key = self.key
             if len(key):
-                return f"S3RelPath({self.key!r})"
+                return f"S3RelPath({key!r})"
             else:
                 return "S3RelPath()"
         else:
@@ -2102,6 +2111,7 @@ class S3Path:
         opener=None,
         ignore_ext=False,
         compression=None,
+        api_kwargs: dict = None,
         bsm: Optional['BotoSesManager'] = None,
     ):
         """
@@ -2216,3 +2226,29 @@ class S3Path:
             for p in self.parents:
                 if p.is_bucket() is False:
                     p.mkdir(exist_ok=True, parents=False, bsm=bsm)
+
+    # --------------------------------------------------------------------------
+    #                         S3 Object Tagging
+    # --------------------------------------------------------------------------
+    __S5_TAGGING__ = None
+
+    def get_tagging(self, *args, **kwargs) -> dict:
+        raise NotImplementedError
+
+    def put_tagging(self, *args, **kwargs) -> dict:
+        raise NotImplementedError
+
+    def delete_tagging(self, *args, **kwargs) -> dict:
+        raise NotImplementedError
+
+    def get_acl(self, *args, **kwargs) -> dict:
+        raise NotImplementedError
+
+    def put_acl(self, *args, **kwargs) -> dict:
+        raise NotImplementedError
+
+    def get_legal_hold(self, *args, **kwargs) -> dict:
+        raise NotImplementedError
+
+    def put_legal_hold(self, *args, **kwargs) -> dict:
+        raise NotImplementedError
