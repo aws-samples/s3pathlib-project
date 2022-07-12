@@ -23,7 +23,8 @@ Release and Version History
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
-- add the ``__truediv__`` operator override. it is a``s3path / part1 / part2`` syntax sugar.
+- add the ``__truediv__`` operator override. it is a ``s3path / part1 / part2`` syntax sugar.
+- add the ``__sub__`` operator override. it is a ``S3Path("bucket/folder") - S3Path("bucket")`` syntax sugar.
 
 **Minor Improvements**
 

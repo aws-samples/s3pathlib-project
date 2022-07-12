@@ -426,7 +426,16 @@ class TestS3Path:
         with pytest.raises(TypeError):
             void / "bucket"
 
+    def test_sub_operator(
+        self,
+        bucket,
+        directory,
+        file,
+    ):
+        assert (directory - bucket) == directory.relative_to(bucket)
+        assert (file - directory) == file.relative_to(directory)
 
+        
 if __name__ == "__main__":
     import os
 

@@ -714,6 +714,13 @@ class S3Path:
                 raise TypeError("you cannot do ``RelativeS3Path / NonRelativeS3Path``!")
             return S3Path(self, other)
 
+    def __sub__(self, other: 'S3Path') -> 'S3Path':
+        """
+        A syntax sugar. Basically ``s3path1 - s3path2`` is equal to
+        ``s3path2.relative_to(s3path1)``
+        """
+        return self.relative_to(other)
+
     def copy(self) -> 'S3Path':
         """
         Create an duplicate copy of S3Path object that logically equals to
