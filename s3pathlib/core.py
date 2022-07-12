@@ -72,6 +72,9 @@ class S3PathIterProxy(IterProxy):
     def all(self) -> List['S3Path']:
         return super(S3PathIterProxy, self).all()
 
+    def skip(self, k: int) -> 'S3PathIterProxy':
+        return super(S3PathIterProxy, self).skip(k=k)
+
     def filter_by_ext(self, *exts: str) -> 'S3PathIterProxy':
         """
         Filter S3 object by file extension. Case is insensitive.
@@ -373,7 +376,7 @@ class S3Path:
     # --------------------------------------------------------------------------
     #               Objective Oriented Programming Implementation
     # --------------------------------------------------------------------------
-    __OOP_IMPLEMENTATION__ = None
+    __S1_OOP_IMPLEMENTATION__ = None
 
     def __new__(
         cls,
@@ -583,7 +586,7 @@ class S3Path:
     # --------------------------------------------------------------------------
     #                Method that DOESN't need boto3 API call
     # --------------------------------------------------------------------------
-    __ATTRIBUTE_AND_METHOD__ = None
+    __S2_ATTRIBUTE_AND_METHOD__ = None
 
     def to_dict(self) -> dict:
         """
@@ -672,6 +675,58 @@ class S3Path:
         except AttributeError:
             self._hash = hash(tuple(self._cparts))
             return self._hash
+
+    def __truediv__(
+        self,
+        other: Union[
+            str,
+            'S3Path',
+            List[Union[str, 'S3Path']]
+        ]
+    ) -> 'S3Path':
+        """
+        A syntax sugar. Basically ``S3Path(s3path, part1, part2, ...)``
+        is equal to ``s3path / part1 / part2 / ...`` or
+        ``s3path / [part1, part2]``
+
+        Example::
+
+            >>> S3Path("bucket") / "folder" / "file.txt"
+            S3Path('s3://bucket/folder/file.txt')
+
+            >>> S3Path("bucket") / ["folder", "file.txt"]
+            S3Path('s3://bucket/folder/file.txt')
+
+            # relative path also work
+            >>> S3Path("new-bucket") / (S3Path("bucket/file.txt").relative_to(S3Path("bucket")))
+            S3Path('s3://new-bucket/file.txt')
+
+        .. versionadded:: 1.0.11
+        """
+        if self.is_void():
+            raise TypeError("You cannot do ``VoidS3Path / other``!")
+        if isinstance(other, list):
+            res = self
+            for part in other:
+                res = res / part
+            return res
+        else:
+            if (
+                self.is_relpath()
+                and isinstance(other, S3Path)
+                and other.is_relpath() is False
+            ):
+                raise TypeError("you cannot do ``RelativeS3Path / NonRelativeS3Path``!")
+            return S3Path(self, other)
+
+    def __sub__(self, other: 'S3Path') -> 'S3Path':
+        """
+        A syntax sugar. Basically ``s3path1 - s3path2`` is equal to
+        ``s3path2.relative_to(s3path1)``
+
+        .. versionadded:: 1.0.11
+        """
+        return self.relative_to(other)
 
     def copy(self) -> 'S3Path':
         """
@@ -1306,12 +1361,16 @@ class S3Path:
 
     def __repr__(self):
         classname = self.__class__.__name__
-        if self.is_relpath():
+
+        if self.is_void():
+            return "S3VoidPath()"
+
+        elif self.is_relpath():
             key = self.key
             if len(key):
-                return "{}('{}')".format(classname, key)
+                return f"S3RelPath({key!r})"
             else:
-                return "{}()".format(classname)
+                return "S3RelPath()"
         else:
             uri = self.uri
             return "{}('{}')".format(classname, uri)
@@ -1323,10 +1382,14 @@ class S3Path:
         """
         Return the relative path to another path. If the operation
         is not possible (because this is not a sub path of the other path),
-        raise ValueError.
+        raise ``ValueError``.
+
+        ``-`` is a syntax sugar for ``relative_to``. See more information at
+        :meth:`~S3Path.__sub__`.
 
         The relative path usually works with :meth:`join_path` to form a new
-        path.
+        path. Or you can use the ``/`` syntax sugar as well. See more
+        information at :meth:`~S3Path.__truediv__`.
 
         Examples::
 
@@ -1341,7 +1404,7 @@ class S3Path:
 
         :param other: other :class:`S3Path` instance.
 
-        :return: an relative path object, which is a special version of S3Path
+        :return: a relative path object, which is a special version of S3Path
 
         .. versionadded:: 1.0.1
         """
@@ -1449,7 +1512,7 @@ class S3Path:
     # --------------------------------------------------------------------------
     #                   Method that need boto3 API call
     # --------------------------------------------------------------------------
-    __STATELESS_API__ = None
+    __S3_STATELESS_API__ = None
 
     def clear_cache(self) -> None:
         """
@@ -1619,7 +1682,7 @@ class S3Path:
     # --------------------------------------------------------------------------
     #            Method that change the state of S3 bucket / objects
     # --------------------------------------------------------------------------
-    __STATEFUL_API__ = None
+    __S4_STATEFUL_API__ = None
 
     def upload_file(
         self,
@@ -2048,6 +2111,7 @@ class S3Path:
         opener=None,
         ignore_ext=False,
         compression=None,
+        api_kwargs: dict = None,
         bsm: Optional['BotoSesManager'] = None,
     ):
         """
@@ -2162,3 +2226,29 @@ class S3Path:
             for p in self.parents:
                 if p.is_bucket() is False:
                     p.mkdir(exist_ok=True, parents=False, bsm=bsm)
+
+    # --------------------------------------------------------------------------
+    #                         S3 Object Tagging
+    # --------------------------------------------------------------------------
+    __S5_TAGGING__ = None
+
+    def get_tagging(self, *args, **kwargs) -> dict:
+        raise NotImplementedError
+
+    def put_tagging(self, *args, **kwargs) -> dict:
+        raise NotImplementedError
+
+    def delete_tagging(self, *args, **kwargs) -> dict:
+        raise NotImplementedError
+
+    def get_acl(self, *args, **kwargs) -> dict:
+        raise NotImplementedError
+
+    def put_acl(self, *args, **kwargs) -> dict:
+        raise NotImplementedError
+
+    def get_legal_hold(self, *args, **kwargs) -> dict:
+        raise NotImplementedError
+
+    def put_legal_hold(self, *args, **kwargs) -> dict:
+        raise NotImplementedError

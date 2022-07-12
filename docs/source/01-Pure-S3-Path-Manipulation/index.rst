@@ -2,7 +2,6 @@
 
 Pure S3 Path Manipulation
 ==============================================================================
-
 .. contents::
     :class: this-will-duplicate-information-and-it-is-still-useful-here
     :depth: 1
@@ -53,6 +52,24 @@ Construct a S3 Path
     # construct from string, auto join parts
     >>> S3Path("bucket", "folder", "subfolder/")
     S3Path('s3://bucket/folder/subfolder/')
+
+``/`` **is a Python Operator Override Syntax Sugar, it is the Pythonic way to Construct a Path**.
+
+.. code-block:: python
+
+    >>> s3path_bucket = S3Path("bucket")
+    >>> s3path_bucket / "folder/"
+    S3Path('s3://bucket/folder/')
+
+    # You can chain "/" together
+    >>> s3path_bucket / "folder" / "file.txt"
+    S3Path('s3://bucket/folder/file.txt')
+
+    # it work with list too
+    >>> s3path_bucket / ["folder", "file.txt"]
+    S3Path('s3://bucket/folder/file.txt')
+
+It works with :ref:`relative-path` too.
 
 **Summary**:
 
@@ -192,8 +209,14 @@ Logically a :class:`~s3pathlib.core.S3Path` is also a file system like object. S
 
 S3 Path Methods
 ------------------------------------------------------------------------------
-**Identify S3Path type**
+.. contents::
+    :class: this-will-duplicate-information-and-it-is-still-useful-here
+    :depth: 1
+    :local:
 
+
+Identify S3Path type
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 - :meth:`~s3pathlib.core.S3Path.is_dir`:
 
 .. code-block:: python
@@ -229,8 +252,8 @@ S3 Path Methods
     >>> S3Path("bucket", "folder/").relative_to(S3Path("bucket")).is_relpath()
     True
 
-**Comparison**
-
+Comparison
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Since S3Path can convert to S3 URI, it should be able to compare to each other.
 
 .. code-block:: python
@@ -256,8 +279,8 @@ Since S3Path can convert to S3 URI, it should be able to compare to each other.
     >>> S3Path("bucket/a/1.txt") < S3Path("bucket/a/2.txt")
     True
 
-**Hash**
-
+Hash
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ``S3Path`` is :meth:`hashable <~s3pathlib.core.S3Path.__hash__>`.
 
 .. code-block:: python
@@ -280,8 +303,9 @@ Since S3Path can convert to S3 URI, it should be able to compare to each other.
     >>> set1.difference(set2)
     {S3Path('s3://bucket/1.txt')}
 
-**Mutate the immutable S3Path**
 
+Mutate the immutable S3Path
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 - :meth:`~s3pathlib.core.S3Path.copy`: create a copy of this S3Path, but completely different because it is immutable.
 
 .. code-block:: python
@@ -356,8 +380,10 @@ Since S3Path can convert to S3 URI, it should be able to compare to each other.
     >>> p3.join_path(relpath2, relpath1)
     S3Path('s3://bucket/folder/subfolder/file.txt')
 
-**Parent relationship**
+.. _relative-path:
 
+Relative Path
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 - :meth:`~s3pathlib.core.S3Path.relative_to`: calculate the relative path between two path, the "to path" has to be "shorter than" the "from path"
 
 .. code-block:: python
@@ -371,10 +397,17 @@ Since S3Path can convert to S3 URI, it should be able to compare to each other.
     >>> S3Path("bucket", "a").relative_to(S3Path("bucket", "a/b/c")).parts
     ValueError ...
 
+- The ``-`` operator override provide a syntax sugar for ``relative_to`` method
+
+.. code-block:: python
+
+    >>> S3Path("bucket", "a/b/c") - S3Path("bucket", "a")
+    ['b', 'c']
+
+
 
 What's Next
 ------------------------------------------------------------------------------
-
 Since then everything is not talking to AWS yet, let's learn how to make some AWS S3 API call using ``s3pathlib``.
 
 Go :ref:`stateless-s3-api`

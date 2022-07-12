@@ -68,7 +68,7 @@ class TestS3Path:
         assert p.arn is None
         assert p.console_url is None
         assert p.us_gov_cloud_console_url is None
-        assert str(p) == "S3Path()"
+        assert str(p) == "S3VoidPath()"
         assert p.basename == ""
         with pytest.raises(ValueError):
             _ = p.fname
@@ -88,7 +88,7 @@ class TestS3Path:
         assert p.uri is None
         assert p.arn is None
         assert p.console_url is None
-        assert str(p) == "S3Path('folder/file.txt')"
+        assert str(p) == "S3RelPath('folder/file.txt')"
         assert p.basename == "file.txt"
         assert p.fname == "file"
         assert p.ext == ".txt"
