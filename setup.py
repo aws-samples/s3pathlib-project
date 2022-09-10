@@ -100,7 +100,7 @@ if __name__ == "__main__":
         PY_MODULES = [PKG_NAME, ]
 
     # The project directory name is the GitHub repository name
-    repository_name = os.path.basename(os.path.dirname(__file__))
+    repository_name = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
 
     # Project Url
     URL = "https://github.com/{0}/{1}".format(GITHUB_USERNAME, repository_name)
