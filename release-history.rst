@@ -4,11 +4,11 @@ Release and Version History
 ==============================================================================
 
 
-1.0.12 (TODO)
+1.1.1 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
-- :class:`s3pathlib.aws.Context` object is now singleton.
+- make :class:`s3pathlib.aws.Context` multi-thread safe.
 - allow ``and_``, ``or_``, ``not_`` in iterproxy filter.
 - add ``tagging`` management feature
 - add ``acl`` management feature
@@ -21,7 +21,24 @@ Release and Version History
 **Miscellaneous**
 
 
-1.0.11 (TODO)
+1.0.12 (2022-09-10)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- add :meth:`s3pathlib.core.S3Path.joinpath` method to mimick ``pathlib.Path.joinpath`` behavior
+- add :meth:`s3pathlib.core.S3Path.s3_select_console_url` property
+- add :meth:`s3pathlib.core.S3Path.s3_select_us_gov_cloud_console_url` property
+
+**Bugfixes**
+
+- made :meth:`s3pathlib.core.S3Path.console_url` and :meth:`s3pathlib.core.S3Path.us_gov_cloud_console_url` regular property, they should not be ``FilterableProperty``
+
+**Miscellaneous**
+
+- mark :meth:`s3pathlib.core.S3Path.join_path` as deprecated
+
+
+1.0.11 (2022-07-12)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -86,7 +103,7 @@ Release and Version History
 **Miscellaneous**
 
 
-1.0.5 (Planned)
+1.0.5 (2022-02-06)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -100,7 +117,7 @@ Release and Version History
 **Miscellaneous**
 
 
-1.0.4 (Planned)
+1.0.4 (2022-01-25)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
