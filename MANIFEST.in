@@ -3,8 +3,8 @@
 #
 # For more info: https://docs.python.org/2/distutils/sourcedist.html#manifest-related-options
 
+include s3pathlib
 include *.txt
 include *.rst
-recursive-include s3pathlib *.*
-recursive-exclude *.pyc
-recursive-exclude *.pyo
+exclude *.pyc
+exclude *.pyo
