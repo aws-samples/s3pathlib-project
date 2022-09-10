@@ -2,7 +2,6 @@
 
 import warnings
 import functools
-from decorator import decorator
 
 
 def warn_deprecate(
@@ -26,6 +25,8 @@ def deprecate_v1(version: str, message: str):
 
 
 def deprecate_v2(version: str, message: str):
+    from decorator import decorator
+    
     @decorator
     def deco(func, *args, **kwargs):
         warn_deprecate(func.__name__, version, message)
