@@ -1069,7 +1069,7 @@ class S3Path:
         else:
             return "s3://{}/".format(self._bucket)
 
-    @FilterableProperty
+    @property
     def console_url(self) -> Optional[str]:
         """
         Return an AWS S3 Console url that can inspect the details.
@@ -1083,7 +1083,7 @@ class S3Path:
             console_url = utils.make_s3_console_url(s3_uri=uri)
             return console_url
 
-    @FilterableProperty
+    @property
     def us_gov_cloud_console_url(self) -> Optional[str]:
         """
         Return an AWS US Gov Cloud S3 Console url that can inspect the details.
@@ -1098,6 +1098,39 @@ class S3Path:
                 s3_uri=uri, is_us_gov_cloud=True
             )
             return console_url
+
+    @property
+    def s3_select_console_url(self) -> Optional[str]:
+        """
+        Return an AWS US Gov Cloud S3 Console url that can inspect data with s3 select.
+
+        .. versionadded:: 1.0.12
+        """
+        if self.is_file():
+            return utils.make_s3_select_console_url(
+                bucket=self.bucket,
+                key=self.key,
+                is_us_gov_cloud=False,
+            )
+        else:
+            raise TypeError("you can only do s3 select with an object!")
+
+    @property
+    def s3_select_us_gov_cloud_console_url(self) -> Optional[str]:
+        """
+
+        Return an AWS S3 Console url that can inspect data with s3 select.
+
+        .. versionadded:: 1.0.12
+        """
+        if self.is_file():
+            return utils.make_s3_select_console_url(
+                bucket=self.bucket,
+                key=self.key,
+                is_us_gov_cloud=True,
+            )
+        else:
+            raise TypeError("you can only do s3 select with an object!")
 
     @FilterableProperty
     def arn(self) -> Optional[str]:

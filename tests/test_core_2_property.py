@@ -15,6 +15,8 @@ class TestS3Path:
         assert p.arn == "arn:aws:s3:::bucket/folder/file.txt"
         assert p.console_url == "https://console.aws.amazon.com/s3/object/bucket?prefix=folder/file.txt"
         assert p.us_gov_cloud_console_url == "https://console.amazonaws-us-gov.com/s3/object/bucket?prefix=folder/file.txt"
+        assert p.s3_select_console_url == "https://console.aws.amazon.com/s3/buckets/bucket/object/select?prefix=folder/file.txt"
+        assert p.s3_select_us_gov_cloud_console_url == "https://console.amazonaws-us-gov.com/s3/buckets/bucket/object/select?prefix=folder/file.txt"
         assert str(p) == "S3Path('s3://bucket/folder/file.txt')"
         assert p.basename == "file.txt"
         assert p.fname == "file"
