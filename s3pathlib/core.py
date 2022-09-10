@@ -1480,6 +1480,51 @@ class S3Path:
             args.append(relp)
         return self._from_parts(args)
 
+    def joinpath(
+        self,
+        *other: Union[str, 'S3Path']
+    ) -> 'S3Path':
+        """
+        Join with other relative path or string parts.
+
+        Example::
+
+            # join with string parts
+            >>> p = S3Path("bucket")
+            >>> p.joinpath("folder", "file.txt")
+            S3Path('s3://bucket/folder/file.txt')
+
+            # join ith relative path or string parts
+            >>> p = S3Path("bucket")
+            >>> relpath = S3Path("my-bucket", "data", "folder/").relative_to(S3Path("my-bucket", "data"))
+            >>> p.joinpath("data", relpath, "file.txt")
+            S3Path('s3://bucket/data/folder/file.txt')
+
+        :param others: many string or relative path
+
+        .. versionadded:: 1.1.1
+        """
+        args = [self, ]
+        for part in other:
+            if isinstance(part, str):
+                args.append(part)
+            elif isinstance(part, S3Path):
+                if part.is_relpath() is False:
+                    msg = (
+                        "you can only join with string part or relative path! "
+                        "{} is not a relative path"
+                    ).format(part)
+                    raise TypeError(msg)
+                else:
+                    args.append(part)
+            else:
+                msg = (
+                    "you can only join with string part or relative path! "
+                    "{} is not a relative path"
+                ).format(part)
+                raise TypeError(msg)
+        return self._from_parts(args)
+
     def ensure_object(self) -> None:
         """
         A validator method that ensure it represents a S3 object.
