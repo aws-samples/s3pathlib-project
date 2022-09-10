@@ -40,6 +40,7 @@ except:  # pragma: no cover
 from . import utils, exc, validate
 from .aws import context, Context
 from .iterproxy import IterProxy
+from .marker import warn_deprecate
 
 
 class S3PathIterProxy(IterProxy):
@@ -1469,6 +1470,11 @@ class S3Path:
 
         .. versionadded:: 1.0.1
         """
+        warn_deprecate(
+            func_name="S3Path.join_path",
+            version="2.1.1",
+            message="S3Path.joinpath",
+        )
         args = [self, ]
         for relp in others:
             if relp.is_relpath() is False:
