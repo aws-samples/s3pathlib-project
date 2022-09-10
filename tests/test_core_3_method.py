@@ -264,6 +264,34 @@ class TestS3Path:
         with pytest.raises(TypeError):
             p3.join_path(p1, p2)
 
+    def test_joinpath(self):
+        p = S3Path("bucket")
+        assert p.joinpath("file.txt").uri == "s3://bucket/file.txt"
+        assert p.joinpath("/file.txt").uri == "s3://bucket/file.txt"
+        assert p.joinpath("folder/").uri == "s3://bucket/folder/"
+        assert p.joinpath("/folder/").uri == "s3://bucket/folder/"
+
+        assert p.joinpath("folder", "file.txt").uri == "s3://bucket/folder/file.txt"
+
+        relpath_folder = S3Path("my-bucket", "data", "folder/").relative_to(
+            S3Path("my-bucket", "data")
+        )
+        assert p.joinpath(relpath_folder).uri == "s3://bucket/folder/"
+        assert p.joinpath(
+            "data",
+            relpath_folder,
+            "file.txt",
+        ).uri == "s3://bucket/data/folder/file.txt"
+
+        with pytest.raises(TypeError):
+            S3Path("bucket1").joinpath(S3Path("bucket2"))
+
+        p1 = S3Path("bucket", "folder", "subfolder", "file.txt")
+        p2 = p1.parent  # s3://bucket/folder/subfolder
+        p3 = p2.parent  # s3://bucket/folder
+        with pytest.raises(TypeError):
+            p3.join_path(p1, p2)
+
     def test_copy(self):
         p1 = S3Path()
         p2 = p1.copy()
@@ -435,7 +463,7 @@ class TestS3Path:
         assert (directory - bucket) == directory.relative_to(bucket)
         assert (file - directory) == file.relative_to(directory)
 
-        
+
 if __name__ == "__main__":
     import os
 

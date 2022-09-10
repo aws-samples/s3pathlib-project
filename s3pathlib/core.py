@@ -40,6 +40,7 @@ except:  # pragma: no cover
 from . import utils, exc, validate
 from .aws import context, Context
 from .iterproxy import IterProxy
+from .marker import warn_deprecate
 
 
 class S3PathIterProxy(IterProxy):
@@ -1068,7 +1069,7 @@ class S3Path:
         else:
             return "s3://{}/".format(self._bucket)
 
-    @FilterableProperty
+    @property
     def console_url(self) -> Optional[str]:
         """
         Return an AWS S3 Console url that can inspect the details.
@@ -1082,7 +1083,7 @@ class S3Path:
             console_url = utils.make_s3_console_url(s3_uri=uri)
             return console_url
 
-    @FilterableProperty
+    @property
     def us_gov_cloud_console_url(self) -> Optional[str]:
         """
         Return an AWS US Gov Cloud S3 Console url that can inspect the details.
@@ -1097,6 +1098,39 @@ class S3Path:
                 s3_uri=uri, is_us_gov_cloud=True
             )
             return console_url
+
+    @property
+    def s3_select_console_url(self) -> Optional[str]:
+        """
+        Return an AWS US Gov Cloud S3 Console url that can inspect data with s3 select.
+
+        .. versionadded:: 1.0.12
+        """
+        if self.is_file():
+            return utils.make_s3_select_console_url(
+                bucket=self.bucket,
+                key=self.key,
+                is_us_gov_cloud=False,
+            )
+        else:
+            raise TypeError("you can only do s3 select with an object!")
+
+    @property
+    def s3_select_us_gov_cloud_console_url(self) -> Optional[str]:
+        """
+
+        Return an AWS S3 Console url that can inspect data with s3 select.
+
+        .. versionadded:: 1.0.12
+        """
+        if self.is_file():
+            return utils.make_s3_select_console_url(
+                bucket=self.bucket,
+                key=self.key,
+                is_us_gov_cloud=True,
+            )
+        else:
+            raise TypeError("you can only do s3 select with an object!")
 
     @FilterableProperty
     def arn(self) -> Optional[str]:
@@ -1469,6 +1503,11 @@ class S3Path:
 
         .. versionadded:: 1.0.1
         """
+        warn_deprecate(
+            func_name="S3Path.join_path",
+            version="2.1.1",
+            message="S3Path.joinpath",
+        )
         args = [self, ]
         for relp in others:
             if relp.is_relpath() is False:
@@ -1478,6 +1517,51 @@ class S3Path:
                 ).format(relp)
                 raise TypeError(msg)
             args.append(relp)
+        return self._from_parts(args)
+
+    def joinpath(
+        self,
+        *other: Union[str, 'S3Path']
+    ) -> 'S3Path':
+        """
+        Join with other relative path or string parts.
+
+        Example::
+
+            # join with string parts
+            >>> p = S3Path("bucket")
+            >>> p.joinpath("folder", "file.txt")
+            S3Path('s3://bucket/folder/file.txt')
+
+            # join ith relative path or string parts
+            >>> p = S3Path("bucket")
+            >>> relpath = S3Path("my-bucket", "data", "folder/").relative_to(S3Path("my-bucket", "data"))
+            >>> p.joinpath("data", relpath, "file.txt")
+            S3Path('s3://bucket/data/folder/file.txt')
+
+        :param others: many string or relative path
+
+        .. versionadded:: 1.1.1
+        """
+        args = [self, ]
+        for part in other:
+            if isinstance(part, str):
+                args.append(part)
+            elif isinstance(part, S3Path):
+                if part.is_relpath() is False:
+                    msg = (
+                        "you can only join with string part or relative path! "
+                        "{} is not a relative path"
+                    ).format(part)
+                    raise TypeError(msg)
+                else:
+                    args.append(part)
+            else:
+                msg = (
+                    "you can only join with string part or relative path! "
+                    "{} is not a relative path"
+                ).format(part)
+                raise TypeError(msg)
         return self._from_parts(args)
 
     def ensure_object(self) -> None:

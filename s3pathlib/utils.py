@@ -140,6 +140,22 @@ def make_s3_console_url(
     )
 
 
+def make_s3_select_console_url(
+    bucket: str,
+    key: str,
+    is_us_gov_cloud: bool,
+):
+    if is_us_gov_cloud:
+        endpoint = "console.amazonaws-us-gov.com"
+    else:
+        endpoint = "console.aws.amazon.com"
+    return "https://{endpoint}/s3/buckets/{bucket}/object/select?prefix={key}".format(
+        endpoint=endpoint,
+        bucket=bucket,
+        key=key,
+    )
+
+
 def ensure_s3_object(
     s3_key_or_uri: str,
 ) -> None:
@@ -231,7 +247,7 @@ def repr_data_size(
     return s
 
 
-def parse_data_size(s) -> int: # pragma: no cover
+def parse_data_size(s) -> int:  # pragma: no cover
     """
     Parse human readable string representing a file size. Doesn't support
     size greater than 1YB.
