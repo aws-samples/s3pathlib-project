@@ -2,6 +2,10 @@
 
 """
 This module provides AWS Tags manipulation helpers.
+
+Note:
+
+- This module is not for public API
 """
 
 import typing as T
