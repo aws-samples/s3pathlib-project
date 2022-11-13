@@ -10,13 +10,14 @@ Note:
 
 import typing as T
 from urllib.parse import urlencode
+from .type import TagType, TagSetType
 
 
 def parse_tags(
     data: T.Union[
-        T.List[T.Dict[str, str]]
+        TagSetType,
     ]
-) -> T.Dict[str, str]:
+) -> TagType:
     """
     Convert tags to pythonic dictionary.
     """
@@ -26,7 +27,7 @@ def parse_tags(
         raise NotImplementedError
 
 
-def encode_tag_set(tags: dict) -> T.List[T.Dict[str, str]]:
+def encode_tag_set(tags: TagType) -> TagSetType:
     """
     Some API requires: ``[{"Key": "name", "Value": "Alice"}, {...}, ...]``
     for tagging parameter.
@@ -37,7 +38,7 @@ def encode_tag_set(tags: dict) -> T.List[T.Dict[str, str]]:
     ]
 
 
-def encode_url_query(tags: dict) -> str:
+def encode_url_query(tags: TagType) -> str:
     """
     Some API requires: ``Key1=Value1&Key2=Value2`` for tagging parameter.
     """
