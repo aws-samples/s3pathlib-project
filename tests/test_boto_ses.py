@@ -3,7 +3,7 @@
 import pytest
 from s3pathlib.aws import context
 from s3pathlib.tests import bsm, boto_ses
-from s3pathlib.core import _resolve_s3_client
+from s3pathlib.core.base import _resolve_s3_client
 
 
 def test_resolve_s3_client():

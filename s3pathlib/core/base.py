@@ -39,12 +39,12 @@ except ImportError:  # pragma: no cover
 except:  # pragma: no cover
     raise
 
-from . import utils, exc, validate
-from . import client as better_client
-from .type import TagType, MetadataType
-from .aws import context, Context
-from .iterproxy import IterProxy
-from .marker import warn_deprecate
+from .. import utils, exc, validate
+from .. import client as better_client
+from ..type import TagType, MetadataType
+from ..aws import context, Context
+from ..iterproxy import IterProxy
+from ..marker import warn_deprecate
 
 
 class S3PathIterProxy(IterProxy):
@@ -2319,9 +2319,9 @@ class S3Path:
             see more details `here <https://docs.python.org/3/library/stdtypes.html#str.encode>`_.
         :param metadata: the s3 object metadata in string key value pair dict.
         :param tags: the s3 object tags in string key value pair dict.
-        
+
         .. versionadded:: 1.0.3
-        
+
         .. versionchanged:: 1.1.1
         """
         s3_client = _resolve_s3_client(context, bsm)
