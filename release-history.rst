@@ -21,6 +21,17 @@ Release and Version History
 **Miscellaneous**
 
 
+1.1.1 (TODO)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- add ``tagging`` management feature
+    - add :meth:`~s3pathlib.core.S3Path.get_tags` method
+    - add :meth:`~s3pathlib.core.S3Path.put_tags` method
+    - add :meth:`~s3pathlib.core.S3Path.update_tags` method
+- allow update ``metadata`` and ``taggings`` in :meth:`~s3pathlib.core.S3Path.write_text` and :meth:`~s3pathlib.core.S3Path.write_bytes` method.
+
+
 1.0.12 (2022-09-10)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**

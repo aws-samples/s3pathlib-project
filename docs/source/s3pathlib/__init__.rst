@@ -11,9 +11,13 @@ sub packages and modules
     :maxdepth: 1
 
     aws <aws>
+    client <client>
     core <core>
     exc <exc>
     iterproxy <iterproxy>
+    marker <marker>
+    tag <tag>
+    type <type>
     utils <utils>
     validate <validate>
     

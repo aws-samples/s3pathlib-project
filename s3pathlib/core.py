@@ -1725,6 +1725,8 @@ class S3Path:
         Get s3 object tags in key value pairs dict.
 
         :return: the s3 object tags in string key value pairs dict.
+
+        .. versionadded:: 1.1.1
         """
         self.ensure_object()
         s3_client = _resolve_s3_client(context, bsm)
@@ -1737,6 +1739,8 @@ class S3Path:
         :param tags: the s3 object tags in string key value pairs dict.
 
         :return: the s3 object tags in string key value pairs dict.
+
+        .. versionadded:: 1.1.1
         """
         self.ensure_object()
         s3_client = _resolve_s3_client(context, bsm)
@@ -1750,6 +1754,8 @@ class S3Path:
         :param tags: the s3 object tags in string key value pairs dict.
 
         :return: the latest, merged object tags in string key value pairs dict.
+
+        .. versionadded:: 1.1.1
         """
         self.ensure_object()
         s3_client = _resolve_s3_client(context, bsm)
