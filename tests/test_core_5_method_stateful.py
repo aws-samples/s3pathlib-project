@@ -57,7 +57,7 @@ class TestS3Path:
         p.touch()
 
         p = S3Path(self.p_root, "touch", "folder/")
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             p.touch()
 
     def test_mkdir(self):

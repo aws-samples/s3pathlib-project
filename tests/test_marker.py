@@ -11,7 +11,7 @@ from s3pathlib.marker import (
 def test_deprecate_v1():
     @deprecate_v1(
         version="1.1.1",
-        message="please use another method instead",
+        message="THIS IS FOR UNITTEST: please use another method instead",
     )
     def my_func(a: int, b: int) -> int:
         return a + b
@@ -19,7 +19,7 @@ def test_deprecate_v1():
     class MyClass:
         @deprecate_v1(
             version="1.1.1",
-            message="please use another method instead",
+            message="THIS IS FOR UNITTEST: please use another method instead",
         )
         def my_method(self, a: int, b: int):
             return a + b

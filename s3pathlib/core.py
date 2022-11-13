@@ -2186,16 +2186,16 @@ class S3Path:
 
     def open(
         self,
-        mode="r",
-        buffering=-1,
-        encoding=None,
-        errors=None,
-        newline=None,
+        mode: Optional[str] = "r",
+        buffering: Optional[int] = -1,
+        encoding: Optional[str] = None,
+        errors: Optional[str] = None,
+        newline: Optional[str] = None,
         closefd=True,
         opener=None,
-        ignore_ext=False,
-        compression=None,
-        api_kwargs: dict = None,
+        ignore_ext: bool = False,
+        compression: Optional[str] = None,
+        transport_params: Optional[dict] = None,
         bsm: Optional['BotoSesManager'] = None,
     ):
         """
@@ -2206,6 +2206,9 @@ class S3Path:
         See https://github.com/RaRe-Technologies/smart_open for more info.
         """
         s3_client = _resolve_s3_client(context, bsm)
+        if transport_params is None:
+            transport_params = dict()
+        transport_params["client"] = s3_client
         kwargs = dict(
             uri=self.uri,
             mode=mode,
@@ -2215,7 +2218,7 @@ class S3Path:
             newline=newline,
             closefd=closefd,
             opener=opener,
-            transport_params={"client": s3_client}
+            transport_params=transport_params,
         )
         if smart_open_version_major < 6:  # pragma: no cover
             kwargs["ignore_ext"] = ignore_ext
@@ -2249,6 +2252,7 @@ class S3Path:
         errors=None,
         newline=None,
         bsm: Optional['BotoSesManager'] = None,
+        client_kwargs: Optional[dict] = None,
     ):
         with self.open(
             mode="w",
@@ -2259,7 +2263,11 @@ class S3Path:
         ) as f:
             f.write(data)
 
-    def write_bytes(self, data: bytes, bsm: Optional['BotoSesManager'] = None):
+    def write_bytes(
+        self,
+        data: bytes,
+        bsm: Optional['BotoSesManager'] = None,
+    ):
         with self.open(mode="wb", bsm=bsm) as f:
             f.write(data)
 
@@ -2268,8 +2276,14 @@ class S3Path:
         exist_ok: bool = True,
         bsm: Optional['BotoSesManager'] = None,
     ):  # pragma: no cover
-        if not self.is_file():
-            raise ValueError
+        """
+        Create an empty S3 object at the S3 location if the S3 object not exists.
+        Do nothing if already exists.
+
+        :param exist_ok: if True, it won't raise error when the S3 object
+            already exists.
+        """
+        self.ensure_object()
 
         if self.exists(bsm=bsm):
             if exist_ok:

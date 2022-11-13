@@ -60,7 +60,7 @@ See definition of server side object metadata here: https://docs.aws.amazon.com/
 
 .. note::
 
-    S3 object metadata are cached and only one API call is used. If you want to get the latest server side value, you can call :meth:`~s3pathlib.core.S3Path.clear_cache()` method and then moving forward.
+    S3 object metadata are cached only on API call. If you want to get the latest server side value, you can call :meth:`~s3pathlib.core.S3Path.clear_cache()` method and then moving forward.
 
     .. code-block:: python
     

@@ -4,6 +4,7 @@
 Exception creator and helpers, argument validators, and more.
 """
 
+
 def ensure_one_and_only_one_not_none(**kwargs) -> None:
     """
     Ensure only exact one of the keyword argument is not None.
@@ -15,6 +16,7 @@ def ensure_one_and_only_one_not_none(**kwargs) -> None:
             f"one and only one of arguments from "
             f"{list(kwargs)} can be not None!"
         )
+
 
 def ensure_all_none(**kwargs) -> None:
     """
