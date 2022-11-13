@@ -4,7 +4,7 @@ Release and Version History
 ==============================================================================
 
 
-1.1.1 (TODO)
+1.1.2 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -16,9 +16,8 @@ Release and Version History
 
 **Minor Improvements**
 
-**Bugfixes**
-
-**Miscellaneous**
+- Refactor ``core.py`` module.
+- Refactor ``utils.py`` module.
 
 
 1.1.1 (TODO)

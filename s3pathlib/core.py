@@ -2315,8 +2315,8 @@ class S3Path:
         :param data: the text you want to write.
         :param encoding: how do you want to encode text?
         :param errors: how do you want to handle encode error? can be 'strict',
-            'ignore', 'replace', 'xmlcharrefreplace', 'backslashreplace'. see more details
-            `here <https://docs.python.org/3/library/stdtypes.html#str.encode>`_.
+            ``ignore``, ``replace``, ``xmlcharrefreplace``, ``backslashreplace``.
+            see more details `here <https://docs.python.org/3/library/stdtypes.html#str.encode>`_.
         :param metadata: the s3 object metadata in string key value pair dict.
         :param tags: the s3 object tags in string key value pair dict.
         
