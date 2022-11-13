@@ -31,7 +31,7 @@ def test_deprecate_v1():
 def test_deprecate_v2():
     @deprecate_v2(
         version="1.1.1",
-        message="please use another method instead",
+        message="THIS IS FOR UNITTEST: please use another method instead",
     )
     def my_func(a: int, b: int) -> int:
         return a + b
@@ -39,7 +39,7 @@ def test_deprecate_v2():
     class MyClass:
         @deprecate_v2(
             version="1.1.1",
-            message="please use another method instead",
+            message="THIS IS FOR UNITTEST: please use another method instead",
         )
         def my_method(self, a: int, b: int):
             return a + b

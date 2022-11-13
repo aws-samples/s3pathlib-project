@@ -28,3 +28,15 @@ def ensure_all_none(**kwargs) -> None:
         raise ValueError(
             f"arguments from {list(kwargs)} has to be all None!"
         )
+
+
+class S3BucketNotExist(Exception):
+    pass
+
+
+class S3ObjectNotExist(Exception):
+    pass
+
+
+class S3PermissionDenied(Exception):
+    pass
