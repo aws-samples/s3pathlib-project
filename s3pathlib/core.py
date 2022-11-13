@@ -10,9 +10,11 @@ Import::
     >>> from s3pathlib import S3Path
 """
 
+from typing import Tuple, List, Iterable, Union, Optional, Any
 import functools
 from datetime import datetime
-from typing import Tuple, List, Iterable, Union, Optional, Any
+from urllib.parse import urlencode
+
 from pathlib_mate import Path
 from boto_session_manager import BotoSesManager, AwsServiceEnum
 
@@ -38,6 +40,8 @@ except:  # pragma: no cover
     raise
 
 from . import utils, exc, validate
+from . import client as better_client
+from .type import TagType, MetadataType
 from .aws import context, Context
 from .iterproxy import IterProxy
 from .marker import warn_deprecate
@@ -372,6 +376,7 @@ class S3Path:
         "_cached_cparts",  # cached comparison parts
         "_hash",  # cached hash value
         "_meta",  # s3 object metadata cache object
+        "_tags",  # s3 object tags cache object
     )
 
     # --------------------------------------------------------------------------
@@ -457,6 +462,7 @@ class S3Path:
         self._parts = parts
         self._is_dir = is_dir
         self._meta = None
+        self._tags = None
         if init:
             self._init()
         return self
@@ -1707,6 +1713,48 @@ class S3Path:
         """
         return self._get_meta_value(key="Metadata", default=dict())
 
+    def update_metadata(self, metadata: dict):  # pragma: no cover
+        raise NotImplementedError(
+            "You CANNOT only update metadata without changing the content of the "
+            "object! You can only do full replace ment via the .write_text() or "
+            ".write_bytes() API. This method will NEVER be implemented!"
+        )
+
+    def get_tags(self, bsm: Optional['BotoSesManager'] = None) -> TagType:
+        """
+        Get s3 object tags in key value pairs dict.
+
+        :return: the s3 object tags in string key value pairs dict.
+        """
+        self.ensure_object()
+        s3_client = _resolve_s3_client(context, bsm)
+        return better_client.get_object_tagging(s3_client, self.bucket, self.key)
+
+    def put_tags(self, tags: TagType, bsm: Optional['BotoSesManager'] = None) -> TagType:
+        """
+        Do full replacement of s3 object tags.
+
+        :param tags: the s3 object tags in string key value pairs dict.
+
+        :return: the s3 object tags in string key value pairs dict.
+        """
+        self.ensure_object()
+        s3_client = _resolve_s3_client(context, bsm)
+        better_client.put_object_tagging(s3_client, self.bucket, self.key, tags)
+        return tags
+
+    def update_tags(self, tags: TagType, bsm: Optional['BotoSesManager'] = None) -> TagType:
+        """
+        Do partial updates of s3 object tags.
+
+        :param tags: the s3 object tags in string key value pairs dict.
+
+        :return: the latest, merged object tags in string key value pairs dict.
+        """
+        self.ensure_object()
+        s3_client = _resolve_s3_client(context, bsm)
+        return better_client.update_object_tagging(s3_client, self.bucket, self.key, tags)
+
     def exists(self, bsm: Optional['BotoSesManager'] = None) -> bool:
         """
         - For S3 bucket: check if the bucket exists. If you don't have the
@@ -2250,26 +2298,72 @@ class S3Path:
         data: str,
         encoding="utf-8",
         errors=None,
-        newline=None,
+        metadata: Optional[MetadataType] = None,
+        tags: Optional[TagType] = None,
         bsm: Optional['BotoSesManager'] = None,
-        client_kwargs: Optional[dict] = None,
     ):
-        with self.open(
-            mode="w",
-            encoding=encoding,
-            errors=errors,
-            newline=newline,
-            bsm=bsm
-        ) as f:
-            f.write(data)
+        """
+        Write text to s3 object. A simple wrapper around
+        `s3_client.put_object <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Bucket.put_object>`_
+
+        :param data: the text you want to write.
+        :param encoding: how do you want to encode text?
+        :param errors: how do you want to handle encode error? can be 'strict',
+            'ignore', 'replace', 'xmlcharrefreplace', 'backslashreplace'. see more details
+            `here <https://docs.python.org/3/library/stdtypes.html#str.encode>`_.
+        :param metadata: the s3 object metadata in string key value pair dict.
+        :param tags: the s3 object tags in string key value pair dict.
+        
+        .. versionadded:: 1.0.3
+        
+        .. versionchanged:: 1.1.1
+        """
+        s3_client = _resolve_s3_client(context, bsm)
+        if errors:
+            body = data.encode(encoding, errors=errors)
+        else:
+            body = data.encode(encoding)
+        response = better_client.put_object(
+            s3_client=s3_client,
+            bucket=self.bucket,
+            key=self.key,
+            body=body,
+            metadata=metadata,
+            tags=tags,
+        )
+        self._tags = tags
+        return response
 
     def write_bytes(
         self,
         data: bytes,
+        metadata: Optional[dict] = None,
+        tags: Optional[TagType] = None,
         bsm: Optional['BotoSesManager'] = None,
     ):
-        with self.open(mode="wb", bsm=bsm) as f:
-            f.write(data)
+        """
+        Write binary data to s3 object. A simple wrapper around
+        `s3_client.put_object <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Bucket.put_object>`_
+
+        :param data: the text you want to write.
+        :param metadata: the s3 object metadata in string key value pair dict.
+        :param tags: the s3 object tags in string key value pair dict.
+
+        .. versionadded:: 1.0.3
+
+        .. versionchanged:: 1.1.1
+        """
+        s3_client = _resolve_s3_client(context, bsm)
+        response = better_client.put_object(
+            s3_client=s3_client,
+            bucket=self.bucket,
+            key=self.key,
+            body=data,
+            metadata=metadata,
+            tags=tags,
+        )
+        self._tags = tags
+        return response
 
     def touch(
         self,

@@ -10,7 +10,7 @@ Note:
 
 import typing as T
 
-from .type import TagType
+from .type import TagType, MetadataType
 from .exc import S3ObjectNotExist
 from .tag import parse_tags, encode_tag_set, encode_url_query
 
@@ -20,8 +20,8 @@ def put_object(
     bucket: str,
     key: str,
     body: T.Optional[bytes] = None,
-    metadata: T.Optional[dict] = None,
-    tags: T.Optional[dict] = None
+    metadata: T.Optional[MetadataType] = None,
+    tags: T.Optional[TagType] = None
 ) -> dict:
     """
     wrapper of `put_object <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.put_object>`_

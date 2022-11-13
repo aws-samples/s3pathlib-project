@@ -12,3 +12,5 @@ import typing as T
 
 TagType = T.Dict[str, str]
 TagSetType = T.List[T.Dict[str, str]]
+
+MetadataType = T.Dict[str, str]
