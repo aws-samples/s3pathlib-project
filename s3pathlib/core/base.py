@@ -296,10 +296,14 @@ class FilterableProperty:
         return filter_
 
 
-def _resolve_s3_client(
+def resolve_s3_client(
     context: Context,
     bsm: Optional['BotoSesManager'] = None,
 ):
+    """
+    Figure out the final boto session to use for API call.
+    If ``BotoSesManager`` is defined, then prioritize to use it.
+    """
     if bsm is None:
         return context.s3_client
     else:
@@ -1613,7 +1617,7 @@ class S3Path:
         self._meta = None
 
     def _head_bucket(self, bsm: Optional['BotoSesManager'] = None) -> dict:
-        s3_client = _resolve_s3_client(context, bsm)
+        s3_client = resolve_s3_client(context, bsm)
         return s3_client.head_bucket(
             Bucket=self.bucket,
         )
@@ -1622,7 +1626,7 @@ class S3Path:
         """
         Call head_object() api, store metadata value.
         """
-        s3_client = _resolve_s3_client(context, bsm)
+        s3_client = resolve_s3_client(context, bsm)
         dct = s3_client.head_object(
             Bucket=self.bucket,
             Key=self.key
@@ -1729,7 +1733,7 @@ class S3Path:
         .. versionadded:: 1.1.1
         """
         self.ensure_object()
-        s3_client = _resolve_s3_client(context, bsm)
+        s3_client = resolve_s3_client(context, bsm)
         return better_client.get_object_tagging(s3_client, self.bucket, self.key)
 
     def put_tags(self, tags: TagType, bsm: Optional['BotoSesManager'] = None) -> TagType:
@@ -1743,7 +1747,7 @@ class S3Path:
         .. versionadded:: 1.1.1
         """
         self.ensure_object()
-        s3_client = _resolve_s3_client(context, bsm)
+        s3_client = resolve_s3_client(context, bsm)
         better_client.put_object_tagging(s3_client, self.bucket, self.key, tags)
         return tags
 
@@ -1758,7 +1762,7 @@ class S3Path:
         .. versionadded:: 1.1.1
         """
         self.ensure_object()
-        s3_client = _resolve_s3_client(context, bsm)
+        s3_client = resolve_s3_client(context, bsm)
         return better_client.update_object_tagging(s3_client, self.bucket, self.key, tags)
 
     def exists(self, bsm: Optional['BotoSesManager'] = None) -> bool:
@@ -1783,7 +1787,7 @@ class S3Path:
             except:  # pragma: no cover
                 raise
         elif self.is_file():
-            s3_client = _resolve_s3_client(context, bsm)
+            s3_client = resolve_s3_client(context, bsm)
             dct = utils.head_object_if_exists(
                 s3_client=s3_client,
                 bucket=self.bucket,
@@ -1850,7 +1854,7 @@ class S3Path:
         if overwrite is False:
             self.ensure_not_exists(bsm=bsm)
         p = Path(path)
-        s3_client = _resolve_s3_client(context, bsm)
+        s3_client = resolve_s3_client(context, bsm)
         return s3_client.upload_file(
             p.abspath,
             Bucket=self.bucket,
@@ -1890,7 +1894,7 @@ class S3Path:
         .. versionadded:: 1.0.1
         """
         self.ensure_dir()
-        s3_client = _resolve_s3_client(context, bsm)
+        s3_client = resolve_s3_client(context, bsm)
         return utils.upload_dir(
             s3_client=s3_client,
             bucket=self.bucket,
@@ -1908,7 +1912,7 @@ class S3Path:
         include_folder: bool = False,
         bsm: Optional['BotoSesManager'] = None,
     ) -> Iterable['S3Path']:
-        s3_client = _resolve_s3_client(context, bsm)
+        s3_client = resolve_s3_client(context, bsm)
         for dct in utils.iter_objects(
             s3_client=s3_client,
             bucket=self.bucket,
@@ -1963,7 +1967,7 @@ class S3Path:
         limit: int = None,
         bsm: Optional['BotoSesManager'] = None,
     ) -> Iterable['S3Path']:
-        s3_client = _resolve_s3_client(context, bsm)
+        s3_client = resolve_s3_client(context, bsm)
         paginator = s3_client.get_paginator("list_objects_v2")
         pagination_config = dict(PageSize=batch_size)
         if limit:  # pragma: no cover
@@ -2023,7 +2027,7 @@ class S3Path:
         .. versionadded:: 1.0.1
         """
         self.ensure_dir()
-        s3_client = _resolve_s3_client(context, bsm)
+        s3_client = resolve_s3_client(context, bsm)
         count, size = utils.calculate_total_size(
             s3_client=s3_client,
             bucket=self.bucket,
@@ -2049,7 +2053,7 @@ class S3Path:
         .. versionadded:: 1.0.1
         """
         self.ensure_dir()
-        s3_client = _resolve_s3_client(context, bsm)
+        s3_client = resolve_s3_client(context, bsm)
         return utils.count_objects(
             s3_client=s3_client,
             bucket=self.bucket,
@@ -2079,7 +2083,7 @@ class S3Path:
 
         .. versionadded:: 1.0.1
         """
-        s3_client = _resolve_s3_client(context, bsm)
+        s3_client = resolve_s3_client(context, bsm)
         if self.is_file():
             if self.exists(bsm=bsm):
                 kwargs = dict(
@@ -2136,7 +2140,7 @@ class S3Path:
         dst.ensure_not_relpath()
         if overwrite is False:
             dst.ensure_not_exists(bsm=bsm)
-        s3_client = _resolve_s3_client(context, bsm)
+        s3_client = resolve_s3_client(context, bsm)
         return s3_client.copy_object(
             Bucket=dst.bucket,
             Key=dst.key,
@@ -2259,7 +2263,7 @@ class S3Path:
 
         See https://github.com/RaRe-Technologies/smart_open for more info.
         """
-        s3_client = _resolve_s3_client(context, bsm)
+        s3_client = resolve_s3_client(context, bsm)
         if transport_params is None:
             transport_params = dict()
         transport_params["client"] = s3_client
@@ -2324,7 +2328,7 @@ class S3Path:
 
         .. versionchanged:: 1.1.1
         """
-        s3_client = _resolve_s3_client(context, bsm)
+        s3_client = resolve_s3_client(context, bsm)
         if errors:
             body = data.encode(encoding, errors=errors)
         else:
@@ -2359,7 +2363,7 @@ class S3Path:
 
         .. versionchanged:: 1.1.1
         """
-        s3_client = _resolve_s3_client(context, bsm)
+        s3_client = resolve_s3_client(context, bsm)
         response = better_client.put_object(
             s3_client=s3_client,
             bucket=self.bucket,
@@ -2402,7 +2406,7 @@ class S3Path:
         if not self.is_dir():
             raise ValueError
 
-        s3_client = _resolve_s3_client(context, bsm)
+        s3_client = resolve_s3_client(context, bsm)
         dct = utils.head_object_if_exists(
             s3_client=s3_client,
             bucket=self.bucket,
