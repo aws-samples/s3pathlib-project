@@ -3,6 +3,9 @@
 import pytest
 from s3pathlib import S3Path, context
 from s3pathlib.client import (
+    is_bucket_exists,
+    head_object,
+    head_object_or_none,
     put_object,
     get_object_tagging,
     put_object_tagging,
@@ -14,9 +17,22 @@ from s3pathlib.tests import boto_ses, s3_client, bucket, prefix
 
 context.attach_boto_session(boto_ses)
 
+NOT_EXIST_STR = "8c8b3db3e28e90a95b4d692f81bcbd71"
+
 
 class TestClient:
     p_root = S3Path(bucket, prefix, "client")
+
+    def test_is_bucket_exists(self):
+        assert is_bucket_exists(s3_client, bucket) is True
+        assert is_bucket_exists(s3_client, NOT_EXIST_STR) is False
+
+    def test_head_object(self):
+        with pytest.raises(S3ObjectNotExist):
+            head_object(s3_client, bucket, NOT_EXIST_STR)
+
+    def test_head_object_or_none(self):
+        assert head_object_or_none(s3_client, bucket, NOT_EXIST_STR) is None
 
     def test_put_object(self):
         p = S3Path(self.p_root, "put_object", "hello.txt")
