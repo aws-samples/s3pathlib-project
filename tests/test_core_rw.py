@@ -40,6 +40,25 @@ class TestS3Path:
         assert p.metadata == {"file-type": "binary"}
         assert p.get_tags() == {"key1": "value1", "key2": "alice=bob"}
 
+    def test_metadata_tags(self):
+        p = S3Path(self.p_root, "log.txt")
+
+        # put metadata and tags
+        p.write_text(
+            "hello",
+            metadata={"creator": "s3pathlib"},
+            tags={"creator": "s3pathlib"},
+        )
+        assert p.metadata == {"creator": "s3pathlib"}
+        assert p.get_tags() == {"creator": "s3pathlib"}
+
+        # put content without metadata and tags
+        p.write_text("hello")
+        p.head_object()
+        assert p.metadata == {}
+        assert p.get_tags() == {}
+
+
 
 if __name__ == "__main__":
-    run_cov_test(__file__, module="s3pathlib.core", open_browser=False)
+    run_cov_test(__file__, module="s3pathlib.core.rw", open_browser=False)
