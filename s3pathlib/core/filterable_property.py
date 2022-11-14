@@ -38,11 +38,6 @@ class FilterableProperty(T.Generic[FilterableType]):
             def username(self) -> str:
                 return self.name
 
-
-        class FilterableUserProperty(FilterableProperty[User]):
-            pass
-
-
         filter_function = User.username == "alice
         assert filter_function(User(name="alice")) == True
         assert filter_function(User(name="bob")) == False

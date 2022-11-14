@@ -13,10 +13,6 @@ class User:
         return self.name
 
 
-class FilterableUserProperty(FilterableProperty[User]):
-    pass
-
-
 class TestFilterableProperty:
     def test(self):
         user = User(name="alice")
