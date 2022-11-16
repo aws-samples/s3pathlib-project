@@ -69,7 +69,7 @@ class ReadAndWriteAPIMixin:
     ):
         """
         Write binary data to s3 object. A simple wrapper around
-        `s3_client.put_object <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Bucket.put_object>`_
+        `s3_client.put_object <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.put_object>`_
 
         :param data: the text you want to write.
         :param metadata: the s3 object metadata in string key value pair dict.
@@ -90,7 +90,8 @@ class ReadAndWriteAPIMixin:
             metadata=metadata,
             tags=tags,
         )
-        # TODO: update _meta attributes to avoid unnecessary head_object api call
+        self._meta = response
+        self._meta["Metadata"] = metadata
         return response
 
     def write_text(
@@ -104,7 +105,7 @@ class ReadAndWriteAPIMixin:
     ):
         """
         Write text to s3 object. A simple wrapper around
-        `s3_client.put_object <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Bucket.put_object>`_
+        `s3_client.put_object <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.put_object>`_
 
         :param data: the text you want to write.
         :param encoding: how do you want to encode text?

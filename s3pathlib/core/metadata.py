@@ -50,6 +50,21 @@ class MetadataAPIMixin:
             self.head_object(bsm=bsm)
         return self._meta.get(key, default)
 
+    def _get_or_pull_meta_value(
+        self: "S3Path",
+        key: str,
+        bsm: T.Optional["BotoSesManager"] = None,
+    ) -> T.Any:
+        """
+        Note:
+
+            This method is for those metadata fields that always exists.
+        """
+        value = self._get_meta_value(key, default=None, bsm=bsm)
+        if value is None:
+            self.head_object(bsm=bsm)
+        return self._meta[key]
+
     @FilterableProperty
     def etag(self: "S3Path") -> str:
         """
@@ -61,7 +76,7 @@ class MetadataAPIMixin:
 
         .. versionadded:: 1.0.1
         """
-        return self._get_meta_value(key="ETag")[1:-1]
+        return self._get_or_pull_meta_value(key="ETag")[1:-1]
 
     @FilterableProperty
     def last_modified_at(self: "S3Path") -> datetime:
@@ -70,7 +85,7 @@ class MetadataAPIMixin:
 
         .. versionadded:: 1.0.1
         """
-        return self._get_meta_value(key="LastModified")
+        return self._get_or_pull_meta_value(key="LastModified")
 
     @FilterableProperty
     def size(self: "S3Path") -> int:
@@ -79,7 +94,7 @@ class MetadataAPIMixin:
 
         .. versionadded:: 1.0.1
         """
-        return self._get_meta_value(key="ContentLength")
+        return self._get_or_pull_meta_value(key="ContentLength")
 
     @property
     def size_for_human(self: "S3Path") -> str:
@@ -119,10 +134,7 @@ class MetadataAPIMixin:
 
         .. versionadded:: 1.0.1
         """
-        metadata = self._get_meta_value(key="Metadata", default=None)
-        if metadata is None:
-            self.clear_cache()
-        return self._get_meta_value(key="Metadata")
+        return self._get_or_pull_meta_value(key="Metadata")
 
     def clear_cache(self: "S3Path") -> None:
         """

@@ -20,6 +20,7 @@ Release and Version History
 **Minor Improvements**
 
 - Refactor ``core.py`` module, split the 2.5k line script into 10+ 100 line module.
+- Made the metadata pull more intelligent.
 
 **Bugfixes**
 
