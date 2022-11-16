@@ -4,7 +4,7 @@ Release and Version History
 ==============================================================================
 
 
-1.1.2 (TODO)
+1.2.1 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -14,13 +14,20 @@ Release and Version History
 - add ``acl`` management feature
 - add ``legal_hold`` management feature
 
+
+1.1.2 (2022-11-16)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Minor Improvements**
 
-- Refactor ``core.py`` module.
-- Refactor ``utils.py`` module.
+- Refactor ``core.py`` module, split the 2.5k line script into 10+ 100 line module.
+
+**Bugfixes**
+
+- Fix a bug that the ``S3Path`` constructor should not take concrete S3 object / dir path as the second / third / fourth / ... arguments
+- Fix a bug that cannot get the metadata value of the S3Path is created by ``_from_content_dict`` method.
 
 
-1.1.1 (TODO)
+1.1.1 (2022-11-13)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
