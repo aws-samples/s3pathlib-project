@@ -119,7 +119,10 @@ class MetadataAPIMixin:
 
         .. versionadded:: 1.0.1
         """
-        return self._get_meta_value(key="Metadata", default=dict())
+        metadata = self._get_meta_value(key="Metadata", default=None)
+        if metadata is None:
+            self.clear_cache()
+        return self._get_meta_value(key="Metadata")
 
     def clear_cache(self: "S3Path") -> None:
         """

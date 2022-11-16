@@ -6,15 +6,17 @@ from s3pathlib.utils import md5_binary
 from s3pathlib.tests import s3_client, bucket, prefix, run_cov_test
 
 
+s3dir_root = S3Path(bucket, prefix, "core", "metadata/")
+
+
 class TestMetadataAPIMixin:
-    _root = S3Path(bucket, prefix, "core", "metadata/")
-    p = S3Path(_root, "file.txt")
-    p_empty_object = S3Path(_root, "empty.txt")
-    p_soft_folder_file = S3Path(_root, "soft_folder", "file.txt")
-    p_hard_folder = S3Path(_root, "hard_folder/")
-    p_hard_folder_file = S3Path(_root, "hard_folder", "file.txt")
-    p_empty_folder = S3Path(_root, "empty_folder/")
-    p_statistics = S3Path(_root, "statistics/")
+    p = S3Path(s3dir_root, "file.txt")
+    p_empty_object = S3Path(s3dir_root, "empty.txt")
+    p_soft_folder_file = S3Path(s3dir_root, "soft_folder", "file.txt")
+    p_hard_folder = S3Path(s3dir_root, "hard_folder/")
+    p_hard_folder_file = S3Path(s3dir_root, "hard_folder", "file.txt")
+    p_empty_folder = S3Path(s3dir_root, "empty_folder/")
+    p_statistics = S3Path(s3dir_root, "statistics/")
 
     @classmethod
     def setup_for_exists(cls):
@@ -102,6 +104,24 @@ class TestMetadataAPIMixin:
                 "Owner": {"DisplayName": "string", "ID": "string"},
             },
         )
+
+    def test_object_metadata(self):
+        s3path = s3dir_root / "object-metadata.txt"
+        s3_client.put_object(
+            Bucket=s3path.bucket,
+            Key=s3path.key,
+            Body="Hello World!",
+        )
+        assert s3path.metadata == {} # if no user metadata, then it will return {}
+
+        s3_client.put_object(
+            Bucket=s3path.bucket,
+            Key=s3path.key,
+            Body="Hello World!",
+            Metadata={"key": "value"},
+        )
+        s3path._meta = {"ETag": "abcd"}
+        assert s3path.metadata == {"key": "value"}
 
 
 if __name__ == "__main__":
