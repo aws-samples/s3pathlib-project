@@ -155,7 +155,14 @@ class BaseS3Path:
                 utils.validate_s3_key(arg)
                 _parts.extend(utils.split_parts(arg))
             elif isinstance(arg, BaseS3Path):
-                _parts.extend(arg._parts)
+                if arg._bucket is None:
+                    _parts.extend(arg._parts)
+                else:
+                    raise TypeError(
+                        "from the second arguments, it has to be raw string "
+                        "(as a part) or a relative S3Path (without bucket)! "
+                        f"this is invalid: {arg}."
+                    )
             else:
                 raise TypeError
 

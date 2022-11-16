@@ -80,6 +80,9 @@ class TestBaseS3Path:
         with pytest.raises(TypeError):
             S3Path("bucket", 1, 2, 3)
 
+        with pytest.raises(TypeError):
+            S3Path(S3Path("bucket"), S3Path("a", "b", "c"))
+
 
 if __name__ == "__main__":
     run_cov_test(__file__, module="s3pathlib.core.base", open_browser=False)
