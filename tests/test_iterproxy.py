@@ -87,7 +87,6 @@ class TestIterProxy:
 
 
 if __name__ == "__main__":
-    import os
+    from s3pathlib.tests import run_cov_test
 
-    basename = os.path.basename(__file__)
-    pytest.main([basename, "-s", "--tb=native"])
+    run_cov_test(__file__, module="s3pathlib.iterproxy", open_browser=False)

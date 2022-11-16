@@ -83,7 +83,7 @@ def put_object(
     key: str,
     body: T.Optional[bytes] = None,
     metadata: T.Optional[MetadataType] = None,
-    tags: T.Optional[TagType] = None
+    tags: T.Optional[TagType] = None,
 ) -> dict:
     """
     wrapper of `put_object <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.put_object>`_

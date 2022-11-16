@@ -10,19 +10,14 @@ def test_validate_s3_bucket():
         ("", False),
         ("a", False),
         ("a" * 100, False),
-
         ("bucket@example.com", False),
         ("my_bucket", False),
-
         ("-my-bucket", False),
         ("my-bucket-", False),
-
         ("my-bucket-", False),
-
         ("192.168.0.1", False),
         ("xn--my-bucket", False),
         ("my-bucket-s3alias", False),
-
         # good case
         ("my-bucket", True),
     ]
@@ -39,10 +34,15 @@ def test_validate_s3_key():
         # bad cases
         ("a" * 2000, False),
         ("%20", False),
-
         # good cases
-        ("", True,),
-        ("abcd", True,),
+        (
+            "",
+            True,
+        ),
+        (
+            "abcd",
+            True,
+        ),
     ]
     for key, flag in test_cases:
         if flag:
@@ -58,7 +58,6 @@ def test_validate_s3_uri():
         ("bucket/key", False),
         ("s3://bucket", False),
         ("s3://ab/%20", False),
-
         # good cases
         ("s3://bucket/key", True),
         ("s3://bucket/folder/file.txt", True),
@@ -81,7 +80,6 @@ def test_validate_s3_arn():
         ("arn:aws:s3:::b", False),
         ("arn:aws:s3:::{}".format("b" * 100), False),
         ("arn:aws:s3:::bucket/%20", False),
-
         # good cases
         ("arn:aws:s3:::bucket/key", True),
         ("arn:aws:s3:::bucket/folder/file.txt", True),
@@ -98,7 +96,6 @@ def test_validate_s3_arn():
 
 
 if __name__ == "__main__":
-    import os
+    from s3pathlib.tests import run_cov_test
 
-    basename = os.path.basename(__file__)
-    pytest.main([basename, "-s", "--tb=native"])
+    run_cov_test(__file__, module="s3pathlib.validate", open_browser=False)
