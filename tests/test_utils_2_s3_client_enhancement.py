@@ -128,7 +128,7 @@ class TestS3ClientEnhancement:
         ) is False
 
     def test_upload_dir(self):
-        local_dir = os.path.join(dir_tests, "test_upload_dir")
+        local_dir = os.path.join(dir_tests, "core", "test_upload_dir")
 
         # regular upload
         utils.upload_dir(
@@ -168,7 +168,7 @@ class TestS3ClientEnhancement:
             prefix=utils.smart_join_s3_key(
                 parts=[prefix, "test_iter_objects"], is_dir=True
             ),
-            local_dir=os.path.join(dir_tests, "test_iter_objects"),
+            local_dir=os.path.join(dir_tests, "core", "test_iter_objects"),
             pattern="**/*.txt",
             overwrite=True,
         )
@@ -385,7 +385,7 @@ class TestS3ClientEnhancement:
             s3_client=s3_client,
             bucket=bucket,
             prefix=utils.smart_join_s3_key(parts=[prefix, "test_delete_dir"], is_dir=True),
-            local_dir=os.path.join(dir_tests, "test_iter_objects"),
+            local_dir=os.path.join(dir_tests, "core", "test_iter_objects"),
             pattern="**/*.txt",
             overwrite=True,
         )

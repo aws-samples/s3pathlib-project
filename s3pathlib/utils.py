@@ -531,7 +531,7 @@ def upload_dir(
     overwrite: bool = False,
 ) -> int:
     """
-    Recursively upload a local directory and files in its sub directory.
+    Recursively upload a local directory and files in its subdirectory.
 
     :param s3_client: ``boto3.session.Session().client("s3")`` object
     :param bucket: s3 bucket name

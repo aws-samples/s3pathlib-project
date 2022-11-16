@@ -68,6 +68,9 @@ class Context:
 
     @property
     def aws_account_id(self) -> str:
+        """
+        The AWS Account ID of the current boto session/
+        """
         if self._aws_account_id is None:
             self._aws_account_id = self.sts_client.get_caller_identity()["Account"]
         return self._aws_account_id

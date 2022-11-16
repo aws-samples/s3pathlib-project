@@ -2,21 +2,13 @@
 
 import pytest
 from s3pathlib.core import S3Path
+from s3pathlib.tests import run_cov_test
 
 
-class TestS3Path:
+class TestAttributeAPIMixin:
     def test_properties(self):
         # s3 object
         p = S3Path("bucket", "folder", "file.txt")
-        assert p.bucket == "bucket"
-        assert p.key == "folder/file.txt"
-        assert p.parts == ["folder", "file.txt"]
-        assert p.uri == "s3://bucket/folder/file.txt"
-        assert p.arn == "arn:aws:s3:::bucket/folder/file.txt"
-        assert p.console_url == "https://console.aws.amazon.com/s3/object/bucket?prefix=folder/file.txt"
-        assert p.us_gov_cloud_console_url == "https://console.amazonaws-us-gov.com/s3/object/bucket?prefix=folder/file.txt"
-        assert p.s3_select_console_url == "https://console.aws.amazon.com/s3/buckets/bucket/object/select?prefix=folder/file.txt"
-        assert p.s3_select_us_gov_cloud_console_url == "https://console.amazonaws-us-gov.com/s3/buckets/bucket/object/select?prefix=folder/file.txt"
         assert str(p) == "S3Path('s3://bucket/folder/file.txt')"
         assert p.basename == "file.txt"
         assert p.fname == "file"
@@ -27,12 +19,6 @@ class TestS3Path:
 
         # s3 directory
         p = S3Path("bucket", "folder/")
-        assert p.bucket == "bucket"
-        assert p.key == "folder/"
-        assert p.parts == ["folder", ]
-        assert p.uri == "s3://bucket/folder/"
-        assert p.arn == "arn:aws:s3:::bucket/folder/"
-        assert p.console_url == "https://console.aws.amazon.com/s3/buckets/bucket?prefix=folder/"
         assert str(p) == "S3Path('s3://bucket/folder/')"
         assert p.basename == "folder"
         with pytest.raises(TypeError):
@@ -45,12 +31,6 @@ class TestS3Path:
 
         # s3 bucket
         p = S3Path("bucket")
-        assert p.bucket == "bucket"
-        assert p.key == ""
-        assert p.parts == []
-        assert p.uri == "s3://bucket/"
-        assert p.arn == "arn:aws:s3:::bucket"
-        assert p.console_url == "https://console.aws.amazon.com/s3/buckets/bucket?tab=objects"
         assert str(p) == "S3Path('s3://bucket/')"
         assert p.basename == ""
         with pytest.raises(TypeError):
@@ -63,13 +43,6 @@ class TestS3Path:
 
         # void path
         p = S3Path()
-        assert p.bucket is None
-        assert p.key == ""
-        assert p.parts == []
-        assert p.uri is None
-        assert p.arn is None
-        assert p.console_url is None
-        assert p.us_gov_cloud_console_url is None
         assert str(p) == "S3VoidPath()"
         assert p.basename == ""
         with pytest.raises(ValueError):
@@ -84,12 +57,6 @@ class TestS3Path:
 
         # relative path
         p = S3Path("bucket/folder/file.txt").relative_to(S3Path("bucket"))
-        assert p.bucket is None
-        assert p.key == "folder/file.txt"
-        assert p.parts == ["folder", "file.txt"]
-        assert p.uri is None
-        assert p.arn is None
-        assert p.console_url is None
         assert str(p) == "S3RelPath('folder/file.txt')"
         assert p.basename == "file.txt"
         assert p.fname == "file"
@@ -153,10 +120,16 @@ class TestS3Path:
             _ = S3Path().parents
 
         with pytest.raises(ValueError):
-            _ = S3Path(
-                "bucket",
-                "folder", "subfolder", "file.txt",
-            ).relative_to(S3Path("bucket")).parents
+            _ = (
+                S3Path(
+                    "bucket",
+                    "folder",
+                    "subfolder",
+                    "file.txt",
+                )
+                .relative_to(S3Path("bucket"))
+                .parents
+            )
 
     def test_fname(self):
         assert S3Path("bucket", "file").fname == "file"
@@ -178,9 +151,64 @@ class TestS3Path:
                 is_dir=False,
             ).ext
 
+    def test_is_parent_of(self):
+        assert S3Path("bkt").is_parent_of(S3Path("bkt/a")) is True
+        assert S3Path("bkt").is_parent_of(S3Path("bkt/a/")) is True
+        assert S3Path("bkt/a/").is_parent_of(S3Path("bkt/a/b")) is True
+        assert S3Path("bkt/a/").is_parent_of(S3Path("bkt/a/b/")) is True
+
+        # root bucket's parent is itself
+        assert S3Path("bkt").is_parent_of(S3Path("bkt")) is True
+
+        # for non bucket root directory, parent has to be shorter than other
+        assert S3Path("bkt/a/").is_parent_of(S3Path("bkt/a/")) is False
+        assert S3Path("bkt/a/b/").is_parent_of(S3Path("bkt/a")) is False
+
+        # different bucket name always returns False
+        assert S3Path("bkt1/a/").is_parent_of(S3Path("bkt2/a/b/")) is False
+
+        # has to be concrete S3Path
+        with pytest.raises(TypeError):
+            S3Path().is_parent_of(S3Path("bkt/a/b/"))
+
+        with pytest.raises(TypeError):
+            S3Path("bkt/a/").is_parent_of(S3Path())
+
+        # parent has to be a directory
+        with pytest.raises(TypeError):
+            S3Path("bkt/a").is_parent_of(S3Path("bkt/a/b/"))
+
+    def test_is_prefix_of(self):
+        assert S3Path("bkt").is_prefix_of(S3Path("bkt/a")) is True
+        assert S3Path("bkt").is_prefix_of(S3Path("bkt/a/")) is True
+        assert S3Path("bkt/a/").is_prefix_of(S3Path("bkt/a/b")) is True
+        assert S3Path("bkt/a/").is_prefix_of(S3Path("bkt/a/b/")) is True
+        assert S3Path("bkt").is_prefix_of(S3Path("bkt")) is True
+        assert S3Path("bkt/a").is_prefix_of(S3Path("bkt/a")) is True
+        assert S3Path("bkt/a/").is_prefix_of(S3Path("bkt/a/")) is True
+
+        assert S3Path("bkt/a/b/").is_prefix_of(S3Path("bkt/a")) is False
+
+        # different bucket name always returns False
+        assert S3Path("bkt1/a/").is_prefix_of(S3Path("bkt2/a/b/")) is False
+
+        # has to be concrete S3Path
+        with pytest.raises(TypeError):
+            S3Path().is_prefix_of(S3Path("bkt/a/b/"))
+
+        with pytest.raises(TypeError):
+            S3Path("bkt/a/").is_prefix_of(S3Path())
+
+    def test_root(self):
+        assert S3Path("bkt/a/b/c").root == S3Path("bkt/")
+        assert S3Path("bkt/a/b/").root == S3Path("bkt/")
+        assert S3Path("bkt").root == S3Path("bkt/")
+        with pytest.raises(TypeError):
+            _ = S3Path().root
+
+        with pytest.raises(TypeError):
+            _ = S3Path.make_relpath("folder").root
+
 
 if __name__ == "__main__":
-    import os
-
-    basename = os.path.basename(__file__)
-    pytest.main([basename, "-s", "--tb=native"])
+    run_cov_test(__file__, module="s3pathlib.core.attribute", open_browser=False)

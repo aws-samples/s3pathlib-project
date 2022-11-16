@@ -20,7 +20,7 @@ def ensure_one_and_only_one_not_none(**kwargs) -> None:
 
 def ensure_all_none(**kwargs) -> None:
     """
-    Ensure all of the keyword argument is None.
+    Ensure all the keyword arguments are None.
     """
     if len(kwargs) == 0:
         raise ValueError
