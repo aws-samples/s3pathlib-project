@@ -131,12 +131,12 @@ class TestIterObjectsAPIMixin:
             assert p.ext.lower() == ".txt"
 
     def test_iterdir(self):
-        p_list = S3Path(bucket, prefix, "iterproxy/").iterdir().all()
+        p_list = s3dir_test_iter_objects.iterdir().all()
         assert len(p_list) == 5
         assert p_list[0].is_dir()
         assert p_list[-1].is_file()
 
-        p_list = S3Path(bucket, prefix, "iterproxy/fold").iterdir().all()
+        p_list = s3dir_test_iter_objects.joinpath("fold").iterdir().all()
         assert len(p_list) == 4
         assert p_list[0].is_dir()
         assert p_list[-1].is_file()
