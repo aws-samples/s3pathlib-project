@@ -132,6 +132,8 @@ class ReadAndWriteAPIMixin:
     def touch(
         self: "S3Path",
         exist_ok: bool = True,
+        metadata: T.Optional[MetadataType] = None,
+        tags: T.Optional[TagType] = None,
         bsm: T.Optional["BotoSesManager"] = None,
     ):
         """
@@ -149,7 +151,7 @@ class ReadAndWriteAPIMixin:
             else:
                 raise FileExistsError
         else:
-            self.write_text("", bsm=bsm)
+            self.write_text("", metadata=metadata, tags=tags, bsm=bsm)
 
     def mkdir(
         self: "S3Path",
