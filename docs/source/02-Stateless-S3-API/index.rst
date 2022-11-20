@@ -46,6 +46,8 @@ If you are running the code from Cloud machine like AWS EC2 or AWS Lambda, follo
 
 - `Grant AWS EC2 API access using IAM Role <https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html>`_
 
+For more advanced AWS credential manipulation, please see :ref:`aws-credential`.
+
 
 Get S3 Object Metadata
 ------------------------------------------------------------------------------

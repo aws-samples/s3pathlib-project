@@ -10,9 +10,10 @@ sub packages and modules
 .. toctree::
     :maxdepth: 1
 
+    core <core/__init__>
     aws <aws>
     client <client>
-    core <core>
+    compat <compat>
     exc <exc>
     iterproxy <iterproxy>
     marker <marker>
