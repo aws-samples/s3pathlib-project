@@ -16,9 +16,9 @@ Comparing to :ref:`Stateless S3 API <what-is-stateless-s3-api>`, **Stateful S3 A
 
 Copy, Move (Cut), Delete, Upload
 ------------------------------------------------------------------------------
-:class:`~s3pathlib.core.S3Path` is a OS path-liked object. So you should be able to, copy, move (cut), delete, overwrite.
+:class:`~s3pathlib.core.s3path.S3Path` is a OS path-liked object. So you should be able to, copy, move (cut), delete, overwrite.
 
-- :meth:`~s3pathlib.core.S3Path.copy_to`: copy object or directory (recursively) from one location to another. similar to `shutil.copy <https://docs.python.org/3/library/shutil.html#shutil.copy>`_ and `shutil.copytree <https://docs.python.org/3/library/shutil.html#shutil.copytree>`_
+- :meth:`~s3pathlib.core.copy.CopyAPIMixin.copy_to`: copy object or directory (recursively) from one location to another. similar to `shutil.copy <https://docs.python.org/3/library/shutil.html#shutil.copy>`_ and `shutil.copytree <https://docs.python.org/3/library/shutil.html#shutil.copytree>`_
 
 .. code-block:: python
 
@@ -28,7 +28,7 @@ Copy, Move (Cut), Delete, Upload
     >>> p = S3Path("bucket", "datalake", "table_transactions/")
     >>> p.copy_to(p.change(new_bucket="backup-bucket"))
 
-- :meth:`~s3pathlib.core.S3Path.move_to`: move (cut) object or directory (recursively) from one location to another. similar to `shutil.move <https://docs.python.org/3/library/shutil.html#shutil.move>`_
+- :meth:`~s3pathlib.core.copy.CopyAPIMixin.move_to`: move (cut) object or directory (recursively) from one location to another. similar to `shutil.move <https://docs.python.org/3/library/shutil.html#shutil.move>`_
 
 .. code-block:: python
 
@@ -38,7 +38,7 @@ Copy, Move (Cut), Delete, Upload
     >>> p = S3Path("bucket", "datalake", "table_transactions/")
     >>> p.move_to(p.change(new_bucket="backup-bucket"))
 
-- :meth:`~s3pathlib.core.S3Path.delete_if_exists`: delete object or directory (recursively). similar to `os.remove <https://docs.python.org/3/library/os.html#os.remove>`_ and `shutil.rmtree <https://docs.python.org/3/library/shutil.html#shutil.rmtree>`_
+- :meth:`~s3pathlib.core.delete.DeleteAPIMixin.delete_if_exists`: delete object or directory (recursively). similar to `os.remove <https://docs.python.org/3/library/os.html#os.remove>`_ and `shutil.rmtree <https://docs.python.org/3/library/shutil.html#shutil.rmtree>`_
 
 .. code-block:: python
 
@@ -46,7 +46,7 @@ Copy, Move (Cut), Delete, Upload
     >>> p = S3Path("bucket", "tmp/")
     >>> p.delete_if_exists()
 
-- :meth:`~s3pathlib.core.S3Path.upload_file`: upload a file to s3.
+- :meth:`~s3pathlib.core.upload.UploadAPIMixin.upload_file`: upload a file to s3.
 
 .. code-block:: python
 
@@ -54,7 +54,7 @@ Copy, Move (Cut), Delete, Upload
     >>> if not p.exists():
     ...     p.upload_file("/tmp/log.txt")
 
-- :meth:`~s3pathlib.core.S3Path.upload_dir`: upload a directory (recursively) to a s3 prefix.
+- :meth:`~s3pathlib.core.upload.UploadAPIMixin.upload_dir`: upload a directory (recursively) to a s3 prefix.
 
 .. code-block:: python
 

@@ -53,16 +53,16 @@ Get S3 Object Metadata
 ------------------------------------------------------------------------------
 See definition of server side object metadata here: https://docs.aws.amazon.com/AmazonS3/latest/API/API_Object.html.
 
-- :attr:`~s3pathlib.core.S3Path.etag`
-- :attr:`~s3pathlib.core.S3Path.last_modified_at`
-- :attr:`~s3pathlib.core.S3Path.size`
-- :attr:`~s3pathlib.core.S3Path.size_for_human`
-- :attr:`~s3pathlib.core.S3Path.version_id`
-- :attr:`~s3pathlib.core.S3Path.expire_at`
+- :attr:`~s3pathlib.core.metadata.MetadataAPIMixin.etag`
+- :attr:`~s3pathlib.core.metadata.MetadataAPIMixin.last_modified_at`
+- :attr:`~s3pathlib.core.metadata.MetadataAPIMixin.size`
+- :attr:`~s3pathlib.core.metadata.MetadataAPIMixin.size_for_human`
+- :attr:`~s3pathlib.core.metadata.MetadataAPIMixin.version_id`
+- :attr:`~s3pathlib.core.metadata.MetadataAPIMixin.expire_at`
 
 .. note::
 
-    S3 object metadata are cached only on API call. If you want to get the latest server side value, you can call :meth:`~s3pathlib.core.S3Path.clear_cache()` method and then moving forward.
+    S3 object metadata are cached only on API call. If you want to get the latest server side value, you can call :meth:`~s3pathlib.core.metadata.MetadataAPIMixin.clear_cache()` method and then moving forward.
 
     .. code-block:: python
     
@@ -101,7 +101,7 @@ Example:
 
 Count Objects and Size
 ------------------------------------------------------------------------------
-AWS Console has a button "Calculate Total Size" tells you how many objects and the total size in a S3 folder. :meth:`~s3pathlib.core.S3Path.calculate_total_size` and :meth:`~s3pathlib.core.S3Path.count_objects` can do that too.
+AWS Console has a button "Calculate Total Size" tells you how many objects and the total size in a S3 folder. :meth:`~s3pathlib.core.iter_objects.IterObjectsAPIMixin.calculate_total_size` and :meth:`~s3pathlib.core.iter_objects.IterObjectsAPIMixin.count_objects` can do that too.
 
 .. code-block:: python
 
@@ -119,7 +119,7 @@ AWS Console has a button "Calculate Total Size" tells you how many objects and t
 
     In the AWS S3 console, if you clicked "Create Folder" button, it actually creates an empty object with tailing ``/`` to represent the logic folder. It is invisible to human but the empty object actually exists and counts as an object in the native AWS boto3 API.
 
-    As a human we don't care about "logical folder" and want the number we calculate is what we see. So **b default, s3pathlib doesn't count logic folder and also won't yield s3 object in the** :meth:`~s3pathlib.core.S3Path.iter_objects` **API**.
+    As a human we don't care about "logical folder" and want the number we calculate is what we see. So **b default, s3pathlib doesn't count logic folder and also won't yield s3 object in the** :meth:`~s3pathlib.core.iter_objects.IterObjectsAPIMixin.iter_objects` **API**.
 
     If you insist to see "logical folder", you can use ``include_folder=True`` to enable it.
 
@@ -137,7 +137,7 @@ Iterate all objects (by default, it doesn't yield "logical folder"):
     for p_obj in p.iter_objects():
         ...
 
-:meth:`~s3pathlib.core.S3Path.iter_objects` also support the following arguments:
+:meth:`~s3pathlib.core.iter_objects.IterObjectsAPIMixin.iter_objects` also support the following arguments:
 
 - ``batch_size``: number of s3 objects returned per API call, internally it makes pagination API call to iterate through all s3 objects. Large batch size can reduce the total API call and hence inprove performance.
 - ``limit``: limit the number of objects you want to return.

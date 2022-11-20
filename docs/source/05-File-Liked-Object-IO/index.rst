@@ -11,10 +11,10 @@ File Liked Object IO
 
 Single S3 Object Text / Bytes IO
 ------------------------------------------------------------------------------
-- read text
-- read bytes
-- write text
-- write bytes
+- :meth:`read text <~s3pathlib.core.rw.ReadAndWriteAPIMixin.read_text>`
+- :meth:`read bytes  <~s3pathlib.core.rw.ReadAndWriteAPIMixin.read_bytes>`
+- :meth:`write text  <~s3pathlib.core.rw.ReadAndWriteAPIMixin.write_text>`
+- :meth:`write bytes  <~s3pathlib.core.rw.ReadAndWriteAPIMixin.write_bytes>`
 
 .. code-block:: python
 
@@ -37,7 +37,7 @@ File IO API open / close, read / write
 ------------------------------------------------------------------------------
 .. note::
 
-    Special Thanks to `smart_open <https://github.com/RaRe-Technologies/smart_open>`_. ``s3pathlib`` just provides a simple wrapper around ``smart_open``.
+    Special Thanks to `smart_open <https://github.com/RaRe-Technologies/smart_open>`_. :meth:`S3Path.open <s3pathlib.core.opener.OpenerAPIMixin.open>` just provides a simple wrapper around ``smart_open``.
 
 .. code-block:: python
 

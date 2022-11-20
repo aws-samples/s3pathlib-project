@@ -41,7 +41,15 @@ class OpenerAPIMixin:
         """
         Open S3Path as a file-liked object.
 
-        :return: a file-like object.
+        :param mode: "r", "w", "rb", "wb"
+        :param compression: whether do you want to compress the content
+        :param multipart_upload: do you want to use multi-part upload,
+            by default it is True
+        :param metadata: also put the user defined metadata dictionary
+        :param tags: also put the tag dictionary
+        :param bsm: optional ``boto_session_manager.BotoSesManager`` object
+
+        :return: a file-like object that has ``read()`` and ``write()`` method.
 
         See https://github.com/RaRe-Technologies/smart_open for more info.
 
