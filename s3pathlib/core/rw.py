@@ -142,6 +142,10 @@ class ReadAndWriteAPIMixin:
 
         :param exist_ok: if True, it won't raise error when the S3 object
             already exists.
+
+        .. versionchanged:: 1.0.6
+
+        .. versionchanged:: 1.2.1
         """
         self.ensure_object()
 
@@ -159,6 +163,11 @@ class ReadAndWriteAPIMixin:
         parents: bool = False,
         bsm: T.Optional["BotoSesManager"] = None,
     ):
+        """
+        Make an S3 folder (empty "/" file)
+
+        .. versionchanged:: 1.0.6
+        """
         if not self.is_dir():
             raise ValueError
 

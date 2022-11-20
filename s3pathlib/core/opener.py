@@ -44,6 +44,10 @@ class OpenerAPIMixin:
         :return: a file-like object.
 
         See https://github.com/RaRe-Technologies/smart_open for more info.
+
+        .. versionadded:: 1.0.1
+
+        .. versionchanged:: 1.2.1
         """
         s3_client = resolve_s3_client(context, bsm)
         if transport_params is None:
