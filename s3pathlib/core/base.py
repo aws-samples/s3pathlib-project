@@ -20,26 +20,6 @@ if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
 
 
-# try:
-#     import smart_open
-#
-#     smart_open_version = smart_open.__version__
-#     (
-#         smart_open_version_major, smart_open_version_minor, _
-#     ) = smart_open_version.split(".")
-#     smart_open_version_major = int(smart_open_version_major)
-#     smart_open_version_minor = int(smart_open_version_minor)
-# except ImportError:  # pragma: no cover
-#     pass
-# except:  # pragma: no cover
-#     raise
-
-# from .filterable_property import FilterableProperty
-# from .. import utils, exc, validate
-
-# from ..marker import warn_deprecate
-
-
 class BaseS3Path:
     """
     Similar to ``pathlib.Path``. An objective oriented programming interface
