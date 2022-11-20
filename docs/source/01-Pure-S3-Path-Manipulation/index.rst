@@ -91,28 +91,28 @@ S3 URI is a unique resource identifier that uniquely locate a S3 bucket, S3 obje
 
 S3 Path Attributes
 ------------------------------------------------------------------------------
-:class:`~s3pathlib.core.S3Path` is immutable and hashable. These attributes doesn't need AWS boto3 API call and generally available. For attributes like :attr:`~s3pathlib.core.S3Path.etag`, :attr:`~s3pathlib.core.S3Path.size` that need API call, see :ref:`configure-aws-context`
+:class:`~s3pathlib.core.s3path.S3Path` is immutable and hashable. These attributes doesn't need AWS boto3 API call and generally available. For attributes like :attr:`~s3pathlib.core.metadata.MetadataAPIMixin.etag`, :attr:`~s3pathlib.core.metadata.MetadataAPIMixin.size` that need API call, see :ref:`configure-aws-context`
 
 .. code-block:: python
 
     # create an instance
     >>> p = S3Path("bucket", "folder", "file.txt")
 
-- :attr:`~s3pathlib.core.S3Path.bucket`
+- :attr:`~s3pathlib.core.uri.UriAPIMixin.bucket`
 
 .. code-block:: python
 
     >>> p.bucket
     'bucket'
 
-- :attr:`~s3pathlib.core.S3Path.key`
+- :attr:`~s3pathlib.core.uri.UriAPIMixin.key`
 
 .. code-block:: python
 
     >>> p.key
     'folder/file.txt'
 
-- :attr:`~s3pathlib.core.S3Path.parts`: you can access the s3 key parts in sequence too
+- :attr:`~s3pathlib.core.base.BaseS3Path.parts`: you can access the s3 key parts in sequence too
 
 .. code-block:: python
 
@@ -129,77 +129,77 @@ Since it is **immutable**, you cannot change the value of the attribute:
       File "<input>", line 1, in <module>
     AttributeError: can't set attribute
 
-- :attr:`~s3pathlib.core.S3Path.uri`: `unique resource identifier <https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-bucket-intro.html>`_
+- :attr:`~s3pathlib.core.uri.UriAPIMixin.uri`: `unique resource identifier <https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-bucket-intro.html>`_
 
 .. code-block:: python
 
     >>> p.uri
     's3://bucket/folder/file.txt'
 
-- :attr:`~s3pathlib.core.S3Path.console_url`: open console to preview
+- :attr:`~s3pathlib.core.uri.UriAPIMixin.console_url`: open console to preview
 
 .. code-block:: python
 
     >>> p.console_url
     'https://s3.console.aws.amazon.com/s3/object/bucket?prefix=folder/file.txt'
 
-- :attr:`~s3pathlib.core.S3Path.arn`: `aws resource namespace <https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html>`_
+- :attr:`~s3pathlib.core.uri.UriAPIMixin.arn`: `aws resource namespace <https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html>`_
 
 .. code-block:: python
 
     >>> p.arn
     'arn:aws:s3:::bucket/folder/file.txt'
 
-Logically a :class:`~s3pathlib.core.S3Path` is also a file system like object. So it should have those **file system concepts** too:
+Logically a :class:`~s3pathlib.core.s3path.S3Path` is also a file system like object. So it should have those **file system concepts** too:
 
 .. code-block:: python
 
     # create an instance
     >>> p = S3Path("bucket", "folder", "file.txt")
 
-- :attr:`~s3pathlib.core.S3Path.basename`: the file name with extension.
+- :attr:`~s3pathlib.core.attribute.AttributeAPIMixin.basename`: the file name with extension.
 
 .. code-block:: python
 
     >>> p.basename
     'file.txt'
 
-- :attr:`~s3pathlib.core.S3Path.fname`: file name without file extension.
+- :attr:`~s3pathlib.core.attribute.AttributeAPIMixin.fname`: file name without file extension.
 
 .. code-block:: python
 
     >>> p.fname
     'file'
 
-- :attr:`~s3pathlib.core.S3Path.ext`: file extension, if available
+- :attr:`~s3pathlib.core.attribute.AttributeAPIMixin.ext`: file extension, if available
 
 .. code-block:: python
 
     >>> p.ext
     '.txt'
 
-- :attr:`~s3pathlib.core.S3Path.dirname`: the basename of the parent directory
+- :attr:`~s3pathlib.core.attribute.AttributeAPIMixin.dirname`: the basename of the parent directory
 
 .. code-block:: python
 
     >>> p.dirname
     'folder'
 
-- :attr:`~s3pathlib.core.S3Path.abspath`: the absolute path is the full path from the root drive. You can think of S3 bucket as the root drive.
+- :attr:`~s3pathlib.core.attribute.AttributeAPIMixin.abspath`: the absolute path is the full path from the root drive. You can think of S3 bucket as the root drive.
 
 .. code-block:: python
 
     >>> p.abspath
     '/folder/file.txt'
 
-- :attr:`~s3pathlib.core.S3Path.parent`: the parent directory S3 Path
+- :attr:`~s3pathlib.core.attribute.AttributeAPIMixin.parent`: the parent directory S3 Path
 
 .. code-block:: python
 
     >>> p.parent
     S3Path('s3://bucket/folder/')
 
-- :attr:`~s3pathlib.core.S3Path.dirpath`: the absolute path of the parent directory. It is equal to ``p.parent.abspath``
+- :attr:`~s3pathlib.core.attribute.AttributeAPIMixin.dirpath`: the absolute path of the parent directory. It is equal to ``p.parent.abspath``
 
 .. code-block:: python
 
@@ -217,40 +217,41 @@ S3 Path Methods
 
 Identify S3Path type
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- :meth:`~s3pathlib.core.S3Path.is_dir`:
+- :meth:`~s3pathlib.core.is_test.IsTestAPIMixin.is_dir`:
 
 .. code-block:: python
 
     >>> S3Path("bucket", "folder/").is_dir()
     True
 
-- :meth:`~s3pathlib.core.S3Path.is_file`:
+- :meth:`~s3pathlib.core.is_test.IsTestAPIMixin.is_file`:
 
 .. code-block:: python
 
     >>> S3Path("bucket", "file.txt").is_file()
     True
 
-- :meth:`~s3pathlib.core.S3Path.is_bucket`:
+- :meth:`~s3pathlib.core.is_test.IsTestAPIMixin.is_bucket`:
 
 .. code-block:: python
 
     >>> S3Path("bucket").is_bucket()
     True
 
-- :meth:`~s3pathlib.core.S3Path.is_void`:
+- :meth:`~s3pathlib.core.is_test.IsTestAPIMixin.is_void`:
 
 .. code-block:: python
 
     >>> S3Path().is_void()
     True
 
-- :meth:`~s3pathlib.core.S3Path.is_relpath`:
+- :meth:`~s3pathlib.core.relative.RelativePathAPIMixin.is_relpath`:
 
 .. code-block:: python
 
     >>> S3Path("bucket", "folder/").relative_to(S3Path("bucket")).is_relpath()
     True
+
 
 Comparison
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -281,7 +282,7 @@ Since S3Path can convert to S3 URI, it should be able to compare to each other.
 
 Hash
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-``S3Path`` is :meth:`hashable <~s3pathlib.core.S3Path.__hash__>`.
+``S3Path`` is :meth:`hashable <~s3pathlib.core.comparison.ComparisonAPIMixin.__hash__>`.
 
 .. code-block:: python
 
@@ -306,7 +307,7 @@ Hash
 
 Mutate the immutable S3Path
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- :meth:`~s3pathlib.core.S3Path.copy`: create a copy of this S3Path, but completely different because it is immutable.
+- :meth:`~s3pathlib.core.mutate.MutateAPIMixin.copy`: create a copy of this S3Path, but completely different because it is immutable.
 
 .. code-block:: python
 
@@ -319,7 +320,7 @@ Mutate the immutable S3Path
     >>> p1 is p2
     False
 
-- :meth:`~s3pathlib.core.S3Path.change`: Create a new S3Path by replacing part of the attributes.
+- :meth:`~s3pathlib.core.mutate.MutateAPIMixin.change`: Create a new S3Path by replacing part of the attributes.
 
 .. code-block:: python
 
@@ -353,7 +354,7 @@ Mutate the immutable S3Path
     >>> p.change(new_dirpath="x/y/").uri
     's3://bkt/x/y/c.jpg'
 
-- :meth:`~s3pathlib.core.S3Path.join_path`: join with other relative paths to form another path
+- :meth:`~s3pathlib.core.joinpath.JoinPathAPIMixin.joinpath`: join with other relative paths to form another path
 
 .. code-block:: python
 
@@ -371,20 +372,32 @@ Mutate the immutable S3Path
     S3Path('file.txt')
 
     # join one relative path
-    >>> p2.join_path(relpath1)
+    >>> p2.joinpath(relpath1)
     S3Path('s3://bucket/folder/subfolder/file.txt')
 
     # join multiple relative path
     >>> p3 = p2.parent
     >>> relpath2 = p2.relative_to(p3)
-    >>> p3.join_path(relpath2, relpath1)
+    >>> p3.joinpath(relpath2, relpath1)
     S3Path('s3://bucket/folder/subfolder/file.txt')
+
+- The ``/`` operator provide a syntax sugar for ``joinpath`` method
+
+.. code-block:: python
+
+    >>> p = S3Path("bucket")
+    >>> p / "file.txt"
+    S3Path('s3://bucket/file.txt')
+
+    >>> p / "folder" / "file.txt"
+    S3Path('s3://bucket/folder/file.txt')
+
 
 .. _relative-path:
 
 Relative Path
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- :meth:`~s3pathlib.core.S3Path.relative_to`: calculate the relative path between two path, the "to path" has to be "shorter than" the "from path"
+- :meth:`~s3pathlib.core.relative.RelativePathAPIMixin.relative_to`: calculate the relative path between two path, the "to path" has to be "shorter than" the "from path"
 
 .. code-block:: python
 

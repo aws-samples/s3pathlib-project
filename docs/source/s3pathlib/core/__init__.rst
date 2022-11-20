@@ -29,6 +29,7 @@ sub packages and modules
     rw <rw>
     s3path <s3path>
     serde <serde>
+    sync <sync>
     tagging <tagging>
     upload <upload>
     uri <uri>
