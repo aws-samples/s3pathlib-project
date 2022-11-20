@@ -80,6 +80,7 @@ class SyncAPIMixin:
                 if bsm.boto_ses.profile_name != "default":
                     args.extend(["--profile", context.boto_ses.profile_name])
 
+        print("cmd: {}".format(" ".join(args)))
         response = subprocess.run(args)
         if response.returncode != 0: # pragma: no cover
             raise SystemError
