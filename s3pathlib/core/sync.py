@@ -72,9 +72,11 @@ class SyncAPIMixin:
         args.extend([src_arg, dst_arg])
 
         if bsm is None:  # pragma: no cover
+            print(f"context.boto_ses.profile_name = {context.boto_ses.profile_name}")
             if context.boto_ses.profile_name:
                 args.extend(["--profile", context.boto_ses.profile_name])
         else:  # pragma: no cover
+            print(f"bsm.boto_ses.profile_name = {bsm.boto_ses.profile_name}")
             if bsm.boto_ses.profile_name:
                 args.extend(["--profile", context.boto_ses.profile_name])
 
