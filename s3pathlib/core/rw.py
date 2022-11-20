@@ -63,7 +63,7 @@ class ReadAndWriteAPIMixin:
     def write_bytes(
         self: "S3Path",
         data: bytes,
-        metadata: T.Optional[dict] = None,
+        metadata: T.Optional[MetadataType] = None,
         tags: T.Optional[TagType] = None,
         bsm: T.Optional["BotoSesManager"] = None,
     ):
