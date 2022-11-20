@@ -80,7 +80,9 @@ class SyncAPIMixin:
                 if bsm.boto_ses.profile_name != "default":
                     args.extend(["--profile", context.boto_ses.profile_name])
 
-        subprocess.run(args, check=True)
+        response = subprocess.run(args)
+        if response.returncode != 0: # pragma: no cover
+            raise SystemError
 
     def sync_from(
         self: "S3Path",
