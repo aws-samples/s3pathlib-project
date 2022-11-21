@@ -51,7 +51,7 @@ class SyncAPIMixin:
                 src_is_s3 = True
             else:
                 src_is_s3 = False
-            src_arg = src
+            src_arg = src.replace("\\", "/")
         else:
             src_is_s3 = True
             src_arg = src.uri
@@ -61,7 +61,7 @@ class SyncAPIMixin:
                 dst_is_s3 = True
             else:
                 dst_is_s3 = False
-            dst_arg = dst
+            dst_arg = dst.replace("\\", "/")
         else:
             dst_is_s3 = True
             dst_arg = dst.uri
