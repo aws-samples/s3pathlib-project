@@ -72,18 +72,13 @@ class SyncAPIMixin:
         args.extend([src_arg, dst_arg])
 
         if bsm is None:  # pragma: no cover
-            if context.boto_ses.profile_name:
-                if context.boto_ses.profile_name != "default":
-                    args.extend(["--profile", context.boto_ses.profile_name])
+            with BotoSesManager(botocore_session=context.boto_ses._session).awscli():
+                response = subprocess.run(args)
         else:  # pragma: no cover
-            if bsm.boto_ses.profile_name:
-                if bsm.boto_ses.profile_name != "default":
-                    args.extend(["--profile", context.boto_ses.profile_name])
-
-        print("cmd: {}".format(" ".join(args)))
-        response = subprocess.run(args)
+            with bsm.awscli():
+                response = subprocess.run(args)
         if response.returncode != 0: # pragma: no cover
-            raise SystemError
+            raise SystemError("'aws s3 sync' command failed!")
 
     def sync_from(
         self: "S3Path",
