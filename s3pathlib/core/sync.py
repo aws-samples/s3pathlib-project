@@ -8,12 +8,12 @@ import typing as T
 
 import subprocess
 
-from ..aws import context
+from boto_session_manager import BotoSesManager
 
+from ..aws import context
 
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
-    from boto_session_manager import BotoSesManager
 
 
 class SyncAPIMixin:
@@ -77,7 +77,7 @@ class SyncAPIMixin:
         else:  # pragma: no cover
             with bsm.awscli():
                 response = subprocess.run(args)
-        if response.returncode != 0: # pragma: no cover
+        if response.returncode != 0:  # pragma: no cover
             raise SystemError("'aws s3 sync' command failed!")
 
     def sync_from(
