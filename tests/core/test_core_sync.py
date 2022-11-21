@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import sys
 import pytest
 from pathlib_mate import Path
 from s3pathlib.core import S3Path
@@ -12,6 +13,10 @@ s3dir_root = S3Path(bucket, prefix, "core", "sync").to_dir()
 
 
 class TestSyncAPIMixin:
+    @pytest.mark.skipif(
+        sys.platform.startswith("win"),
+        reason="windows CLI system is different",
+    )
     def test_sync(self):
         s3path1 = s3dir_root.joinpath("dir1").to_dir()
         s3path2 = s3dir_root.joinpath("dir2").to_dir()
