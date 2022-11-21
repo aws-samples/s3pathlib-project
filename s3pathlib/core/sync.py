@@ -73,6 +73,7 @@ class SyncAPIMixin:
 
         if bsm is None:  # pragma: no cover
             with BotoSesManager(botocore_session=context.boto_ses._session).awscli():
+                print(" ".join(args))
                 response = subprocess.run(args)
         else:  # pragma: no cover
             with bsm.awscli():
