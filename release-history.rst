@@ -14,7 +14,7 @@ Release and Version History
 - add ``legal_hold`` management feature
 
 
-1.2.1 (TODO)
+1.2.1 (2022-11-20)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
