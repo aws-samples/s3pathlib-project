@@ -63,7 +63,7 @@ class ReadAndWriteAPIMixin:
     def write_bytes(
         self: "S3Path",
         data: bytes,
-        metadata: T.Optional[dict] = None,
+        metadata: T.Optional[MetadataType] = None,
         tags: T.Optional[TagType] = None,
         bsm: T.Optional["BotoSesManager"] = None,
     ):
@@ -132,6 +132,8 @@ class ReadAndWriteAPIMixin:
     def touch(
         self: "S3Path",
         exist_ok: bool = True,
+        metadata: T.Optional[MetadataType] = None,
+        tags: T.Optional[TagType] = None,
         bsm: T.Optional["BotoSesManager"] = None,
     ):
         """
@@ -140,6 +142,10 @@ class ReadAndWriteAPIMixin:
 
         :param exist_ok: if True, it won't raise error when the S3 object
             already exists.
+
+        .. versionchanged:: 1.0.6
+
+        .. versionchanged:: 1.2.1
         """
         self.ensure_object()
 
@@ -149,7 +155,7 @@ class ReadAndWriteAPIMixin:
             else:
                 raise FileExistsError
         else:
-            self.write_text("", bsm=bsm)
+            self.write_text("", metadata=metadata, tags=tags, bsm=bsm)
 
     def mkdir(
         self: "S3Path",
@@ -157,6 +163,11 @@ class ReadAndWriteAPIMixin:
         parents: bool = False,
         bsm: T.Optional["BotoSesManager"] = None,
     ):
+        """
+        Make an S3 folder (empty "/" file)
+
+        .. versionchanged:: 1.0.6
+        """
         if not self.is_dir():
             raise ValueError
 

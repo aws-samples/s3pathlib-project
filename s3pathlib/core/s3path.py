@@ -23,6 +23,7 @@ from .rw import ReadAndWriteAPIMixin
 from .delete import DeleteAPIMixin
 from .upload import UploadAPIMixin
 from .copy import CopyAPIMixin
+from .sync import SyncAPIMixin
 from .serde import SerdeAPIMixin
 from .opener import OpenerAPIMixin
 
@@ -45,6 +46,7 @@ class S3Path(
     DeleteAPIMixin,
     UploadAPIMixin,
     CopyAPIMixin,
+    SyncAPIMixin,
     SerdeAPIMixin,
     OpenerAPIMixin,
 ):

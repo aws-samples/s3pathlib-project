@@ -8,7 +8,7 @@ S3 Object Filtering
 
 In file system, recursively finding files under a directory that matchs certain / combination of criteria is a common use case. It is not easy to do with native AWS API.
 
-``s3pathlib`` provides a Pythonic way to do that. The :meth:`~s3pathlib.core.S3Path.iter_objects`` actually returns an :class:`~s3pathlib.core.S3PathIterProxy` object. It serves as a iterator that yield :class:`~s3pathlib.core.S3Path` items and provides more utility method to control / filter the items you want to return.
+``s3pathlib`` provides a Pythonic way to do that. The :meth:`~s3pathlib.core.iter_objects.IterObjectsAPIMixin.iter_objects` actually returns an :class:`~s3pathlib.core.iter_objects.S3PathIterProxy` object. It serves as a iterator that yield :class:`~s3pathlib.core.s3path.S3Path` items and provides more utility method to control / filter the items you want to return.
 
 .. note::
 
@@ -52,28 +52,28 @@ Multiple Filter (logic AND)
 
 List of attributes can be used for filter:
 
-- :meth:`~s3pathlib.core.S3Path.bucket`
-- :meth:`~s3pathlib.core.S3Path.key`
-- :meth:`~s3pathlib.core.S3Path.uri`
-- :meth:`~s3pathlib.core.S3Path.console_url`
-- :meth:`~s3pathlib.core.S3Path.arn`
-- :meth:`~s3pathlib.core.S3Path.parts`
-- :meth:`~s3pathlib.core.S3Path.basename`
-- :meth:`~s3pathlib.core.S3Path.fname`
-- :meth:`~s3pathlib.core.S3Path.ext`
-- :meth:`~s3pathlib.core.S3Path.dirname`
-- :meth:`~s3pathlib.core.S3Path.dirpath`
-- :meth:`~s3pathlib.core.S3Path.abspath`
-- :meth:`~s3pathlib.core.S3Path.etag`
-- :meth:`~s3pathlib.core.S3Path.size`
-- :meth:`~s3pathlib.core.S3Path.last_modified_at`
-- :meth:`~s3pathlib.core.S3Path.version_id`
-- :meth:`~s3pathlib.core.S3Path.expire_at`
+- ``bucket``
+- ``key``
+- ``uri``
+- ``console_url``
+- ``arn``
+- ``parts``
+- ``basename``
+- ``fname``
+- ``ext``
+- ``dirname``
+- ``dirpath``
+- ``abspath``
+- ``etag``
+- ``size``
+- ``last_modified_at``
+- ``version_id``
+- ``expire_at``
 
 
 Custom Filter
 ------------------------------------------------------------------------------
-A filter function is simply a callable function that takes only one argument :class:`S3Path`, and returns a boolean value to indicate that whether we WANT TO KEEP THIS OBJECT. If returns ``False``, this ``S3Path`` will not be yield. You can define arbitrary criterion in your filter function.
+A filter function is simply a callable function that takes only one argument :class:`~s3pathlib.core.s3path.S3Path`, and returns a boolean value to indicate that whether we WANT TO KEEP THIS OBJECT. If returns ``False``, this ``S3Path`` will not be yield. You can define arbitrary criterion in your filter function.
 
 Example:
 
@@ -107,16 +107,16 @@ Example:
 
 List of built-in comparator for filtering:
 
-- :meth:`~s3pathlib.core.FilterableProperty.equal_to`
-- :meth:`~s3pathlib.core.FilterableProperty.not_equal_to`
-- :meth:`~s3pathlib.core.FilterableProperty.greater`
-- :meth:`~s3pathlib.core.FilterableProperty.less`
-- :meth:`~s3pathlib.core.FilterableProperty.greater_equal`
-- :meth:`~s3pathlib.core.FilterableProperty.less_equal`
-- :meth:`~s3pathlib.core.FilterableProperty.between`
-- :meth:`~s3pathlib.core.FilterableProperty.startswith`
-- :meth:`~s3pathlib.core.FilterableProperty.endswith`
-- :meth:`~s3pathlib.core.FilterableProperty.contains`
+- :meth:`~s3pathlib.core.filterable_property.FilterableProperty.equal_to`
+- :meth:`~s3pathlib.core.filterable_property.FilterableProperty.not_equal_to`
+- :meth:`~s3pathlib.core.filterable_property.FilterableProperty.greater`
+- :meth:`~s3pathlib.core.filterable_property.FilterableProperty.less`
+- :meth:`~s3pathlib.core.filterable_property.FilterableProperty.greater_equal`
+- :meth:`~s3pathlib.core.filterable_property.FilterableProperty.less_equal`
+- :meth:`~s3pathlib.core.filterable_property.FilterableProperty.between`
+- :meth:`~s3pathlib.core.filterable_property.FilterableProperty.startswith`
+- :meth:`~s3pathlib.core.filterable_property.FilterableProperty.endswith`
+- :meth:`~s3pathlib.core.filterable_property.FilterableProperty.contains`
 
 
 Control Returned Items

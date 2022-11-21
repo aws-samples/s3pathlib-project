@@ -1,12 +1,21 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
+
+import pytest
+
 from s3pathlib.core import S3Path
+from s3pathlib.core.metadata import alert_upper_case
 from s3pathlib.utils import md5_binary
 from s3pathlib.tests import s3_client, bucket, prefix, run_cov_test
 
 
 s3dir_root = S3Path(bucket, prefix, "core", "metadata/")
+
+
+def test_alert_upper_case():
+    with pytest.warns(UserWarning):
+        alert_upper_case(metadata={"Hello": "World"})
 
 
 class TestMetadataAPIMixin:
