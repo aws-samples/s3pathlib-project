@@ -6,12 +6,11 @@ Tagging related API.
 
 import typing as T
 
+from iterproxy import IterProxy
+
 from .resolve_s3_client import resolve_s3_client
-from .. import client as better_client
 from .. import utils
 from ..aws import context
-from ..type import TagType
-from ..iterproxy import IterProxy
 
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path

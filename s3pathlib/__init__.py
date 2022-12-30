@@ -18,6 +18,8 @@ try:
     from . import utils
     from .aws import context
     from .core import S3Path
+
+    from iterproxy import and_, or_, not_
 except ImportError:  # pragma: no cover
     pass
 except:  # pragma: no cover

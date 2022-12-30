@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import pytest
+
 from pathlib_mate import Path
+from iterproxy import and_
+
 from s3pathlib.core import S3Path
 from s3pathlib.client import put_object
 from s3pathlib.tests import s3_client, bucket, prefix, run_cov_test
@@ -70,7 +73,7 @@ class TestIterObjectsAPIMixin:
 
     def test_filter(self):
         proxy = s3dir_test_iter_objects.iter_objects().filter(
-            S3Path.basename == "1.txt"
+            and_(S3Path.basename == "1.txt")
         )
         l = proxy.all()
         assert [p.basename for p in l] == [

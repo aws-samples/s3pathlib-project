@@ -4,14 +4,25 @@ Release and Version History
 ==============================================================================
 
 
-1.2.2 (TODO)
+1.2.3 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
 - make :class:`s3pathlib.aws.Context` multi-thread safe.
-- allow ``and_``, ``or_``, ``not_`` in iterproxy filter.
 - add ``acl`` management feature
 - add ``legal_hold`` management feature
+
+
+1.3.1 (2022-12-30)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- allow ``and_``, ``or_``, ``not_`` in iterproxy filter.
+- allow update ``metadata`` and ``taggings`` in :meth:`~s3pathlib.core.S3Path.copy.CopyAPIMixin.copy_file`, :meth:`~s3pathlib.core.S3Path.copy.CopyAPIMixin.copy_to` and :meth:`~s3pathlib.core.S3Path.copy.CopyAPIMixin.move_to` method.
+
+**Miscellaneous**
+
+- the ``iterproxy.py`` module is taken out and released as a independent project.
 
 
 1.2.1 (2022-11-20)

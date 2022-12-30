@@ -1,4 +1,5 @@
 boto3
+iterproxy
 pathlib_mate>=1.0.1
 boto_session_manager>=1.2.1
 smart_open>=5.1.0

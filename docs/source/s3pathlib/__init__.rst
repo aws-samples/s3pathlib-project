@@ -15,7 +15,6 @@ sub packages and modules
     client <client>
     compat <compat>
     exc <exc>
-    iterproxy <iterproxy>
     marker <marker>
     tag <tag>
     type <type>

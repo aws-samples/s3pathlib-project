@@ -6,10 +6,11 @@ Read and write related API.
 
 import typing as T
 
-from .resolve_s3_client import resolve_s3_client
 from .. import utils, client as better_client
 from ..type import TagType, MetadataType
 from ..aws import context
+
+from .resolve_s3_client import resolve_s3_client
 
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
