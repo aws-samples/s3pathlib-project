@@ -43,7 +43,7 @@ class OpenerAPIMixin:
 
         :param mode: "r", "w", "rb", "wb"
         :param compression: whether do you want to compress the content
-        :param multipart_upload: do you want to use multi-part upload,
+        :param multipart_upload: do you want to use multi-parts upload,
             by default it is True
         :param metadata: also put the user defined metadata dictionary
         :param tags: also put the tag dictionary

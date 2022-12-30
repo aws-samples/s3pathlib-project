@@ -10,6 +10,7 @@ from s3pathlib.client import (
     get_object_tagging,
     put_object_tagging,
     update_object_tagging,
+    copy_object,
     S3ObjectNotExist,
 )
 
@@ -80,6 +81,49 @@ class TestClient:
 
         existing_tags = get_object_tagging(s3_client, p.bucket, p.key)
         assert existing_tags == {"k1": "v1", "k2": "v22", "k3": "v3"}
+
+    def test_copy_object(self):
+        p_src = S3Path(self.p_root, "copy_object", "src.txt")
+        p_dst = S3Path(self.p_root, "copy_object", "dst.txt")
+        p_src.delete_if_exists()
+        p_dst.delete_if_exists()
+
+        put_object(
+            s3_client,
+            p_src.bucket,
+            p_src.key,
+            b"hello",
+            metadata=dict(key_name="a"),
+            tags=dict(tag_name="a"),
+        )
+
+        # copy without metadata and tags
+        copy_object(
+            s3_client,
+            p_src.bucket,
+            p_src.key,
+            p_dst.bucket,
+            p_dst.key,
+        )
+
+        # metadata is empty
+        p_dst.clear_cache()
+        assert p_dst.metadata == {"key_name": "a"}
+        assert p_dst.get_tags() == {"tag_name": "a"}
+
+        # copy with metadata and tags
+        copy_object(
+            s3_client,
+            p_src.bucket,
+            p_src.key,
+            p_dst.bucket,
+            p_dst.key,
+            metadata=dict(key_name="b"),
+            tags=dict(tag_name="b"),
+        )
+        p_dst.clear_cache()
+        assert p_dst.metadata == {"key_name": "b"}
+        assert p_dst.get_tags() == {"tag_name": "b"}
 
 
 if __name__ == "__main__":

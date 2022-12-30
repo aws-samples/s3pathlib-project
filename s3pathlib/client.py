@@ -153,3 +153,34 @@ def update_object_tagging(
     existing_tags.update(tags)
     put_object_tagging(s3_client, bucket, key, existing_tags)
     return existing_tags
+
+
+def copy_object(
+    s3_client,
+    src_bucket: str,
+    src_key: str,
+    dst_bucket: str,
+    dst_key: str,
+    metadata: T.Optional[MetadataType] = None,
+    tags: T.Optional[TagType] = None,
+    **kwargs
+) -> dict:
+    """
+    wrapper of `copy_object <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.copy_object>`_
+    """
+    api_kwargs = dict(
+        Bucket=dst_bucket,
+        Key=dst_key,
+        CopySource=dict(
+            Bucket=src_bucket,
+            Key=src_key,
+        ),
+    )
+    api_kwargs.update(kwargs)
+    if metadata is not None:
+        api_kwargs["Metadata"] = metadata
+        api_kwargs["MetadataDirective"] = "REPLACE"
+    if tags is not None:
+        api_kwargs["Tagging"] = encode_url_query(tags)
+        api_kwargs["TaggingDirective"] = "REPLACE"
+    return s3_client.copy_object(**api_kwargs)
