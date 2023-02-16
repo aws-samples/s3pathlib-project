@@ -13,6 +13,9 @@
 
 .. image:: https://img.shields.io/pypi/pyversions/s3pathlib.svg
     :target: https://pypi.python.org/pypi/s3pathlib
+    
+.. image:: https://img.shields.io/pypi/dm/s3pathlib.svg
+    :target: https://pypi.python.org/pypi/s3pathlib
 
 ------
 
