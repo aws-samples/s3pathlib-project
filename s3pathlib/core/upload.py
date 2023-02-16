@@ -7,8 +7,10 @@ Upload file from local to s3.
 import typing as T
 
 from pathlib_mate import Path
+
 from .resolve_s3_client import resolve_s3_client
 from .. import utils
+from ..type import PathType
 from ..aws import context
 
 if T.TYPE_CHECKING:  # pragma: no cover
@@ -23,7 +25,7 @@ class UploadAPIMixin:
 
     def upload_file(
         self: "S3Path",
-        path: str,
+        path: PathType,
         overwrite: bool = False,
         extra_args: dict = None,
         callback: callable = None,
@@ -61,7 +63,7 @@ class UploadAPIMixin:
 
     def upload_dir(
         self: "S3Path",
-        local_dir: str,
+        local_dir: PathType,
         pattern: str = "**/*",
         overwrite: bool = False,
         bsm: T.Optional["BotoSesManager"] = None,

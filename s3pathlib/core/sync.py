@@ -11,9 +11,17 @@ import subprocess
 from boto_session_manager import BotoSesManager
 
 from ..aws import context
+from ..type import PathType
 
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
+
+
+def _preprocess(path: T.Union["S3Path", PathType]) -> T.Union["S3Path", str]:
+    if hasattr(path, "console_url"):
+        return path
+    else:
+        return str(path)
 
 
 class SyncAPIMixin:
@@ -24,9 +32,17 @@ class SyncAPIMixin:
     @classmethod
     def sync(
         cls: T.Type["S3Path"],
-        src: T.Union["S3Path", str],
-        dst: T.Union["S3Path", str],
+        src: T.Union["S3Path", PathType],
+        dst: T.Union["S3Path", PathType],
         bsm: T.Optional["BotoSesManager"] = None,
+        quite: bool = True,
+        include: T.Optional[str] = None,
+        exclude: T.Optional[str] = None,
+        acl: T.Optional[str] = None,
+        only_show_errors: bool = False,
+        no_progress: bool = False,
+        page_size: T.Optional[str] = None,
+        delete: bool = False,
     ):
         """
         Implement the `aws s3 sync <https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html>`_
@@ -39,12 +55,15 @@ class SyncAPIMixin:
 
         TODO: add support for all aws s3 sync supported arguments
         """
-
         args = [
             "aws",
             "s3",
             "sync",
         ]
+
+        # handle source and target
+        src = _preprocess(src)
+        dst = _preprocess(dst)
 
         if isinstance(src, str):
             if src.startswith("s3://"):
@@ -71,6 +90,24 @@ class SyncAPIMixin:
 
         args.extend([src_arg, dst_arg])
 
+        # handle additional CLI argument
+        if quite:  # pragma: no cover
+            args.append("--quiet")
+        if include:  # pragma: no cover
+            args.extend(["--include", include])
+        if exclude:  # pragma: no cover
+            args.extend(["--exclude", exclude])
+        if acl:  # pragma: no cover
+            args.extend(["--acl", acl])
+        if only_show_errors:  # pragma: no cover
+            args.append("--only-show-errors")
+        if no_progress:  # pragma: no cover
+            args.append("--no-progress")
+        if page_size:  # pragma: no cover
+            args.extend(["--page-size", str(page_size)])
+        if delete:  # pragma: no cover
+            args.append("--delete")
+
         if bsm is None:  # pragma: no cover
             with BotoSesManager(botocore_session=context.boto_ses._session).awscli():
                 print(" ".join(args))
@@ -83,20 +120,60 @@ class SyncAPIMixin:
 
     def sync_from(
         self: "S3Path",
-        src: T.Union["S3Path", str],
+        src: T.Union["S3Path", PathType],
         bsm: T.Optional["BotoSesManager"] = None,
+        quite: bool = True,
+        include: T.Optional[str] = None,
+        exclude: T.Optional[str] = None,
+        acl: T.Optional[str] = None,
+        only_show_errors: bool = False,
+        no_progress: bool = False,
+        page_size: T.Optional[str] = None,
+        delete: bool = False,
     ):
         """
         Sync data from external place to this S3 location.
         """
-        return self.sync(src=src, dst=self, bsm=bsm)
+        return self.sync(
+            src=src,
+            dst=self,
+            bsm=bsm,
+            quite=quite,
+            include=include,
+            exclude=exclude,
+            acl=acl,
+            only_show_errors=only_show_errors,
+            no_progress=no_progress,
+            page_size=page_size,
+            delete=delete,
+        )
 
     def sync_to(
         self: "S3Path",
-        dst: T.Union["S3Path", str],
+        dst: T.Union["S3Path", PathType],
         bsm: T.Optional["BotoSesManager"] = None,
+        quite: bool = True,
+        include: T.Optional[str] = None,
+        exclude: T.Optional[str] = None,
+        acl: T.Optional[str] = None,
+        only_show_errors: bool = False,
+        no_progress: bool = False,
+        page_size: T.Optional[str] = None,
+        delete: bool = False,
     ):
         """
         Sync the data at this S3 location to external place.
         """
-        return self.sync(src=self, dst=dst, bsm=bsm)
+        return self.sync(
+            src=self,
+            dst=dst,
+            bsm=bsm,
+            quite=quite,
+            include=include,
+            exclude=exclude,
+            acl=acl,
+            only_show_errors=only_show_errors,
+            no_progress=no_progress,
+            page_size=page_size,
+            delete=delete,
+        )

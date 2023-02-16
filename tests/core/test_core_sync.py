@@ -29,7 +29,7 @@ class TestSyncAPIMixin:
         path1.remove_if_exists()
         path2.remove_if_exists()
 
-        s3path1.sync_from(path0.abspath)
+        s3path1.sync_from(path0)
         assert s3path1.count_objects() == 2
 
         s3path1.sync_to(s3path2)
@@ -41,7 +41,7 @@ class TestSyncAPIMixin:
         s3path1.sync_from(s3path2.uri)
         assert s3path1.count_objects() == 2
 
-        s3path2.sync_to(path1.abspath)
+        s3path2.sync_to(path1)
         assert path1.file_stat()["file"] == 2
 
         with pytest.raises(ValueError):

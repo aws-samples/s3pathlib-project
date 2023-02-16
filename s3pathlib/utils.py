@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import typing as T
 import hashlib
-from typing import Tuple, List, Iterable, Optional
 from pathlib_mate import Path
+
+from .type import PathType
 
 try:
     import botocore.exceptions
@@ -14,7 +16,7 @@ except:  # pragma: no cover
 
 def split_s3_uri(
     s3_uri: str,
-) -> Tuple[str, str]:
+) -> T.Tuple[str, str]:
     """
     Split AWS S3 URI, returns bucket and key.
 
@@ -43,7 +45,7 @@ def join_s3_uri(
     return "s3://{}/{}".format(bucket, key)
 
 
-def split_parts(key) -> List[str]:
+def split_parts(key: str) -> T.List[str]:
     """
     Split s3 key parts using "/" delimiter.
 
@@ -60,7 +62,7 @@ def split_parts(key) -> List[str]:
 
 
 def smart_join_s3_key(
-    parts: List[str],
+    parts: T.List[str],
     is_dir: bool,
 ) -> str:
     """
@@ -91,9 +93,9 @@ def smart_join_s3_key(
 
 
 def make_s3_console_url(
-    bucket: Optional[str] = None,
-    prefix: Optional[str] = None,
-    s3_uri: Optional[str] = None,
+    bucket: T.Optional[str] = None,
+    prefix: T.Optional[str] = None,
+    s3_uri: T.Optional[str] = None,
     is_us_gov_cloud: bool = False,
 ) -> str:
     """
@@ -144,7 +146,7 @@ def make_s3_select_console_url(
     bucket: str,
     key: str,
     is_us_gov_cloud: bool,
-):
+) -> str:
     if is_us_gov_cloud:
         endpoint = "console.amazonaws-us-gov.com"
     else:
@@ -405,9 +407,9 @@ __S3_CLIENT_ENHANCEMENT__ = None
 
 
 def grouper_list(
-    l: Iterable,
+    l: T.Iterable,
     n: int,
-) -> Iterable[list]:  # pragma: no cover
+) -> T.Iterable[list]:  # pragma: no cover
     """
     Evenly divide list into fixed-length piece, no filled value if chunk
     size smaller than fixed-length.
@@ -452,7 +454,7 @@ def head_object_if_exists(
     s3_client,
     bucket: str,
     key: str,
-) -> Optional[dict]:
+) -> T.Optional[dict]:
     """
     Use head_object() api to return metadata of an object.
 
@@ -526,7 +528,7 @@ def upload_dir(
     s3_client,
     bucket: str,
     prefix: str,
-    local_dir: str,
+    local_dir: PathType,
     pattern: str = "**/*",
     overwrite: bool = False,
 ) -> int:
@@ -570,7 +572,7 @@ def upload_dir(
         final_prefix = ""
 
     # list of (local file path, target s3 key)
-    todo: List[Tuple[str, str]] = list()
+    todo: T.List[T.Tuple[str, str]] = list()
     for p in p_local_dir.glob(pattern):
         if p.is_file():
             relative_path = p.relative_to(p_local_dir)
@@ -599,7 +601,7 @@ def iter_objects(
     limit: int = None,
     recursive: bool = True,
     include_folder: bool = False,
-) -> Iterable[dict]:
+) -> T.Iterable[dict]:
     """
     Recursively iterate objects, yield python dict object described in ``response["Contents"]``
     ``s3_client.list_objects_v2``
@@ -652,15 +654,15 @@ def iter_objects(
             "/ to indicate that it is a folder."
         )
 
-    next_token: Optional[str] = None
+    next_token: T.Optional[str] = None
     count: int = 0  # counter for how many item yielded
 
     if include_folder:
-        def yield_from_contents(contents: List[dict]) -> Iterable[dict]:
+        def yield_from_contents(contents: T.List[dict]) -> T.Iterable[dict]:
             for dct in contents:
                 yield dct
     else:
-        def yield_from_contents(contents: List[dict]) -> Iterable[dict]:
+        def yield_from_contents(contents: T.List[dict]) -> T.Iterable[dict]:
             for dct in contents:
                 if (not dct["Key"].endswith("/")) or (dct["Size"] != 0):
                     yield dct
@@ -695,7 +697,7 @@ def calculate_total_size(
     bucket: str,
     prefix: str,
     include_folder: bool = False,
-) -> Tuple[int, int]:
+) -> T.Tuple[int, int]:
     """
     Perform the "Calculate Total Size" action in AWS S3 console.
 
@@ -792,7 +794,7 @@ def delete_dir(
     ):
         to_delete_keys.append(dct["Key"])
 
-    keys: List[str]
+    keys: T.List[str]
     for keys in grouper_list(to_delete_keys, 1000):
         kwargs = dict(
             Bucket=bucket,
@@ -805,13 +807,13 @@ def delete_dir(
                 ]
             },
         )
-        addtional_kwargs = collect_not_null_kwargs(
+        additional_kwargs = collect_not_null_kwargs(
             MFA=mfa,
             RequestPayer=request_payer,
             BypassGovernanceRetention=bypass_governance_retention,
             ExpectedBucketOwner=expected_bucket_owner,
         )
-        kwargs.update(addtional_kwargs)
+        kwargs.update(additional_kwargs)
         s3_client.delete_objects(**kwargs)
 
     return len(to_delete_keys)
