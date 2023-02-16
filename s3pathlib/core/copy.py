@@ -5,6 +5,7 @@ Copy file from s3 to s3.
 """
 
 import typing as T
+from func_args import NOTHING
 
 from .. import client as better_client
 from ..type import TagType, MetadataType
@@ -25,8 +26,8 @@ class CopyAPIMixin:
     def copy_file(
         self: "S3Path",
         dst: "S3Path",
-        metadata: T.Optional[MetadataType] = None,
-        tags: T.Optional[TagType] = None,
+        metadata: T.Optional[MetadataType] = NOTHING,
+        tags: T.Optional[TagType] = NOTHING,
         overwrite: bool = False,
         bsm: T.Optional["BotoSesManager"] = None,
     ) -> dict:
@@ -103,8 +104,8 @@ class CopyAPIMixin:
     def copy_to(
         self: "S3Path",
         dst: "S3Path",
-        metadata: T.Optional[MetadataType] = None,
-        tags: T.Optional[TagType] = None,
+        metadata: T.Optional[MetadataType] = NOTHING,
+        tags: T.Optional[TagType] = NOTHING,
         overwrite: bool = False,
         bsm: T.Optional["BotoSesManager"] = None,
     ) -> int:
@@ -142,8 +143,8 @@ class CopyAPIMixin:
     def move_to(
         self: "S3Path",
         dst: "S3Path",
-        metadata: T.Optional[MetadataType] = None,
-        tags: T.Optional[TagType] = None,
+        metadata: T.Optional[MetadataType] = NOTHING,
+        tags: T.Optional[TagType] = NOTHING,
         overwrite: bool = False,
         bsm: T.Optional["BotoSesManager"] = None,
     ) -> int:

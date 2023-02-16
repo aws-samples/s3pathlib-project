@@ -5,6 +5,7 @@ Read and write related API.
 """
 
 import typing as T
+from func_args import NOTHING
 
 from .. import utils, client as better_client
 from ..type import TagType, MetadataType
@@ -64,8 +65,8 @@ class ReadAndWriteAPIMixin:
     def write_bytes(
         self: "S3Path",
         data: bytes,
-        metadata: T.Optional[MetadataType] = None,
-        tags: T.Optional[TagType] = None,
+        metadata: T.Optional[MetadataType] = NOTHING,
+        tags: T.Optional[TagType] = NOTHING,
         bsm: T.Optional["BotoSesManager"] = None,
     ):
         """
@@ -100,8 +101,8 @@ class ReadAndWriteAPIMixin:
         data: str,
         encoding="utf-8",
         errors="strict",
-        metadata: T.Optional[MetadataType] = None,
-        tags: T.Optional[TagType] = None,
+        metadata: T.Optional[MetadataType] = NOTHING,
+        tags: T.Optional[TagType] = NOTHING,
         bsm: T.Optional["BotoSesManager"] = None,
     ):
         """
@@ -133,8 +134,8 @@ class ReadAndWriteAPIMixin:
     def touch(
         self: "S3Path",
         exist_ok: bool = True,
-        metadata: T.Optional[MetadataType] = None,
-        tags: T.Optional[TagType] = None,
+        metadata: T.Optional[MetadataType] = NOTHING,
+        tags: T.Optional[TagType] = NOTHING,
         bsm: T.Optional["BotoSesManager"] = None,
     ):
         """

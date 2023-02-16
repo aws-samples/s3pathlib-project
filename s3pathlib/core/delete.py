@@ -5,6 +5,7 @@ Delete S3 file or folder.
 """
 
 import typing as T
+from func_args import NOTHING
 
 from .resolve_s3_client import resolve_s3_client
 from .. import utils
