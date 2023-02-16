@@ -4,13 +4,31 @@ Release and Version History
 ==============================================================================
 
 
-1.2.3 (TODO)
+Backlog (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
 - make :class:`s3pathlib.aws.Context` multi-thread safe.
 - add ``acl`` management feature
 - add ``legal_hold`` management feature
+
+**Minor Improvements**
+
+- add JupyterNotebook document
+
+
+1.4.1 (2023-02-16)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- now the following API supports full list of native boto3 argument:
+    - ``S3Path.write_bytes``
+    - ``S3Path.write_text``
+    - ``S3Path.copy_file``
+    - ``S3Path.copy_dir``
+    - ``S3Path.copy_to``
+    - ``S3Path.move_to``
+- add many optional argument to the ``S3Path.sync()`` method.
 
 
 1.3.1 (2022-12-30)
