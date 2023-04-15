@@ -6,13 +6,15 @@ Please **pick a concise, informative and complete title** for your PR.
 
 Please explain the motivation behind this PR in the description.
 
-If you're fixing a bug, link to the issue number like so:
+## Issue #, if available
 
-```
-- Fixes #{issue_number}
-```
+If you're adding a new feature, then consider opening an issue and discussing it with the maintainers (GitHub Username ``MacHu-GWU``) before you actually do the hard work.
 
-If you're adding a new feature, then consider opening a issue and discussing it with the maintainers (GitHub Username ``MacHu-GWU``) before you actually do the hard work.
+## Description of changes:
+
+Please explain the changes you have made here.
+
+By submitting this pull request, I confirm that you can use, modify, copy, and redistribute this contribution, under the terms of your choice.
 
 ## Tests
 
