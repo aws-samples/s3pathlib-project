@@ -30,13 +30,22 @@ class DeleteAPIMixin:
         expected_bucket_owner: str = None,
         include_folder: bool = True,
         bsm: T.Optional["BotoSesManager"] = None,
-    ):
+    ) -> int:
         """
         Delete an object or an entire directory. Will do nothing
         if it doesn't exist.
 
-        Ref: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.delete_object
+        .. _delete_object: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client
 
+        Reference:
+
+        - delete_object_
+
+        :param mfa: see delete_object_ API doc
+        :param version_id: see delete_object_ API doc
+        :param request_payer: see delete_object_ API doc
+        :param bypass_governance_retention: see delete_object_ API doc
+        :param expected_bucket_owner: see delete_object_ API doc
         :param include_folder: see :meth:`iter_objects`
 
         :return: number of object is deleted
