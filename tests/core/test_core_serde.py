@@ -18,4 +18,4 @@ class TestSerdeAPIMixin:
 
 
 if __name__ == "__main__":
-    run_cov_test(__file__, module="s3pathlib.core.serde", open_browser=False)
+    run_cov_test(__file__, module="s3pathlib.core.serde", preview=False)

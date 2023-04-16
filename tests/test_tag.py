@@ -21,4 +21,4 @@ def test_encode_url_query():
 if __name__ == "__main__":
     from s3pathlib.tests import run_cov_test
 
-    run_cov_test(__file__, module="s3pathlib.tag", open_browser=False)
+    run_cov_test(__file__, module="s3pathlib.tag", preview=False)

@@ -66,4 +66,4 @@ class TestUploadAPIMixin:
 
 
 if __name__ == "__main__":
-    run_cov_test(__file__, module="s3pathlib.core.upload", open_browser=False)
+    run_cov_test(__file__, module="s3pathlib.core.upload", preview=False)

@@ -47,7 +47,7 @@ def _run_cov_test(
     subprocess.run(args)
 
 
-def run_cov_test(script: str, module: str, open_browser: bool = False):
+def run_cov_test(script: str, module: str, preview: bool = False):
     _run_cov_test(
         bin_pytest=f"{bin_pytest}",
         script=script,
@@ -55,7 +55,7 @@ def run_cov_test(script: str, module: str, open_browser: bool = False):
         root_dir=f"{dir_project_root}",
         htmlcov_dir=f"{dir_htmlcov}",
     )
-    if open_browser:
+    if preview:
         _open_cov_report(module)
 
 

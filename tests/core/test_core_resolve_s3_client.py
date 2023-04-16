@@ -17,4 +17,4 @@ def test_resolve_s3_client():
 if __name__ == "__main__":
     from s3pathlib.tests import run_cov_test
 
-    run_cov_test(__file__, module="s3pathlib.core.resolve_s3_client", open_browser=False)
+    run_cov_test(__file__, module="s3pathlib.core.resolve_s3_client", preview=False)

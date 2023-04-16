@@ -129,4 +129,4 @@ class TestClient:
 if __name__ == "__main__":
     from s3pathlib.tests import run_cov_test
 
-    run_cov_test(__file__, module="s3pathlib.client", open_browser=False)
+    run_cov_test(__file__, module="s3pathlib.client", preview=False)

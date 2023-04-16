@@ -212,4 +212,4 @@ class TestIterObjectsAPIMixin:
 
 
 if __name__ == "__main__":
-    run_cov_test(__file__, module="s3pathlib.core.iter_objects", open_browser=False)
+    run_cov_test(__file__, module="s3pathlib.core.iter_objects", preview=False)
