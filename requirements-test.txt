@@ -2,3 +2,4 @@
 pytest                                  # test framework
 pytest-cov                              # coverage test
 decorator
+moto
