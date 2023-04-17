@@ -17,6 +17,8 @@ class BetterHeadBucket(BaseTest):
         assert is_bucket_exists(self.s3_client, "this-bucket-not-exists") is False
 
 
+# NOTE: this module should ONLY be tested with MOCK
+# DO NOT USE REAL S3 BUCKET
 class TestUseMock(BetterHeadBucket):
     use_mock = True
 
