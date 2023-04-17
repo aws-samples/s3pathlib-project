@@ -9,6 +9,10 @@ import moto
 from boto_session_manager import BotoSesManager
 from rich import print as rprint
 from s3pathlib import S3Path, context
+from s3pathlib.compat import cached_property
+
+if T.TYPE_CHECKING:
+    from mypy_boto3_s3 import S3Client
 
 if "CI" in os.environ:
     runtime = "ci"
@@ -119,7 +123,15 @@ class BaseTest:
         if cls.use_mock is True:
             pass
         elif cls.use_mock is False:
-            kwargs["profile_name"] = "aws_data_lab_sanhe_opensource_s3pathlib"
+            if runtime == "ci":
+                kwargs["aws_access_key_id"] = os.environ[
+                    "AWS_ACCESS_KEY_ID_FOR_GITHUB_CI"
+                ]
+                kwargs["aws_secret_access_key"] = os.environ[
+                    "AWS_SECRET_ACCESS_KEY_FOR_GITHUB_CI"
+                ]
+            else:
+                kwargs["profile_name"] = "aws_data_lab_sanhe_opensource_s3pathlib"
         else:
             raise NotImplementedError("use_mock must be True or False!")
 
@@ -166,7 +178,19 @@ class BaseTest:
         """
         return "/".join(self.module.split("."))
 
-    @property
+    @cached_property
+    def s3_client(self):
+        return self.bsm.s3_client
+
+    @cached_property
+    def bucket(self) -> str:
+        return self.get_bucket()
+
+    @cached_property
+    def bucket_with_versioning(self) -> str:
+        return self.get_bucket_with_versioning()
+
+    @cached_property
     def s3dir_root(self) -> S3Path:
         """
         The root S3 directory for testing in the regular S3 bucket.
@@ -177,7 +201,7 @@ class BaseTest:
             self.module_folders,
         ).to_dir()
 
-    @property
+    @cached_property
     def s3dir_root_with_versioning(self) -> S3Path:
         """
         The root S3 directory for testing in the versioning S3 bucket.
