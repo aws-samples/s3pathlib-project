@@ -16,7 +16,7 @@ from func_args import NOTHING, resolve_kwargs
 from .. import tag
 
 
-if T.TYPE_CHECKING:
+if T.TYPE_CHECKING: # pragma: no cover
     from mypy_boto3_s3 import S3Client
 
 
