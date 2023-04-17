@@ -21,6 +21,8 @@ if T.TYPE_CHECKING:  # pragma: no cover
         CommonPrefixTypeDef,
     )
 
+    _ = ListObjectsV2OutputTypeDef
+
 
 class ObjectTypeDefIterproxy(IterProxy["ObjectTypeDef"]):
     """
@@ -52,6 +54,11 @@ class ListObjectsV2OutputTypeDefIterproxy(IterProxy["ListObjectsV2OutputTypeDef"
                 yield content
 
     def contents(self) -> ObjectTypeDefIterproxy:
+        """
+        Iterate object contents.
+
+        .. versionadded:: 2.1.1
+        """
         return ObjectTypeDefIterproxy(self._yield_content())
 
     def _yield_common_prefixes(self) -> T.Iterator["CommonPrefixTypeDef"]:
@@ -60,11 +67,21 @@ class ListObjectsV2OutputTypeDefIterproxy(IterProxy["ListObjectsV2OutputTypeDef"
                 yield common_prefix
 
     def common_prefixs(self) -> CommonPrefixTypeDefIterproxy:
+        """
+        Iterate folders.
+
+        .. versionadded:: 2.1.1
+        """
         return CommonPrefixTypeDefIterproxy(self._yield_common_prefixes())
 
     def contents_and_common_prefixs(
         self,
     ) -> T.Tuple[T.List["ObjectTypeDef"], T.List["CommonPrefixTypeDef"]]:
+        """
+        Return the list of object contents and folders.
+
+        .. versionadded:: 2.1.1
+        """
         contents = list()
         common_prefixs = list()
         for response in self:
@@ -150,7 +167,17 @@ def paginate_list_objects_v2(
     return ListObjectsV2OutputTypeDefIterproxy(_paginate_list_objects_v2())
 
 
-def filter_object_only(content: "ObjectTypeDef") -> bool:
+def is_content_an_object(content: "ObjectTypeDef") -> bool:
+    """
+    Return True if the content is an object (not a folder).
+
+    Truth table
+
+    - ends with "/", size is 0: False
+    - ends with "/", size > 0: False
+    - ends without "/", size is 0:
+    - ends without "/", size > 0:
+    """
     return (not content["Key"].endswith("/")) or (content["Size"] != 0)
 
 
@@ -182,7 +209,7 @@ def calculate_total_size(
         prefix=prefix,
     ).contents()
     if include_folder is False:
-        contents_iterproxy = contents_iterproxy.filter(filter_object_only)
+        contents_iterproxy = contents_iterproxy.filter(is_content_an_object)
     for content in contents_iterproxy:
         count += 1
         total_size += content["Size"]
@@ -214,7 +241,7 @@ def count_objects(
         prefix=prefix,
     ).contents()
     if include_folder is False:
-        contents_iterproxy = contents_iterproxy.filter(filter_object_only)
+        contents_iterproxy = contents_iterproxy.filter(is_content_an_object)
     count = 0
     for count, _ in enumerate(contents_iterproxy, start=1):
         pass

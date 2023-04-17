@@ -62,14 +62,14 @@ class BetterListObjects(DummyData):
         assert len(result.contents().all()) == 11
 
     def _test_paginate_list_objects_v2_common_prefixs(self):
-        contents, common_prefixs = paginate_list_objects_v2(
+        contents, common_prefixes = paginate_list_objects_v2(
             s3_client=self.s3_client,
             bucket=self.bucket,
             prefix=self.prefix_test_list_objects,
             delimiter="/",
         ).contents_and_common_prefixs()
-        assert len(contents) == 2
-        assert len(common_prefixs) == 3
+        assert len(contents) == 2 # 2 files
+        assert len(common_prefixes) == 3 # 3 folders
 
         result = paginate_list_objects_v2(
             s3_client=self.s3_client,
@@ -77,7 +77,32 @@ class BetterListObjects(DummyData):
             prefix=self.prefix_test_list_objects,
             delimiter="/",
         )
-        assert len(result.common_prefixs().all()) == 3
+        assert len(result.common_prefixs().all()) == 3 # 3 folders
+
+    def _test_paginate_list_objects_v2_hard_and_soft_folder(self):
+        contents, common_prefixes = paginate_list_objects_v2(
+            s3_client=self.s3_client,
+            bucket=self.bucket,
+            prefix=self.prefix_dummy_data,
+        ).contents_and_common_prefixs()
+
+        # file.txt
+        # soft_folder/file.txt,
+        # hard_folder/
+        # hard_folder/file.txt
+        # empty_hard_folder/
+        assert len(contents) == 5
+        assert len(common_prefixes) == 0
+
+        contents, common_prefixes = paginate_list_objects_v2(
+            s3_client=self.s3_client,
+            bucket=self.bucket,
+            prefix=self.prefix_dummy_data,
+            delimiter="/",
+        ).contents_and_common_prefixs()
+
+        assert len(contents) == 1  # file.txt
+        assert len(common_prefixes) == 3  # soft_folder, hard_folder, empty_hard_folder
 
     def _test_calculate_total_size(self):
         s3_client = self.s3_client
@@ -218,6 +243,7 @@ class BetterListObjects(DummyData):
         self._test_paginate_list_objects_v2_argument_error()
         self._test_paginate_list_objects_v2_contents()
         self._test_paginate_list_objects_v2_common_prefixs()
+        self._test_paginate_list_objects_v2_hard_and_soft_folder()
         self._test_calculate_total_size()
         self._test_count_objects()
 
