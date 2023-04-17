@@ -366,7 +366,7 @@ class ReadAndWriteAPIMixin:
         .. versionchanged:: 1.0.6
         """
         if not self.is_dir():
-            raise ValueError
+            raise ValueError(f"{self.uri} is not a directory, you cannot make dir!")
 
         s3_client = resolve_s3_client(context, bsm)
         dct = utils.head_object_if_exists(
@@ -378,7 +378,7 @@ class ReadAndWriteAPIMixin:
             if exist_ok:
                 pass
             else:
-                raise FileExistsError
+                raise FileExistsError(f"{self.uri} already exists!")
         else:
             s3_client.put_object(
                 Bucket=self.bucket,
