@@ -9,6 +9,9 @@ from .tagging import (
     update_bucket_tagging,
     update_object_tagging,
 )
+from .upload import (
+    upload_dir,
+)
 from .list_objects import (
     ObjectTypeDefIterproxy,
     CommonPrefixTypeDefIterproxy,
@@ -21,7 +24,4 @@ from .list_objects import (
 from .delete_object import (
     delete_object,
     delete_dir,
-)
-from .upload import (
-    upload_dir,
 )

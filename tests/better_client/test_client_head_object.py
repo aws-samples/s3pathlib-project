@@ -23,7 +23,6 @@ class BetterHeadObject(DummyData):
         # at begin, no object exists
         bucket = self.bucket
         key = smart_join_s3_key([self.prefix, "file.txt"], is_dir=False)
-
         assert is_object_exists(self.s3_client, bucket=bucket, key=key) is False
 
         with pytest.raises(exc.S3ObjectNotExist):
@@ -104,10 +103,8 @@ class BetterHeadObject(DummyData):
         self._test_is_object_exists()
 
 
-class Test(BetterHeadObject):
-    use_mock = False
-
-
+# NOTE: this module should ONLY be tested with MOCK
+# DO NOT USE REAL S3 BUCKET
 class TestUseMock(BetterHeadObject):
     use_mock = True
 
