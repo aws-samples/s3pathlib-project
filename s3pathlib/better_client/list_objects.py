@@ -56,11 +56,23 @@ class ListObjectsV2OutputTypeDefIterproxy(IterProxy["ListObjectsV2OutputTypeDef"
 
     def _yield_common_prefixes(self) -> T.Iterator["CommonPrefixTypeDef"]:
         for response in self:
-            for content in response.get("CommonPrefixes", []):
-                yield content
+            for common_prefix in response.get("CommonPrefixes", []):
+                yield common_prefix
 
     def common_prefixs(self) -> CommonPrefixTypeDefIterproxy:
         return CommonPrefixTypeDefIterproxy(self._yield_common_prefixes())
+
+    def contents_and_common_prefixs(
+        self,
+    ) -> T.Tuple[T.List["ObjectTypeDef"], T.List["CommonPrefixTypeDef"]]:
+        contents = list()
+        common_prefixs = list()
+        for response in self:
+            for content in response.get("Contents", []):
+                contents.append(content)
+            for common_prefix in response.get("CommonPrefixes", []):
+                common_prefixs.append(common_prefix)
+        return contents, common_prefixs
 
 
 def paginate_list_objects_v2(
@@ -138,7 +150,7 @@ def paginate_list_objects_v2(
     return ListObjectsV2OutputTypeDefIterproxy(_paginate_list_objects_v2())
 
 
-def filter_object_only(content: ObjectTypeDef) -> bool:
+def filter_object_only(content: "ObjectTypeDef") -> bool:
     return (not content["Key"].endswith("/")) or (content["Size"] != 0)
 
 
