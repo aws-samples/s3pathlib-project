@@ -7,10 +7,8 @@ import pytest
 from s3pathlib.core import S3Path
 from s3pathlib.core.metadata import alert_upper_case
 from s3pathlib.utils import md5_binary
-from s3pathlib.tests import s3_client, bucket, prefix, run_cov_test
-
-
-s3dir_root = S3Path(bucket, prefix, "core", "metadata/")
+from s3pathlib.tests import run_cov_test
+from s3pathlib.tests.mock import BaseTest
 
 
 def test_alert_upper_case():
@@ -18,73 +16,24 @@ def test_alert_upper_case():
         alert_upper_case(metadata={"Hello": "World"})
 
 
-class TestMetadataAPIMixin:
-    p = S3Path(s3dir_root, "file.txt")
-    p_empty_object = S3Path(s3dir_root, "empty.txt")
-    p_soft_folder_file = S3Path(s3dir_root, "soft_folder", "file.txt")
-    p_hard_folder = S3Path(s3dir_root, "hard_folder/")
-    p_hard_folder_file = S3Path(s3dir_root, "hard_folder", "file.txt")
-    p_empty_folder = S3Path(s3dir_root, "empty_folder/")
-    p_statistics = S3Path(s3dir_root, "statistics/")
+class MetadataAPIMixin(BaseTest):
+    module = "core.metadata"
+
+    p: S3Path
 
     @classmethod
-    def setup_for_exists(cls):
-        s3_client.put_object(
+    def custom_setup_class(cls):
+        cls.p = S3Path(cls.get_s3dir_root(), "file.txt")
+        cls.bsm.s3_client.put_object(
             Bucket=cls.p.bucket,
             Key=cls.p.key,
             Body="Hello World!",
             Metadata={"creator": "Alice"},
         )
-        s3_client.put_object(
-            Bucket=cls.p_empty_object.bucket,
-            Key=cls.p_empty_object.key,
-            Body="",
-            Metadata={"creator": "Alice"},
-        )
-        s3_client.put_object(
-            Bucket=cls.p_soft_folder_file.bucket,
-            Key=cls.p_soft_folder_file.key,
-            Body="Hello World!",
-        )
-        s3_client.put_object(
-            Bucket=cls.p_hard_folder.bucket,
-            Key=cls.p_hard_folder.key,
-            Body="",
-        )
-        s3_client.put_object(
-            Bucket=cls.p_hard_folder_file.bucket,
-            Key=cls.p_hard_folder_file.key,
-            Body="Hello World!",
-        )
-        s3_client.put_object(
-            Bucket=cls.p_empty_folder.bucket,
-            Key=cls.p_empty_folder.key,
-            Body="",
-        )
-
-    @classmethod
-    def setup_for_statistics(cls):
-        for i in range(1, 1 + 4):
-            s3_client.put_object(
-                Bucket=cls.p_statistics.bucket,
-                Key=S3Path(cls.p_statistics, "folder1", f"{i}.txt").key,
-                Body="Hello World!",
-            )
-
-        for i in range(1, 1 + 6):
-            s3_client.put_object(
-                Bucket=cls.p_statistics.bucket,
-                Key=S3Path(cls.p_statistics, "folder2", f"{i}.json").key,
-                Body='{"message": "Hello World!"}',
-            )
-
-    @classmethod
-    def setup_class(cls):
-        cls.setup_for_exists()
-        cls.setup_for_statistics()
 
     def test_attributes(self):
         p = self.p
+
         assert p.etag == md5_binary("Hello World!".encode("utf-8"))
         _ = p.last_modified_at
         assert p.size == 12
@@ -95,6 +44,7 @@ class TestMetadataAPIMixin:
 
     def test_clear_cache(self):
         p = self.p
+
         p.clear_cache()
         assert p._meta is None
         assert len(p.etag) == 32
@@ -115,15 +65,15 @@ class TestMetadataAPIMixin:
         )
 
     def test_object_metadata(self):
-        s3path = s3dir_root / "object-metadata.txt"
-        s3_client.put_object(
+        s3path = S3Path(self.s3dir_root, "object-metadata.txt")
+        self.s3_client.put_object(
             Bucket=s3path.bucket,
             Key=s3path.key,
             Body="Hello World!",
         )
-        assert s3path.metadata == {} # if no user metadata, then it will return {}
+        assert s3path.metadata == {}  # if no user metadata, then it will return {}
 
-        s3_client.put_object(
+        self.s3_client.put_object(
             Bucket=s3path.bucket,
             Key=s3path.key,
             Body="Hello World!",
@@ -131,6 +81,14 @@ class TestMetadataAPIMixin:
         )
         s3path._meta = {"ETag": "abcd"}
         assert s3path.metadata == {"key": "value"}
+
+
+class Test(MetadataAPIMixin):
+    use_mock = False
+
+
+class TestWithVersioning(MetadataAPIMixin):
+    use_mock = True
 
 
 if __name__ == "__main__":
