@@ -2,16 +2,18 @@
 
 from s3pathlib import client as better_client
 from s3pathlib.core import S3Path
-from s3pathlib.tests import bsm, s3_client, bucket, prefix, run_cov_test
-
-s3dir_root = S3Path(bucket, prefix, "core", "tagging")
-s3path_file = s3dir_root / "hello.txt"
+from s3pathlib.tests import run_cov_test
+from s3pathlib.tests.mock import BaseTest
 
 
-class TestTaggingAPIMixin:
+class TaggingAPIMixin(BaseTest):
+    module = "core.tagging"
+
     def test_attributes(self):
+        s3path_file = S3Path(self.s3dir_root, "hello.txt")
+
         better_client.put_object(
-            s3_client,
+            self.s3_client,
             bucket=s3path_file.bucket,
             key=s3path_file.key,
             body=b"Hello World!",
@@ -22,7 +24,7 @@ class TestTaggingAPIMixin:
 
         # use put_object API
         better_client.put_object(
-            s3_client,
+            self.s3_client,
             bucket=s3path_file.bucket,
             key=s3path_file.key,
             body=b"Hello World!",
@@ -40,6 +42,14 @@ class TestTaggingAPIMixin:
 
         existing_tags = s3path_file.get_tags()
         assert existing_tags == {"k1": "v1", "k2": "v22", "k3": "v3"}
+
+
+class Test(TaggingAPIMixin):
+    use_mock = False
+
+
+class TestWithVersioning(TaggingAPIMixin):
+    use_mock = True
 
 
 if __name__ == "__main__":
