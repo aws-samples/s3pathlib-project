@@ -77,10 +77,10 @@
                 "s3:RestoreObject"
             ],
             "Resource": [
-                "arn:aws:s3:::807388292768-us-east-1-s3pathlib-test",
-                "arn:aws:s3:::807388292768-us-east-1-s3pathlib-test-versioning-on",
-                "arn:aws:s3:::807388292768-us-east-1-s3pathlib-test/*",
-                "arn:aws:s3:::807388292768-us-east-1-s3pathlib-test-versioning-on/*"
+                "arn:aws:s3:::${aws_account_id}-us-east-1-s3pathlib-test",
+                "arn:aws:s3:::${aws_account_id}-us-east-1-s3pathlib-test-versioning-on",
+                "arn:aws:s3:::${aws_account_id}-us-east-1-s3pathlib-test/*",
+                "arn:aws:s3:::${aws_account_id}-us-east-1-s3pathlib-test-versioning-on/*"
             ]
         },
         {
