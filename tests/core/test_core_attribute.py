@@ -3,10 +3,11 @@
 import pytest
 from s3pathlib.core import S3Path
 from s3pathlib.tests import run_cov_test
+from s3pathlib.tests.mock import BaseTest
 
 
-class TestAttributeAPIMixin:
-    def test_properties(self):
+class AttributeAPIMixin:
+    def _test_properties(self):
         # s3 object
         p = S3Path("bucket", "folder", "file.txt")
         assert str(p) == "S3Path('s3://bucket/folder/file.txt')"
@@ -67,7 +68,7 @@ class TestAttributeAPIMixin:
         with pytest.raises(TypeError):
             _ = p.abspath
 
-    def test_parent(self):
+    def _test_parent(self):
         p = S3Path("bucket", "folder", "file.txt").parent
         assert p._bucket == "bucket"
         assert p._parts == ["folder"]
@@ -98,7 +99,7 @@ class TestAttributeAPIMixin:
         assert p._parts == []
         assert p._is_dir is None
 
-    def test_parents(self):
+    def _test_parents(self):
         p_list = S3Path("bucket", "folder", "file.txt").parents
         assert p_list[0].uri == "s3://bucket/folder/"
         assert len(p_list) == 2
@@ -131,7 +132,7 @@ class TestAttributeAPIMixin:
                 .parents
             )
 
-    def test_fname(self):
+    def _test_fname(self):
         assert S3Path("bucket", "file").fname == "file"
 
         with pytest.raises(ValueError):
@@ -141,7 +142,7 @@ class TestAttributeAPIMixin:
                 is_dir=False,
             ).fname
 
-    def test_ext(self):
+    def _test_ext(self):
         assert S3Path("bucket", "file").ext == ""
 
         with pytest.raises(ValueError):
@@ -151,7 +152,7 @@ class TestAttributeAPIMixin:
                 is_dir=False,
             ).ext
 
-    def test_is_parent_of(self):
+    def _test_is_parent_of(self):
         assert S3Path("bkt").is_parent_of(S3Path("bkt/a")) is True
         assert S3Path("bkt").is_parent_of(S3Path("bkt/a/")) is True
         assert S3Path("bkt/a/").is_parent_of(S3Path("bkt/a/b")) is True
@@ -178,7 +179,7 @@ class TestAttributeAPIMixin:
         with pytest.raises(TypeError):
             S3Path("bkt/a").is_parent_of(S3Path("bkt/a/b/"))
 
-    def test_is_prefix_of(self):
+    def _test_is_prefix_of(self):
         assert S3Path("bkt").is_prefix_of(S3Path("bkt/a")) is True
         assert S3Path("bkt").is_prefix_of(S3Path("bkt/a/")) is True
         assert S3Path("bkt/a/").is_prefix_of(S3Path("bkt/a/b")) is True
@@ -199,7 +200,7 @@ class TestAttributeAPIMixin:
         with pytest.raises(TypeError):
             S3Path("bkt/a/").is_prefix_of(S3Path())
 
-    def test_root(self):
+    def _test_root(self):
         assert S3Path("bkt/a/b/c").root == S3Path("bkt/")
         assert S3Path("bkt/a/b/").root == S3Path("bkt/")
         assert S3Path("bkt").root == S3Path("bkt/")
@@ -208,6 +209,24 @@ class TestAttributeAPIMixin:
 
         with pytest.raises(TypeError):
             _ = S3Path.make_relpath("folder").root
+
+    def test(self):
+        self._test_properties()
+        self._test_parent()
+        self._test_parents()
+        self._test_fname()
+        self._test_ext()
+        self._test_is_parent_of()
+        self._test_is_prefix_of()
+        self._test_root()
+
+
+class Test(AttributeAPIMixin):
+    use_mock = False
+
+
+class TestWithVersioning(AttributeAPIMixin):
+    use_mock = True
 
 
 if __name__ == "__main__":
