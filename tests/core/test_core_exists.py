@@ -108,7 +108,7 @@ class Test(ExistsAPIMixin):
     use_mock = False
 
 
-class TestWithVersioning(ExistsAPIMixin):
+class TestUseMock(ExistsAPIMixin):
     use_mock = True
 
 

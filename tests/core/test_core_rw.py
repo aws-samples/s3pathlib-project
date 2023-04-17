@@ -131,7 +131,7 @@ class Test(ReadAndWriteAPIMixin):
     use_mock = False
 
 
-class TestWithVersioning(ReadAndWriteAPIMixin):
+class TestUseMock(ReadAndWriteAPIMixin):
     use_mock = True
 
 

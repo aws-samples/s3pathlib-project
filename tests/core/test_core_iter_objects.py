@@ -232,7 +232,7 @@ class Test(IterObjectsAPIMixin):
     use_mock = False
 
 
-class TestWithVersioning(IterObjectsAPIMixin):
+class TestUseMock(IterObjectsAPIMixin):
     use_mock = True
 
 

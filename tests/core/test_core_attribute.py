@@ -225,7 +225,7 @@ class Test(AttributeAPIMixin):
     use_mock = False
 
 
-class TestWithVersioning(AttributeAPIMixin):
+class TestUseMock(AttributeAPIMixin):
     use_mock = True
 
 

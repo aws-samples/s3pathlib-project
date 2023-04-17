@@ -627,7 +627,7 @@ class Test(S3ClientEnhancement):
     use_mock = False
 
 
-class TestWithVersioning(S3ClientEnhancement):
+class TestUseMock(S3ClientEnhancement):
     use_mock = True
 
 

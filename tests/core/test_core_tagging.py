@@ -48,7 +48,7 @@ class Test(TaggingAPIMixin):
     use_mock = False
 
 
-class TestWithVersioning(TaggingAPIMixin):
+class TestUseMock(TaggingAPIMixin):
     use_mock = True
 
 

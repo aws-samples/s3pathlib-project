@@ -96,7 +96,7 @@ class Test(CopyAPIMixin):
     use_mock = False
 
 
-class TestWithVersioning(CopyAPIMixin):
+class TestUseMock(CopyAPIMixin):
     use_mock = True
 
 

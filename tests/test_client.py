@@ -137,7 +137,7 @@ class Test(Client):
     use_mock = False
 
 
-class TestWithVersioning(Client):
+class TestUseMock(Client):
     use_mock = True
 
 

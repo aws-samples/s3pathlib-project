@@ -23,7 +23,7 @@ class Test(ResolveS3Client):
     use_mock = False
 
 
-class TestWithVersioning(ResolveS3Client):
+class TestUseMock(ResolveS3Client):
     use_mock = True
 
 

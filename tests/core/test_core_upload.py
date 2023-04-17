@@ -74,7 +74,7 @@ class Test(UploadAPIMixin):
     use_mock = False
 
 
-class TestWithVersioning(UploadAPIMixin):
+class TestUseMock(UploadAPIMixin):
     use_mock = True
 
 

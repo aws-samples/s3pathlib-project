@@ -96,7 +96,7 @@ class Test(BaseS3Path):
     use_mock = False
 
 
-class TestWithVersioning(BaseS3Path):
+class TestUseMock(BaseS3Path):
     use_mock = True
 
 

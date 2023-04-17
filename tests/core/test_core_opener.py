@@ -61,7 +61,7 @@ class Test(OpenerAPIMixin):
     use_mock = False
 
 
-class TestWithVersioning(OpenerAPIMixin):
+class TestUseMock(OpenerAPIMixin):
     use_mock = True
 
 

@@ -42,7 +42,7 @@ class Test(DeleteAPIMixin):
     use_mock = False
 
 
-class TestWithVersioning(DeleteAPIMixin):
+class TestUseMock(DeleteAPIMixin):
     use_mock = True
 
 

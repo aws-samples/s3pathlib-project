@@ -87,7 +87,7 @@ class Test(MetadataAPIMixin):
     use_mock = False
 
 
-class TestWithVersioning(MetadataAPIMixin):
+class TestUseMock(MetadataAPIMixin):
     use_mock = True
 
 
