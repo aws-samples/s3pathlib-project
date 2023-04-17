@@ -96,6 +96,8 @@ class BaseTest:
 
     @classmethod
     def setup_moto(cls):
+        # cls.use_mock = True # uncomment this to force use_mock to True
+
         if cls.use_mock is True:
             cls.mock_s3 = moto.mock_s3()
             cls.mock_sts = moto.mock_sts()
@@ -109,6 +111,8 @@ class BaseTest:
 
     @classmethod
     def teardown_moto(cls):
+        # cls.use_mock = True # uncomment this to force use_mock to True
+
         if cls.use_mock is True:
             cls.mock_s3.stop()
             cls.mock_sts.stop()
@@ -170,13 +174,13 @@ class BaseTest:
         cls.teardown_moto()
         cls.custom_teardown_class()
 
-    @property
-    def module_folders(self) -> str:
+    @classmethod
+    def get_module_folders(cls) -> str:
         """
         The module name will become a sub-folder in the test S3 bucket,
         providing module level test cases isolation.
         """
-        return "/".join(self.module.split("."))
+        return "/".join(cls.module.split("."))
 
     @cached_property
     def s3_client(self):
@@ -190,27 +194,35 @@ class BaseTest:
     def bucket_with_versioning(self) -> str:
         return self.get_bucket_with_versioning()
 
+    @classmethod
+    def get_s3dir_root(cls) -> S3Path:
+        return S3Path(
+            cls.get_bucket(),
+            prefix,
+            cls.get_module_folders(),
+        ).to_dir()
+
+    @classmethod
+    def get_s3dir_root_with_versioning(cls) -> S3Path:
+        return S3Path(
+            cls.get_bucket_with_versioning(),
+            prefix,
+            cls.get_module_folders(),
+        ).to_dir()
+
     @cached_property
     def s3dir_root(self) -> S3Path:
         """
         The root S3 directory for testing in the regular S3 bucket.
         """
-        return S3Path(
-            self.get_bucket(),
-            prefix,
-            self.module_folders,
-        ).to_dir()
+        return self.get_s3dir_root()
 
     @cached_property
     def s3dir_root_with_versioning(self) -> S3Path:
         """
         The root S3 directory for testing in the versioning S3 bucket.
         """
-        return S3Path(
-            self.get_bucket_with_versioning(),
-            prefix,
-            self.module_folders,
-        ).to_dir()
+        return self.get_s3dir_root_with_versioning()
 
     def rprint_response(self, res: dict):
         """
