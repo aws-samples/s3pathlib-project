@@ -5,13 +5,13 @@ from s3pathlib.tests import run_cov_test
 from s3pathlib.tests.mock import BaseTest
 
 
-class TestDeleteAPIMixin(BaseTest):
+class DeleteAPIMixin(BaseTest):
     module = "core.delete"
 
-    def test_delete_if_exists(self):
+    def _test_delete_if_exists(self):
         s3dir_root = self.s3dir_root
 
-        # file
+        # --- file
         s3path = S3Path(s3dir_root, "delete-if-exists", "test.py")
         s3path.write_text("hello")
         assert s3path.exists() is True
@@ -22,7 +22,7 @@ class TestDeleteAPIMixin(BaseTest):
         assert s3path.delete_if_exists() == 0
         assert s3path.exists() is False
 
-        # dir
+        # --- dir
         s3dir = S3Path(s3dir_root, "delete-if-exists", "test/")
         s3dir.joinpath("1.txt").write_text("alice")
         s3dir.joinpath("folder/1.txt").write_text("bob")
@@ -33,6 +33,17 @@ class TestDeleteAPIMixin(BaseTest):
 
         assert s3dir.delete_if_exists() == 0
         assert s3dir.exists() is False
+
+    def test(self):
+        self._test_delete_if_exists()
+
+
+class Test(DeleteAPIMixin):
+    use_mock = False
+
+
+class TestWithVersioning(DeleteAPIMixin):
+    use_mock = True
 
 
 if __name__ == "__main__":
