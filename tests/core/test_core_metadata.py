@@ -31,7 +31,7 @@ class MetadataAPIMixin(BaseTest):
             Metadata={"creator": "Alice"},
         )
 
-    def test_attributes(self):
+    def _test_attributes(self):
         p = self.p
 
         assert p.etag == md5_binary("Hello World!".encode("utf-8"))
@@ -42,7 +42,7 @@ class MetadataAPIMixin(BaseTest):
         assert p.expire_at is None
         assert p.metadata == {"creator": "Alice"}
 
-    def test_clear_cache(self):
+    def _test_clear_cache(self):
         p = self.p
 
         p.clear_cache()
@@ -50,21 +50,25 @@ class MetadataAPIMixin(BaseTest):
         assert len(p.etag) == 32
         assert isinstance(p._meta, dict)
 
-    def test_from_content_dict(self):
+    def _test_from_content_dict(self):
         s3path = S3Path._from_content_dict(
             bucket="bucket",
             dct={
                 "Key": "file.txt",
                 "LastModified": datetime(2015, 1, 1),
-                "ETag": "string",
+                "ETag": "'string'",
                 "ChecksumAlgorithm": "SHA256",
                 "Size": 123,
                 "StorageClass": "STANDARD",
                 "Owner": {"DisplayName": "string", "ID": "string"},
             },
         )
+        assert s3path.key == "file.txt"
+        assert s3path.last_modified_at == datetime(2015, 1, 1)
+        assert s3path.etag == "string"
+        assert s3path.size == 123
 
-    def test_object_metadata(self):
+    def _test_object_metadata(self):
         s3path = S3Path(self.s3dir_root, "object-metadata.txt")
         self.s3_client.put_object(
             Bucket=s3path.bucket,
@@ -81,6 +85,12 @@ class MetadataAPIMixin(BaseTest):
         )
         s3path._meta = {"ETag": "abcd"}
         assert s3path.metadata == {"key": "value"}
+
+    def test(self):
+        self._test_attributes()
+        self._test_clear_cache()
+        self._test_from_content_dict()
+        self._test_object_metadata()
 
 
 class Test(MetadataAPIMixin):
