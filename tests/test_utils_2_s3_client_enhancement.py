@@ -79,7 +79,7 @@ class S3ClientEnhancement(BaseTest):
             Body="",
         )
 
-    def test_exists(self):
+    def _test_exists(self):
         s3_client = self.s3_client
         bucket = self.bucket
 
@@ -189,7 +189,7 @@ class S3ClientEnhancement(BaseTest):
             is False
         )
 
-    def test_upload_dir(self):
+    def _test_upload_dir(self):
         s3_client = self.s3_client
         bucket = self.bucket
 
@@ -231,7 +231,7 @@ class S3ClientEnhancement(BaseTest):
                 overwrite=False,
             )
 
-    def test_iter_objects(self):
+    def _test_iter_objects(self):
         s3_client = self.s3_client
         bucket = self.bucket
 
@@ -361,7 +361,7 @@ class S3ClientEnhancement(BaseTest):
                 )
             )
 
-    def test_calculate_total_size(self):
+    def _test_calculate_total_size(self):
         s3_client = self.s3_client
         bucket = self.bucket
 
@@ -442,7 +442,7 @@ class S3ClientEnhancement(BaseTest):
         )
         assert count == 0
 
-    def test_count_objects(self):
+    def _test_count_objects(self):
         s3_client = self.s3_client
         bucket = self.bucket
 
@@ -537,7 +537,7 @@ class S3ClientEnhancement(BaseTest):
             == 0
         )
 
-    def test_delete_dir(self):
+    def _test_delete_dir(self):
         s3_client = self.s3_client
         bucket = self.bucket
 
@@ -613,6 +613,14 @@ class S3ClientEnhancement(BaseTest):
             )[1]
             == 0
         )
+
+    def test(self):
+        self._test_exists()
+        self._test_upload_dir()
+        self._test_iter_objects()
+        self._test_calculate_total_size()
+        self._test_count_objects()
+        self._test_delete_dir()
 
 
 class Test(S3ClientEnhancement):
