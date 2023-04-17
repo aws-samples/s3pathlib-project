@@ -2,13 +2,16 @@
 
 import pytest
 from s3pathlib.core import S3Path
-from s3pathlib.tests import bucket, prefix, run_cov_test
+from s3pathlib.tests import run_cov_test
+from s3pathlib.tests.mock import BaseTest
 
-s3dir_root = S3Path(bucket, prefix, "core", "rw/")
 
+class ReadAndWriteAPIMixin(BaseTest):
+    module = "core.rw"
 
-class TestReadAndWriteAPIMixin:
-    def test_text_bytes_io(self):
+    def _test_text_bytes_io(self):
+        s3dir_root = self.s3dir_root
+
         # text
         s = "this is text"
         p = S3Path(s3dir_root, "file.txt")
@@ -37,7 +40,9 @@ class TestReadAndWriteAPIMixin:
         assert p.metadata == {"file-type": "binary"}
         assert p.get_tags() == {"key1": "value1", "key2": "alice=bob"}
 
-    def test_metadata_tags(self):
+    def _test_metadata_tags(self):
+        s3dir_root = self.s3dir_root
+
         p = S3Path(s3dir_root, "log.txt")
 
         # put metadata and tags
@@ -55,7 +60,9 @@ class TestReadAndWriteAPIMixin:
         assert p.metadata == {}
         assert p.get_tags() == {}
 
-    def test_touch(self):
+    def _test_touch(self):
+        s3dir_root = self.s3dir_root
+
         p = S3Path(s3dir_root, "touch", "test.txt")
         p.delete_if_exists()
 
@@ -71,7 +78,9 @@ class TestReadAndWriteAPIMixin:
         with pytest.raises(TypeError):
             p.touch()
 
-    def test_mkdir(self):
+    def _test_mkdir(self):
+        s3dir_root = self.s3dir_root
+
         # case 1, exists_ok = False, parents = True
         p_root = S3Path(s3dir_root, "mkdir/")
 
@@ -110,6 +119,20 @@ class TestReadAndWriteAPIMixin:
 
         with pytest.raises(ValueError):
             S3Path(p_root, "test.txt").mkdir()
+
+    def test(self):
+        self._test_text_bytes_io()
+        self._test_metadata_tags()
+        self._test_touch()
+        self._test_mkdir()
+
+
+class Test(ReadAndWriteAPIMixin):
+    use_mock = False
+
+
+class TestWithVersioning(ReadAndWriteAPIMixin):
+    use_mock = True
 
 
 if __name__ == "__main__":
