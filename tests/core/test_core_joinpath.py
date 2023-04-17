@@ -12,11 +12,13 @@ class TestJoinPathAPIMixin:
         p3 = p2.parent
         relpath1 = p1.relative_to(p2)
         relpath2 = p2.relative_to(p3)
-        p4 = p3.join_path(relpath2, relpath1)
-        assert p1 == p4
 
-        with pytest.raises(TypeError):
-            p3.join_path(p1, p2)
+        with pytest.warns():
+            p4 = p3.join_path(relpath2, relpath1)
+            assert p1 == p4
+
+            with pytest.raises(TypeError):
+                p3.join_path(p1, p2)
 
     def test_joinpath(self):
         # ------
