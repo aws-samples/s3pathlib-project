@@ -6,7 +6,7 @@ from s3pathlib.tests import run_cov_test
 from s3pathlib.tests.mock import BaseTest
 
 
-class AttributeAPIMixin:
+class AttributeAPIMixin(BaseTest):
     def _test_properties(self):
         # s3 object
         p = S3Path("bucket", "folder", "file.txt")
