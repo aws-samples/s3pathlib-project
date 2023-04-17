@@ -2,8 +2,6 @@
 
 import pytest
 
-from s3pathlib.core import S3Path
-from s3pathlib import exc
 from s3pathlib.better_client.upload import (
     upload_dir,
 )
