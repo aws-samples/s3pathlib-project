@@ -3,6 +3,7 @@
 import pytest
 import os
 from s3pathlib import utils
+from s3pathlib.tests import run_cov_test
 
 dir_here = os.path.dirname(os.path.abspath(__file__))
 dir_project_root = os.path.dirname(dir_here)
@@ -101,7 +102,4 @@ def test_parse_data_size():
 
 
 if __name__ == "__main__":
-    import os
-
-    basename = os.path.basename(__file__)
-    pytest.main([basename, "-s", "--tb=native"])
+    run_cov_test(__file__, "s3pathlib.utils", preview=False)
