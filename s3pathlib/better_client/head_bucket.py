@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Improve the _head_bucket API.
+Improve the head_bucket_ API.
 
 .. _head_bucket: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.head_bucket
 """
