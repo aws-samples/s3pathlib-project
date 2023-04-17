@@ -17,8 +17,9 @@ from .. import exc
 from ..utils import grouper_list
 from .list_objects import paginate_list_objects_v2, filter_object_only
 
-if T.TYPE_CHECKING:
+if T.TYPE_CHECKING: # pragma: no cover
     from mypy_boto3_s3 import S3Client
+    from mypy_boto3_s3.type_defs import DeleteObjectsOutputTypeDef
 
 
 def delete_object(
@@ -31,7 +32,7 @@ def delete_object(
     bypass_governance_retention: bool = NOTHING,
     expected_bucket_owner: str = NOTHING,
     ignore_not_found: bool = False,
-) -> bool:
+) -> T.Optional["DeleteObjectsOutputTypeDef"]:
     """
     Wrapper of delete_object_.
 
@@ -46,10 +47,10 @@ def delete_object(
     :param ignore_not_found: Default is ``False``; if ``True``, silently
         return 0 if the object does not exist.
 
-    :return: A boolean flag to indicate if a deletion happened or not
+    :return: See delete_object_.
     """
     try:
-        s3_client.delete_object(
+        response = s3_client.delete_object(
             **resolve_kwargs(
                 Bucket=bucket,
                 Key=key,
@@ -60,11 +61,11 @@ def delete_object(
                 ExpectedBucketOwner=expected_bucket_owner,
             )
         )
-        return True
-    except botocore.exceptions.ClientError as e:
+        return response
+    except botocore.exceptions.ClientError as e: # pragma: no cover
         if "Not Found" in str(e):
             if ignore_not_found:
-                return False
+                return None
             else:
                 raise exc.S3ObjectNotExist.make(f"s3://{bucket}/{key}")
         else:  # pragma: no cover
@@ -76,7 +77,7 @@ def delete_dir(
     bucket: str,
     prefix: str,
     batch_size: int = 1000,
-    limit: int = None,
+    limit: int = NOTHING,
     mfa: str = NOTHING,
     request_payer: str = NOTHING,
     bypass_governance_retention: bool = NOTHING,
