@@ -104,6 +104,15 @@ class BetterListObjects(DummyData):
         assert len(contents) == 1  # file.txt
         assert len(common_prefixes) == 3  # soft_folder, hard_folder, empty_hard_folder
 
+        contents, common_prefixes = paginate_list_objects_v2(
+            s3_client=self.s3_client,
+            bucket=self.bucket,
+            prefix=self.prefix_hard_folder,
+            delimiter="/",
+        ).contents_and_common_prefixs()
+        assert len(contents) == 2  # hard_folder/, hard_folder/file.txt
+        assert len(common_prefixes) == 0
+
     def _test_calculate_total_size(self):
         s3_client = self.s3_client
         bucket = self.bucket
