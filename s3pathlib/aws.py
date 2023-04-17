@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Manage the AWS environment that s3pathlib dealing with.
+Manage the AWS environment that ``s3pathlib`` dealing with.
 """
 
 from typing import Optional
@@ -34,15 +34,15 @@ class Context:
         except:  # pragma: no cover
             pass
 
-    def attach_boto_session(self, boto_ses):
+    def attach_boto_session(self, boto_ses: "boto3.session.Session"):
         """
-        Attach a custom boto session.
-
-        :type boto_ses: boto3.session.Session
+        Attach a custom boto session, also remove caches.
         """
         self.boto_ses = boto_ses
         self._s3_client = None
         self._sts_client = None
+        self._aws_account_id = None
+        self._aws_region = None
 
     @property
     def s3_client(self):
@@ -69,7 +69,7 @@ class Context:
     @property
     def aws_account_id(self) -> str:
         """
-        The AWS Account ID of the current boto session/
+        The AWS Account ID of the current boto session.
         """
         if self._aws_account_id is None:
             self._aws_account_id = self.sts_client.get_caller_identity()["Account"]
@@ -77,6 +77,9 @@ class Context:
 
     @property
     def aws_region(self) -> str:
+        """
+        The AWS Region of the current boto session.
+        """
         if self._aws_region is None:
             self._aws_region = self.boto_ses.region_name
         return self._aws_region
