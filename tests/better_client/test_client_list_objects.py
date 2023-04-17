@@ -16,31 +16,18 @@ from s3pathlib.better_client.list_objects import (
 from s3pathlib.utils import smart_join_s3_key
 from s3pathlib.tests import run_cov_test
 from s3pathlib.tests.mock import BaseTest
-from s3pathlib.tests.paths import dir_test_iter_objects_folder
+from s3pathlib.tests.paths import dir_test_list_objects_folder
 
 from dummy_data import DummyData
 
 
 class BetterListObjects(DummyData):
     module = "better_client.list_objects"
-    prefix_test_iter_objects: str
+    prefix_test_list_objects: str
 
     @classmethod
     def custom_setup_class(cls):
-        # setup test data for iter_objects
-        cls.prefix_test_iter_objects = smart_join_s3_key(
-            parts=[cls.get_prefix(), "test_iter_objects"],
-            is_dir=True,
-        )
-        upload_dir(
-            s3_client=cls.bsm.s3_client,
-            bucket=cls.get_bucket(),
-            prefix=cls.prefix_test_iter_objects,
-            local_dir=f"{dir_test_iter_objects_folder}",
-            pattern="**/*.txt",
-            overwrite=True,
-        )
-
+        cls.setup_list_objects_folder()
         cls.setup_dummy_data()
 
     def _test_paginate_list_objects_v2_argument_error(self):
@@ -59,7 +46,7 @@ class BetterListObjects(DummyData):
         result = paginate_list_objects_v2(
             s3_client=self.s3_client,
             bucket=self.bucket,
-            prefix=self.prefix_test_iter_objects,
+            prefix=self.prefix_test_list_objects,
             batch_size=3,
             limit=5,
         )
@@ -69,7 +56,7 @@ class BetterListObjects(DummyData):
         result = paginate_list_objects_v2(
             s3_client=self.s3_client,
             bucket=self.bucket,
-            prefix=self.prefix_test_iter_objects,
+            prefix=self.prefix_test_list_objects,
             batch_size=10,
             limit=3,
         )
@@ -79,7 +66,7 @@ class BetterListObjects(DummyData):
         result = paginate_list_objects_v2(
             s3_client=self.s3_client,
             bucket=self.bucket,
-            prefix=self.prefix_test_iter_objects,
+            prefix=self.prefix_test_list_objects,
             batch_size=10,
         )
         assert len(result.contents().all()) == 11
@@ -88,7 +75,7 @@ class BetterListObjects(DummyData):
         contents, common_prefixs = paginate_list_objects_v2(
             s3_client=self.s3_client,
             bucket=self.bucket,
-            prefix=self.prefix_test_iter_objects,
+            prefix=self.prefix_test_list_objects,
             delimiter="/",
         ).contents_and_common_prefixs()
         assert len(contents) == 2
@@ -97,7 +84,7 @@ class BetterListObjects(DummyData):
         result = paginate_list_objects_v2(
             s3_client=self.s3_client,
             bucket=self.bucket,
-            prefix=self.prefix_test_iter_objects,
+            prefix=self.prefix_test_list_objects,
             delimiter="/",
         )
         assert len(result.common_prefixs().all()) == 3
@@ -245,8 +232,8 @@ class BetterListObjects(DummyData):
         self._test_count_objects()
 
 
-# class Test(BetterListObjects):
-#     use_mock = False
+class Test(BetterListObjects):
+    use_mock = False
 
 
 class TestUseMock(BetterListObjects):

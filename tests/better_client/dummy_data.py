@@ -2,9 +2,14 @@
 
 from s3pathlib.utils import smart_join_s3_key
 from s3pathlib.tests.mock import BaseTest
+from s3pathlib.tests.paths import (
+    dir_test_list_objects_folder,
+    dir_test_upload_dir_folder,
+)
 
 
 class DummyData(BaseTest):
+    prefix_dummy_data: str
     key_hello: str
     key_soft_folder: str
     prefix_soft_folder: str
@@ -38,12 +43,16 @@ class DummyData(BaseTest):
         """
         s3_client = cls.bsm.s3_client
 
+        cls.prefix_dummy_data = smart_join_s3_key(
+            parts=[cls.get_prefix(), "dummy_data"],
+            is_dir=True,
+        )
         cls.key_hello = smart_join_s3_key(
-            parts=[cls.get_prefix(), "hello.txt"],
+            parts=[cls.prefix_dummy_data, "hello.txt"],
             is_dir=False,
         )
         cls.key_soft_folder = smart_join_s3_key(
-            [cls.get_prefix(), "soft_folder"], is_dir=False
+            [cls.prefix_dummy_data, "soft_folder"], is_dir=False
         )
         cls.prefix_soft_folder = cls.key_soft_folder + "/"
         cls.key_soft_folder_file = smart_join_s3_key(
@@ -51,7 +60,7 @@ class DummyData(BaseTest):
             is_dir=False,
         )
         cls.key_hard_folder = smart_join_s3_key(
-            parts=[cls.get_prefix(), "hard_folder"],
+            parts=[cls.prefix_dummy_data, "hard_folder"],
             is_dir=False,
         )
         cls.prefix_hard_folder = cls.key_hard_folder + "/"
@@ -60,12 +69,12 @@ class DummyData(BaseTest):
             is_dir=False,
         )
         cls.key_empty_hard_folder = smart_join_s3_key(
-            parts=[cls.get_prefix(), "empty_hard_folder"],
+            parts=[cls.prefix_dummy_data, "empty_hard_folder"],
             is_dir=False,
         )
         cls.prefix_empty_hard_folder = cls.key_empty_hard_folder + "/"
         cls.key_never_exists = smart_join_s3_key(
-            parts=[cls.get_prefix(), "never_exists"],
+            parts=[cls.prefix_dummy_data, "never_exists"],
             is_dir=False,
         )
         cls.prefix_never_exists = cls.key_never_exists + "/"
@@ -100,4 +109,43 @@ class DummyData(BaseTest):
             Bucket=bucket,
             Key=cls.prefix_empty_hard_folder,
             Body="",
+        )
+
+    prefix_test_list_objects: str
+
+    @classmethod
+    def setup_list_objects_folder(cls):
+        from s3pathlib.better_client.upload import upload_dir
+
+        # setup test data for iter_objects
+        cls.prefix_test_list_objects = smart_join_s3_key(
+            parts=[cls.get_prefix(), "test_iter_objects"],
+            is_dir=True,
+        )
+        upload_dir(
+            s3_client=cls.bsm.s3_client,
+            bucket=cls.get_bucket(),
+            prefix=cls.prefix_test_list_objects,
+            local_dir=f"{dir_test_list_objects_folder}",
+            pattern="**/*.txt",
+            overwrite=True,
+        )
+
+    prefix_test_upload_dir: str
+
+    @classmethod
+    def setup_test_upload_dir(cls):
+        from s3pathlib.better_client.upload import upload_dir
+
+        cls.prefix_test_upload_dir = smart_join_s3_key(
+            parts=[cls.get_prefix(), "test_upload_dir"],
+            is_dir=True,
+        )
+        upload_dir(
+            s3_client=cls.bsm.s3_client,
+            bucket=cls.get_bucket(),
+            prefix=cls.prefix_test_upload_dir,
+            local_dir=f"{dir_test_upload_dir_folder}",
+            pattern="**/*.txt",
+            overwrite=True,
         )
