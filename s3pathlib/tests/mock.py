@@ -237,3 +237,6 @@ class BaseTest:
         if "ResponseMetadata" in res:
             res.pop("ResponseMetadata")
         rprint(res)
+
+    def rprint(self, data):
+        rprint(data)

@@ -7,8 +7,8 @@ from s3pathlib.better_client.upload import (
 )
 from s3pathlib.utils import smart_join_s3_key
 from s3pathlib.tests import run_cov_test
-from s3pathlib.tests.paths import dir_test_upload_dir_folder
 from s3pathlib.tests.mock import prefix, BaseTest
+from s3pathlib.tests.paths import dir_test_upload_dir_folder
 
 dir_test_upload_dir_folder.joinpath("emptyfolder").mkdir(exist_ok=True)
 

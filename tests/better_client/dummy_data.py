@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from s3pathlib.utils import smart_join_s3_key
-from s3pathlib.tests.mock import prefix, BaseTest
+from s3pathlib.tests.mock import BaseTest
 
 
 class DummyData(BaseTest):
@@ -14,6 +14,9 @@ class DummyData(BaseTest):
     key_hard_folder_file: str
     key_empty_hard_folder: str
     prefix_empty_hard_folder: str
+
+    key_never_exists: str
+    prefix_never_exists: str
 
     @classmethod
     def setup_dummy_data(cls):
@@ -30,6 +33,8 @@ class DummyData(BaseTest):
         - ``/{prefix}/hard_folder/file.txt``
         - ``/{prefix}/empty_hard_folder`` (not exists, just for testing)
         - ``/{prefix}/empty_hard_folder/``
+        - ``/{prefix}/never_exists`` (not exists, just for testing)
+        - ``/{prefix}/never_exists/`` (not exists, just for testing)
         """
         s3_client = cls.bsm.s3_client
 
@@ -59,6 +64,11 @@ class DummyData(BaseTest):
             is_dir=False,
         )
         cls.prefix_empty_hard_folder = cls.key_empty_hard_folder + "/"
+        cls.key_never_exists = smart_join_s3_key(
+            parts=[cls.get_prefix(), "never_exists"],
+            is_dir=False,
+        )
+        cls.prefix_never_exists = cls.key_never_exists + "/"
 
         bucket = cls.get_bucket()
 
