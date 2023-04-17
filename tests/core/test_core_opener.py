@@ -3,27 +3,28 @@
 import json
 import pickle
 from s3pathlib.core import S3Path
-from s3pathlib.tests import bucket, prefix, run_cov_test
+from s3pathlib.tests import run_cov_test
+from s3pathlib.tests.mock import BaseTest
 
-s3dir_root = S3Path(bucket, prefix, "core", "open").to_dir()
 
+class OpenerAPIMixin(BaseTest):
+    module = "core.open"
 
-class TestOpenerAPIMixin:
-    def test_open(self):
-        s3path = s3dir_root.joinpath("data.json")
+    def _test_open(self):
+        s3path = S3Path(self.s3dir_root, "data.json")
         with s3path.open("w") as f:
             json.dump({"a": 1}, f)
         with s3path.open("r") as f:
             assert json.load(f) == {"a": 1}
 
-        s3path = s3dir_root.joinpath("data.pickle")
+        s3path = S3Path(self.s3dir_root, "data.pickle")
         with s3path.open("wb") as f:
             pickle.dump({"a": 1}, f)
         with s3path.open("rb") as f:
             assert pickle.load(f) == {"a": 1}
 
-    def test_open_with_additional_kwargs(self):
-        s3path = s3dir_root.joinpath("log.txt")
+    def _test_open_with_additional_kwargs(self):
+        s3path = S3Path(self.s3dir_root, "log.txt")
 
         # multi part upload
         s3path.delete_if_exists()
@@ -50,6 +51,18 @@ class TestOpenerAPIMixin:
 
         assert s3path.metadata == {"creator": "s3pathlib"}
         assert s3path.get_tags() == {"project": "s3pathlib"}
+
+    def test(self):
+        self._test_open()
+        self._test_open_with_additional_kwargs()
+
+
+class Test(OpenerAPIMixin):
+    use_mock = False
+
+
+class TestWithVersioning(OpenerAPIMixin):
+    use_mock = True
 
 
 if __name__ == "__main__":
