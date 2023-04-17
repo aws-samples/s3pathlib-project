@@ -4,7 +4,7 @@
 Manage the AWS environment that ``s3pathlib`` dealing with.
 """
 
-from typing import Optional
+import typing as T
 
 try:
     import boto3
@@ -12,6 +12,10 @@ except ImportError:  # pragma: no cover
     pass
 except:  # pragma: no cover
     raise
+
+if T.TYPE_CHECKING:  # pragma: no cover
+    from mypy_boto3_s3 import S3Client
+    from mypy_boto3_sts import STSClient
 
 
 class Context:
@@ -22,11 +26,11 @@ class Context:
     """
 
     def __init__(self):
-        self.boto_ses: Optional['boto3.session.Session'] = None
-        self._aws_region: Optional[str] = None
-        self._aws_account_id: Optional[str] = None
-        self._s3_client = None
-        self._sts_client = None
+        self.boto_ses: T.Optional["boto3.session.Session"] = None
+        self._aws_region: T.Optional[str] = None
+        self._aws_account_id: T.Optional[str] = None
+        self._s3_client: T.Optional["S3Client"] = None
+        self._sts_client: T.Optional["STSClient"] = None
 
         # try to create default session
         try:
@@ -45,7 +49,7 @@ class Context:
         self._aws_region = None
 
     @property
-    def s3_client(self):
+    def s3_client(self) -> "S3Client":
         """
         Access the s3 client.
 
@@ -56,7 +60,7 @@ class Context:
         return self._s3_client
 
     @property
-    def sts_client(self):
+    def sts_client(self) -> "STSClient":
         """
         Access the s3 client.
 
