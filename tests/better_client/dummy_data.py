@@ -34,17 +34,19 @@ class DummyData(BaseTest):
         s3_client = cls.bsm.s3_client
 
         cls.key_hello = smart_join_s3_key(
-            parts=[prefix, "hello.txt"],
+            parts=[cls.get_prefix(), "hello.txt"],
             is_dir=False,
         )
-        cls.key_soft_folder = smart_join_s3_key([prefix, "soft_folder"], is_dir=False)
+        cls.key_soft_folder = smart_join_s3_key(
+            [cls.get_prefix(), "soft_folder"], is_dir=False
+        )
         cls.prefix_soft_folder = cls.key_soft_folder + "/"
         cls.key_soft_folder_file = smart_join_s3_key(
             parts=[cls.prefix_soft_folder, "file.txt"],
             is_dir=False,
         )
         cls.key_hard_folder = smart_join_s3_key(
-            parts=[prefix, "hard_folder"],
+            parts=[cls.get_prefix(), "hard_folder"],
             is_dir=False,
         )
         cls.prefix_hard_folder = cls.key_hard_folder + "/"
@@ -53,7 +55,7 @@ class DummyData(BaseTest):
             is_dir=False,
         )
         cls.key_empty_hard_folder = smart_join_s3_key(
-            parts=[prefix, "empty_hard_folder"],
+            parts=[cls.get_prefix(), "empty_hard_folder"],
             is_dir=False,
         )
         cls.prefix_empty_hard_folder = cls.key_empty_hard_folder + "/"

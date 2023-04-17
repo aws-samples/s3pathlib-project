@@ -195,19 +195,25 @@ class BaseTest:
         return self.get_bucket_with_versioning()
 
     @classmethod
+    def get_prefix(cls) -> str:
+        return f"{prefix}/{cls.get_module_folders()}"
+
+    @cached_property
+    def prefix(self) -> str:
+        return self.get_prefix()
+
+    @classmethod
     def get_s3dir_root(cls) -> S3Path:
         return S3Path(
             cls.get_bucket(),
-            prefix,
-            cls.get_module_folders(),
+            cls.get_prefix(),
         ).to_dir()
 
     @classmethod
     def get_s3dir_root_with_versioning(cls) -> S3Path:
         return S3Path(
             cls.get_bucket_with_versioning(),
-            prefix,
-            cls.get_module_folders(),
+            cls.get_prefix(),
         ).to_dir()
 
     @cached_property

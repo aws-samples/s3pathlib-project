@@ -8,7 +8,6 @@ from s3pathlib.better_client.head_object import (
 )
 from s3pathlib.utils import smart_join_s3_key
 from s3pathlib.tests import run_cov_test
-from s3pathlib.tests.mock import prefix
 
 from dummy_data import DummyData
 
@@ -23,7 +22,7 @@ class BetterHeadObject(DummyData):
     def _test_before_and_after_put_object(self):
         # at begin, no object exists
         bucket = self.bucket
-        key = smart_join_s3_key([prefix, "file.txt"], is_dir=False)
+        key = smart_join_s3_key([self.prefix, "file.txt"], is_dir=False)
 
         assert is_object_exists(self.s3_client, bucket=bucket, key=key) is False
 

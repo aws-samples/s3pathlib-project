@@ -27,7 +27,7 @@ class BetterUpload(BaseTest):
             s3_client=s3_client,
             bucket=bucket,
             prefix=smart_join_s3_key(
-                parts=[prefix, "test_upload_dir"],
+                parts=[self.prefix, "test_upload_dir"],
                 is_dir=True,
             ),
             local_dir=f"{dir_test_upload_dir_folder}",
@@ -51,7 +51,7 @@ class BetterUpload(BaseTest):
                 s3_client=s3_client,
                 bucket=bucket,
                 prefix=smart_join_s3_key(
-                    parts=[prefix, "test_upload_dir"],
+                    parts=[self.prefix, "test_upload_dir"],
                     is_dir=True,
                 ),
                 local_dir=f"{dir_test_upload_dir_folder}",
