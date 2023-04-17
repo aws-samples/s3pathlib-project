@@ -43,6 +43,7 @@ class SyncAPIMixin:
         no_progress: bool = False,
         page_size: T.Optional[str] = None,
         delete: bool = False,
+        verbose: bool = True,
     ):
         """
         Implement the `aws s3 sync <https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html>`_
@@ -50,6 +51,16 @@ class SyncAPIMixin:
 
         :param src:
         :param dst:
+        :param bsm:
+        :param quite:
+        :param include:
+        :param exclude:
+        :param acl:
+        :param only_show_errors:
+        :param no_progress:
+        :param page_size:
+        :param delete:
+        :param verbose:
 
         .. versionadded:: 1.2.1
 
@@ -110,7 +121,8 @@ class SyncAPIMixin:
 
         if bsm is None:  # pragma: no cover
             with BotoSesManager(botocore_session=context.boto_ses._session).awscli():
-                print(" ".join(args))
+                if verbose:
+                    print(" ".join(args))
                 response = subprocess.run(args)
         else:  # pragma: no cover
             with bsm.awscli():
@@ -130,6 +142,7 @@ class SyncAPIMixin:
         no_progress: bool = False,
         page_size: T.Optional[str] = None,
         delete: bool = False,
+        verbose: bool = True,
     ):
         """
         Sync data from external place to this S3 location.
@@ -146,6 +159,7 @@ class SyncAPIMixin:
             no_progress=no_progress,
             page_size=page_size,
             delete=delete,
+            verbose=verbose,
         )
 
     def sync_to(
@@ -160,6 +174,7 @@ class SyncAPIMixin:
         no_progress: bool = False,
         page_size: T.Optional[str] = None,
         delete: bool = False,
+        verbose: bool = True,
     ):
         """
         Sync the data at this S3 location to external place.
@@ -176,4 +191,5 @@ class SyncAPIMixin:
             no_progress=no_progress,
             page_size=page_size,
             delete=delete,
+            verbose=verbose,
         )
