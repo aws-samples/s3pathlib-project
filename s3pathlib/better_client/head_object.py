@@ -79,6 +79,6 @@ def head_object(
             if ignore_not_found:
                 return None
             else:
-                raise exc.S3ObjectNotExist(str(e))
+                raise exc.S3ObjectNotExist.make(str(e))
         else:  # pragma: no cover
             raise e
