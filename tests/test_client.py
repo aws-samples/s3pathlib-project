@@ -13,40 +13,40 @@ from s3pathlib.client import (
     copy_object,
     S3ObjectNotExist,
 )
+from s3pathlib.tests import run_cov_test
+from s3pathlib.tests.mock import BaseTest
 
-from s3pathlib.tests import boto_ses, s3_client, bucket, prefix
-
-context.attach_boto_session(boto_ses)
-
-NOT_EXIST_STR = "8c8b3db3e28e90a95b4d692f81bcbd71"
+NOT_EXIST_BUCKET = "this_bucket_is_impossible_to_exist"
 
 
-class TestClient:
-    p_root = S3Path(bucket, prefix, "client")
+class Client(BaseTest):
+    module = "client"
 
     def test_is_bucket_exists(self):
-        assert is_bucket_exists(s3_client, bucket) is True
-        assert is_bucket_exists(s3_client, NOT_EXIST_STR) is False
+        assert is_bucket_exists(self.s3_client, self.bucket) is True
+        assert is_bucket_exists(self.s3_client, NOT_EXIST_BUCKET) is False
 
     def test_head_object(self):
         with pytest.raises(S3ObjectNotExist):
-            head_object(s3_client, bucket, NOT_EXIST_STR)
+            head_object(self.s3_client, self.bucket, NOT_EXIST_BUCKET)
 
     def test_head_object_or_none(self):
-        assert head_object_or_none(s3_client, bucket, NOT_EXIST_STR) is None
+        assert (
+            head_object_or_none(self.s3_client, self.bucket, NOT_EXIST_BUCKET) is None
+        )
 
     def test_put_object(self):
-        p = S3Path(self.p_root, "put_object", "hello.txt")
+        p = S3Path(self.s3dir_root, "put_object", "hello.txt")
         p.delete_if_exists()
         p.clear_cache()
 
         # object not exists
         with pytest.raises(S3ObjectNotExist):
-            get_object_tagging(s3_client, p.bucket, p.key)
+            get_object_tagging(self.s3_client, p.bucket, p.key)
 
         # put object without tags
         put_object(
-            s3_client,
+            self.s3_client,
             p.bucket,
             p.key,
             b"hello",
@@ -56,11 +56,11 @@ class TestClient:
         assert p.metadata == {}
 
         # tags is empty
-        assert get_object_tagging(s3_client, p.bucket, p.key) == {}
+        assert get_object_tagging(self.s3_client, p.bucket, p.key) == {}
 
         # use put_object API
         put_object(
-            s3_client,
+            self.s3_client,
             p.bucket,
             p.key,
             metadata={"file-type": "txt"},
@@ -69,27 +69,34 @@ class TestClient:
         p.clear_cache()
         assert p.size == 0  # content erased, because we just put_object without body
         assert p.metadata == {"file-type": "txt"}
-        assert get_object_tagging(s3_client, p.bucket, p.key) == {"k1": "v1"}
+        assert get_object_tagging(self.s3_client, p.bucket, p.key) == {"k1": "v1"}
 
         # put object tagging is a full replacement
-        put_object_tagging(s3_client, p.bucket, p.key, tags={"k2": "v2", "k3": "v3"})
-        assert get_object_tagging(s3_client, p.bucket, p.key) == {"k2": "v2", "k3": "v3"}
+        put_object_tagging(
+            self.s3_client, p.bucket, p.key, tags={"k2": "v2", "k3": "v3"}
+        )
+        assert get_object_tagging(self.s3_client, p.bucket, p.key) == {
+            "k2": "v2",
+            "k3": "v3",
+        }
 
         # update object is a "true update" operation
-        tags = update_object_tagging(s3_client, p.bucket, p.key, tags={"k1": "v1", "k2": "v22"})
+        tags = update_object_tagging(
+            self.s3_client, p.bucket, p.key, tags={"k1": "v1", "k2": "v22"}
+        )
         assert tags == {"k1": "v1", "k2": "v22", "k3": "v3"}
 
-        existing_tags = get_object_tagging(s3_client, p.bucket, p.key)
+        existing_tags = get_object_tagging(self.s3_client, p.bucket, p.key)
         assert existing_tags == {"k1": "v1", "k2": "v22", "k3": "v3"}
 
     def test_copy_object(self):
-        p_src = S3Path(self.p_root, "copy_object", "src.txt")
-        p_dst = S3Path(self.p_root, "copy_object", "dst.txt")
+        p_src = S3Path(self.s3dir_root, "copy_object", "src.txt")
+        p_dst = S3Path(self.s3dir_root, "copy_object", "dst.txt")
         p_src.delete_if_exists()
         p_dst.delete_if_exists()
 
         put_object(
-            s3_client,
+            self.s3_client,
             p_src.bucket,
             p_src.key,
             b"hello",
@@ -99,7 +106,7 @@ class TestClient:
 
         # copy without metadata and tags
         copy_object(
-            s3_client,
+            self.s3_client,
             p_src.bucket,
             p_src.key,
             p_dst.bucket,
@@ -113,7 +120,7 @@ class TestClient:
 
         # copy with metadata and tags
         copy_object(
-            s3_client,
+            self.s3_client,
             p_src.bucket,
             p_src.key,
             p_dst.bucket,
@@ -126,7 +133,13 @@ class TestClient:
         assert p_dst.get_tags() == {"tag_name": "b"}
 
 
-if __name__ == "__main__":
-    from s3pathlib.tests import run_cov_test
+class Test(Client):
+    use_mock = False
 
+
+class TestWithVersioning(Client):
+    use_mock = True
+
+
+if __name__ == "__main__":
     run_cov_test(__file__, module="s3pathlib.client", preview=False)
