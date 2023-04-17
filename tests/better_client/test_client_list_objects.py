@@ -1,22 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import pytest
-from s3pathlib.core import S3Path
-from s3pathlib import exc
-from s3pathlib.better_client.upload import upload_dir
 from s3pathlib.better_client.list_objects import (
-    ObjectTypeDefIterproxy,
-    CommonPrefixTypeDefIterproxy,
-    ListObjectsV2OutputTypeDefIterproxy,
     paginate_list_objects_v2,
-    filter_object_only,
     calculate_total_size,
     count_objects,
 )
-from s3pathlib.utils import smart_join_s3_key
 from s3pathlib.tests import run_cov_test
-from s3pathlib.tests.mock import BaseTest
-from s3pathlib.tests.paths import dir_test_list_objects_folder
 
 from dummy_data import DummyData
 
