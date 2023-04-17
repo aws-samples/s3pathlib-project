@@ -51,10 +51,10 @@ def upload_dir(
     p_local_dir = Path(local_dir)
 
     if p_local_dir.is_file():
-        raise TypeError
+        raise TypeError(f"'{p_local_dir}' is a file, not a directory!")
 
     if p_local_dir.exists() is False:
-        raise FileNotFoundError
+        raise FileNotFoundError(f"'{p_local_dir}' not found!")
 
     if len(prefix):
         final_prefix = f"{prefix}/"
