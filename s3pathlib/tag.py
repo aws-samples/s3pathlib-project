@@ -2,22 +2,14 @@
 
 """
 This module provides AWS Tags manipulation helpers.
-
-Note:
-
-- This module is not for public API
 """
 
-import typing as T
 from urllib.parse import urlencode
+
 from .type import TagType, TagSetType
 
 
-def parse_tags(
-    data: T.Union[
-        TagSetType,
-    ]
-) -> TagType:
+def parse_tags(data: TagSetType) -> TagType:
     """
     Convert tags to pythonic dictionary.
     """
@@ -32,10 +24,7 @@ def encode_tag_set(tags: TagType) -> TagSetType:
     Some API requires: ``[{"Key": "name", "Value": "Alice"}, {...}, ...]``
     for tagging parameter.
     """
-    return [
-        {"Key": k, "Value": v}
-        for k, v in tags.items()
-    ]
+    return [{"Key": k, "Value": v} for k, v in tags.items()]
 
 
 def encode_url_query(tags: TagType) -> str:
