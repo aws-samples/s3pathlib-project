@@ -9,9 +9,12 @@ from s3pathlib.better_client.upload import (
 )
 from s3pathlib.utils import smart_join_s3_key
 from s3pathlib.tests import run_cov_test
+from s3pathlib.tests.paths import dir_test_upload_dir_folder
 from s3pathlib.tests.mock import prefix, BaseTest
 
-from dummy_data import DummyData
+dir_test_upload_dir_folder.joinpath("emptyfolder").mkdir(exist_ok=True)
+
+prefix = smart_join_s3_key([prefix, "better_client", "upload"], is_dir=False)
 
 
 class BetterUpload(BaseTest):
@@ -21,8 +24,6 @@ class BetterUpload(BaseTest):
         s3_client = self.s3_client
         bucket = self.bucket
 
-        local_dir = os.path.join(dir_tests, "core", "test_upload_dir")
-
         # regular upload
         upload_dir(
             s3_client=s3_client,
@@ -31,7 +32,7 @@ class BetterUpload(BaseTest):
                 parts=[prefix, "test_upload_dir"],
                 is_dir=True,
             ),
-            local_dir=local_dir,
+            local_dir=f"{dir_test_upload_dir_folder}",
             pattern="**/*.txt",
             overwrite=True,
         )
@@ -41,11 +42,12 @@ class BetterUpload(BaseTest):
             s3_client=s3_client,
             bucket=bucket,
             prefix="",
-            local_dir=local_dir,
+            local_dir=f"{dir_test_upload_dir_folder}",
             pattern="**/*.txt",
             overwrite=True,
         )
 
+        # raise error when overwrite is False
         with pytest.raises(FileExistsError):
             upload_dir(
                 s3_client=s3_client,
@@ -54,7 +56,30 @@ class BetterUpload(BaseTest):
                     parts=[prefix, "test_upload_dir"],
                     is_dir=True,
                 ),
-                local_dir=local_dir,
+                local_dir=f"{dir_test_upload_dir_folder}",
+                pattern="**/*.txt",
+                overwrite=False,
+            )
+
+        # input argument error
+        path = dir_test_upload_dir_folder.joinpath("1.txt")
+        with pytest.raises(TypeError):
+            upload_dir(
+                s3_client=s3_client,
+                bucket=bucket,
+                prefix="",
+                local_dir=f"{path}",
+                pattern="**/*.txt",
+                overwrite=False,
+            )
+
+        dir_not_exist = dir_test_upload_dir_folder.parent.joinpath("not_exist")
+        with pytest.raises(FileNotFoundError):
+            upload_dir(
+                s3_client=s3_client,
+                bucket=bucket,
+                prefix="",
+                local_dir=f"{dir_not_exist}",
                 pattern="**/*.txt",
                 overwrite=False,
             )
@@ -63,8 +88,8 @@ class BetterUpload(BaseTest):
         self._test()
 
 
-# class Test(BetterUpload):
-#     use_mock = False
+class Test(BetterUpload):
+    use_mock = False
 
 
 class TestUseMock(BetterUpload):
