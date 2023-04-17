@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pytest
-from s3pathlib import S3Path, context
+from s3pathlib import S3Path
 from s3pathlib.client import (
     is_bucket_exists,
     head_object,
