@@ -18,6 +18,7 @@ from .resolve_s3_client import resolve_s3_client
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
     from boto_session_manager import BotoSesManager
+    from mypy_boto3_s3.type_defs import PutObjectOutputTypeDef
 
 
 class ReadAndWriteAPIMixin:
@@ -54,12 +55,13 @@ class ReadAndWriteAPIMixin:
         bsm: T.Optional["BotoSesManager"] = None,
     ) -> str:
         """
-        Read text data from s3 object. A simple wrapper around
-        `s3_client.get_object <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.get_object>`_
+        Read text data from s3 object. A simple wrapper around s3_client.get_object_
 
         .. versionchanged:: 1.1.2
 
             automatically store metadata in cache.
+
+        .. _get_object: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.get_object
         """
         data = self.read_bytes(bsm=bsm)
         return data.decode(encoding, errors=errors)
@@ -101,7 +103,7 @@ class ReadAndWriteAPIMixin:
         object_lock_retain_until_datetime: datetime = NOTHING,
         object_lock_legal_hold_status: str = NOTHING,
         expected_bucket_owner: str = NOTHING,
-    ):
+    ) -> "PutObjectOutputTypeDef":
         """
         Write binary data to s3 object. A simple wrapper around
         `s3_client.put_object <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.put_object>`_
@@ -199,7 +201,7 @@ class ReadAndWriteAPIMixin:
         object_lock_retain_until_datetime: datetime = NOTHING,
         object_lock_legal_hold_status: str = NOTHING,
         expected_bucket_owner: str = NOTHING,
-    ):
+    ) -> "PutObjectOutputTypeDef":
         """
         Write text to s3 object. A simple wrapper around
         `s3_client.put_object <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.put_object>`_
