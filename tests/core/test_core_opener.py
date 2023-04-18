@@ -37,7 +37,7 @@ class OpenerAPIMixin(BaseTest):
             f.write("hello")
 
         assert s3path.metadata == {"creator": "s3pathlib"}
-        assert s3path.get_tags() == {"project": "s3pathlib"}
+        assert s3path.get_tags()[1] == {"project": "s3pathlib"}
 
         # normal upload
         s3path.delete_if_exists()
@@ -50,7 +50,7 @@ class OpenerAPIMixin(BaseTest):
             f.write("hello")
 
         assert s3path.metadata == {"creator": "s3pathlib"}
-        assert s3path.get_tags() == {"project": "s3pathlib"}
+        assert s3path.get_tags()[1] == {"project": "s3pathlib"}
 
     def test(self):
         self._test_open()

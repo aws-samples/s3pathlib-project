@@ -6,7 +6,6 @@ from pathlib_mate import Path
 from iterproxy import and_
 
 from s3pathlib.core import S3Path
-from s3pathlib.client import put_object
 from s3pathlib.tests import run_cov_test
 from s3pathlib.tests.mock import BaseTest
 
@@ -190,35 +189,31 @@ class IterObjectsAPIMixin(BaseTest):
 
     def _test_count_objects(self):
         s3path_soft_folder_file = self.s3dir_root.joinpath("soft_folder", "file.txt")
-        put_object(
-            self.s3_client,
-            s3path_soft_folder_file.bucket,
-            s3path_soft_folder_file.key,
-            b"a",
+        self.s3_client.put_object(
+            Bucket=s3path_soft_folder_file.bucket,
+            Key=s3path_soft_folder_file.key,
+            Body=b"a",
         )
 
         s3dir_hard_folder = self.s3dir_root.joinpath("hard_folder").to_dir()
-        put_object(
-            self.s3_client,
-            s3dir_hard_folder.bucket,
-            s3dir_hard_folder.key,
-            b"",
+        self.s3_client.put_object(
+            Bucket=s3dir_hard_folder.bucket,
+            Key=s3dir_hard_folder.key,
+            Body=b"",
         )
 
         s3path_hard_folder_file = self.s3dir_root.joinpath("hard_folder", "file.txt")
-        put_object(
-            self.s3_client,
-            s3path_hard_folder_file.bucket,
-            s3path_hard_folder_file.key,
-            b"a",
+        self.s3_client.put_object(
+            Bucket=s3path_hard_folder_file.bucket,
+            Key=s3path_hard_folder_file.key,
+            Body=b"a",
         )
 
         s3dir_empty_folder = self.s3dir_root.joinpath("empty_folder").to_dir()
-        put_object(
-            self.s3_client,
-            s3dir_empty_folder.bucket,
-            s3dir_empty_folder.key,
-            b"",
+        self.s3_client.put_object(
+            Bucket=s3dir_empty_folder.bucket,
+            Key=s3dir_empty_folder.key,
+            Body=b"",
         )
 
         # soft / hard / empty folder

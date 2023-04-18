@@ -18,7 +18,7 @@ class SyncAPIMixin(BaseTest):
         sys.platform.startswith("win"),
         reason="windows CLI system is different",
     )
-    def test_sync(self):
+    def _test_sync(self):
         s3path1 = self.s3dir_root.joinpath("dir1").to_dir()
         s3path2 = self.s3dir_root.joinpath("dir2").to_dir()
         path1 = dir_here.joinpath("dir1")
@@ -48,7 +48,13 @@ class SyncAPIMixin(BaseTest):
         with pytest.raises(ValueError):
             S3Path.sync(path1.abspath, path2.abspath, verbose=False)
 
+    def test(self):
+        if self.use_mock is False:
+            self._test_sync()
 
+
+# NOTE: this module should ONLY be tested with MOCK
+# DO NOT USE REAL S3 BUCKET
 class Test(SyncAPIMixin):
     use_mock = False
 

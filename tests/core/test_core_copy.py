@@ -86,10 +86,45 @@ class CopyAPIMixin(BaseTest):
         assert p_src.count_objects() == 0
         assert p_dst.count_objects() == 2
 
+    def _test_copy_with_metadata_and_tagging(self):
+        p_src = S3Path(self.s3dir_root, "copy_object", "src.txt")
+        p_dst = S3Path(self.s3dir_root, "copy_object", "dst.txt")
+        p_src.delete_if_exists()
+        p_dst.delete_if_exists()
+
+        p_src.write_text(
+            "hello",
+            metadata=dict(key_name="a"),
+            tags=dict(tag_name="a"),
+        )
+
+        # copy without metadata and tags argument
+        p_src.copy_to(p_dst)
+
+        # it will automatically copy metadata and tags from source
+        p_dst.clear_cache()
+        assert p_dst.metadata == {"key_name": "a"}
+        assert p_dst.get_tags()[1] == {"tag_name": "a"}
+
+        # copy with explicit metadata and tags
+        p_src.copy_to(
+            p_dst,
+            metadata=dict(key_name="b"),
+            tags=dict(tag_name="b"),
+            overwrite=True,
+        )
+
+        # it will overwrite metadata and tags with the explicit value
+        p_dst.clear_cache()
+        assert p_dst.metadata == {"key_name": "b"}
+        assert p_dst.get_tags()[1] == {"tag_name": "b"}
+
     def test(self):
         self._test_copy_object()
         self._test_copy_dir()
         self._test_move_to()
+
+        self._test_copy_with_metadata_and_tagging()
 
 
 class Test(CopyAPIMixin):

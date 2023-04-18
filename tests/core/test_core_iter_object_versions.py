@@ -6,7 +6,6 @@ from pathlib_mate import Path
 from iterproxy import and_
 
 from s3pathlib.core import S3Path
-from s3pathlib.client import put_object
 from s3pathlib.tests import run_cov_test
 from s3pathlib.tests.mock import BaseTest
 

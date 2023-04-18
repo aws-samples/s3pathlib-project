@@ -2,7 +2,6 @@
 
 import pytest
 from pathlib_mate import Path
-from s3pathlib import client as better_client
 from s3pathlib.core import S3Path
 from s3pathlib.tests import run_cov_test
 from s3pathlib.tests.mock import BaseTest

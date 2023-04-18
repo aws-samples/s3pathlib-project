@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from s3pathlib import client as better_client
 from s3pathlib.core import S3Path
+from s3pathlib.tag import encode_url_query
 from s3pathlib.tests import run_cov_test
 from s3pathlib.tests.mock import BaseTest
 
@@ -12,23 +12,21 @@ class TaggingAPIMixin(BaseTest):
     def _test_get_put_update(self):
         s3path_file = S3Path(self.s3dir_root, "hello.txt")
 
-        better_client.put_object(
-            self.s3_client,
-            bucket=s3path_file.bucket,
-            key=s3path_file.key,
-            body=b"Hello World!",
+        self.s3_client.put_object(
+            Bucket=s3path_file.bucket,
+            Key=s3path_file.key,
+            Body=b"Hello World!",
         )
 
         # tags is empty
         assert s3path_file.get_tags()[1] == {}
 
         # use put_object API
-        better_client.put_object(
-            self.s3_client,
-            bucket=s3path_file.bucket,
-            key=s3path_file.key,
-            body=b"Hello World!",
-            tags={"k1": "v1"},
+        self.s3_client.put_object(
+            Bucket=s3path_file.bucket,
+            Key=s3path_file.key,
+            Body=b"Hello World!",
+            Tagging=encode_url_query({"k1": "v1"}),
         )
         assert s3path_file.get_tags()[1] == {"k1": "v1"}
 
@@ -46,11 +44,10 @@ class TaggingAPIMixin(BaseTest):
     def _test_get_put_update_with_versioning(self):
         s3path_file = S3Path(self.s3dir_root_with_versioning, "hello.txt")
 
-        better_client.put_object(
-            self.s3_client,
-            bucket=s3path_file.bucket,
-            key=s3path_file.key,
-            body=b"Hello World!",
+        self.s3_client.put_object(
+            Bucket=s3path_file.bucket,
+            Key=s3path_file.key,
+            Body=b"Hello World!",
         )
 
         # tags is empty
@@ -58,12 +55,11 @@ class TaggingAPIMixin(BaseTest):
         assert tags == {}
 
         # use put_object API
-        better_client.put_object(
-            self.s3_client,
-            bucket=s3path_file.bucket,
-            key=s3path_file.key,
-            body=b"Hello World!",
-            tags={"k1": "v1"},
+        self.s3_client.put_object(
+            Bucket=s3path_file.bucket,
+            Key=s3path_file.key,
+            Body=b"Hello World!",
+            Tagging=encode_url_query({"k1": "v1"}),
         )
 
         # version is the new one, tags is the new one

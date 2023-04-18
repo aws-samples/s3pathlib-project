@@ -9,7 +9,7 @@ import typing as T
 from pathlib_mate import Path
 
 from .resolve_s3_client import resolve_s3_client
-from .. import utils
+from ..better_client.upload import upload_dir
 from ..type import PathType
 from ..aws import context
 
@@ -92,7 +92,7 @@ class UploadAPIMixin:
         """
         self.ensure_dir()
         s3_client = resolve_s3_client(context, bsm)
-        return utils.upload_dir(
+        return upload_dir(
             s3_client=s3_client,
             bucket=self.bucket,
             prefix=self.key,

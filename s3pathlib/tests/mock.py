@@ -60,11 +60,11 @@ class BaseTest:
     - module: the Python module you are testing with, the module name will become
         a sub-folder in the test S3 bucket.
     """
-
     use_mock: bool
     module: str
 
     bsm: BotoSesManager
+    force_use_mock: bool = True
 
     @classmethod
     def custom_setup_class(cls):
@@ -96,7 +96,8 @@ class BaseTest:
 
     @classmethod
     def setup_moto(cls):
-        # cls.use_mock = True # uncomment this to force use_mock to True
+        if cls.force_use_mock is True:
+            cls.use_mock = True
 
         if cls.use_mock is True:
             cls.mock_s3 = moto.mock_s3()
@@ -111,7 +112,8 @@ class BaseTest:
 
     @classmethod
     def teardown_moto(cls):
-        # cls.use_mock = True # uncomment this to force use_mock to True
+        if cls.force_use_mock is True:
+            cls.use_mock = True
 
         if cls.use_mock is True:
             cls.mock_s3.stop()

@@ -16,6 +16,7 @@ __github_username__ = "aws-samples"
 
 try:
     from . import utils
+    from .better_client import api
     from .aws import context
     from .core import S3Path
 
