@@ -102,11 +102,11 @@ class BetterDeleteObject(DummyData):
             )
             is True
         )
-        delete_dir(
+        assert delete_dir(
             s3_client=s3_client,
             bucket=bucket,
             prefix=self.prefix_hard_folder,
-        )
+        ) == 2
         assert (
             is_object_exists(
                 s3_client=s3_client,
@@ -125,11 +125,11 @@ class BetterDeleteObject(DummyData):
             )
             is True
         )
-        delete_dir(
+        assert delete_dir(
             s3_client=s3_client,
             bucket=bucket,
             prefix=self.prefix_empty_hard_folder,
-        )
+        ) == 1
         assert (
             is_object_exists(
                 s3_client=s3_client,
@@ -148,11 +148,11 @@ class BetterDeleteObject(DummyData):
             )
             is False
         )
-        delete_dir(
+        assert delete_dir(
             s3_client=s3_client,
             bucket=bucket,
             prefix=self.prefix_soft_folder,
-        )
+        ) == 1
         assert (
             count_objects(
                 s3_client=s3_client,

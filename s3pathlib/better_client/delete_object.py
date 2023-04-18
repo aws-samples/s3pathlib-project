@@ -108,7 +108,7 @@ def delete_dir(
     .. versionadded:: 2.1.1
     """
     ensure_s3_dir(prefix)
-    to_delete_keys = list()
+
     contents_iterproxy = paginate_list_objects_v2(
         s3_client=s3_client,
         bucket=bucket,
@@ -138,4 +138,4 @@ def delete_dir(
         s3_client.delete_objects(**kwargs)
         count += len(contents)
 
-    return len(to_delete_keys)
+    return count
