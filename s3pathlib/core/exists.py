@@ -56,7 +56,7 @@ class ExistsAPIMixin:
                 return True
         elif self.is_dir():
             l = list(
-                self.iter_objects(
+                self.iterdir(
                     batch_size=1,
                     limit=1,
                     bsm=bsm,
