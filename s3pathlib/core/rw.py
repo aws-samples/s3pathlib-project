@@ -413,6 +413,7 @@ class ReadAndWriteAPIMixin:
             s3_client=s3_client,
             bucket=self.bucket,
             key=self.key,
+            ignore_not_found=True,
         )
         if response is None:
             s3_client.put_object(

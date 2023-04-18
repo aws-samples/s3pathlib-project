@@ -14,7 +14,7 @@ class ReadAndWriteAPIMixin(BaseTest):
 
         # text
         s = "this is text"
-        p = S3Path(s3dir_root, "file.txt")
+        p = S3Path(s3dir_root, "write", "file.txt")
         p.clear_cache()
 
         p.write_text(
@@ -24,11 +24,11 @@ class ReadAndWriteAPIMixin(BaseTest):
         )
         assert p.read_text() == s
         assert p.metadata == {"file-type": "txt"}
-        assert p.get_tags() == {"key1": "value1", "key2": "alice=bob"}
+        assert p.get_tags()[1] == {"key1": "value1", "key2": "alice=bob"}
 
         # bytes
         b = "this is bytes".encode("utf-8")
-        p = S3Path(s3dir_root, "file.dat")
+        p = S3Path(s3dir_root, "write", "file.dat")
         p.clear_cache()
 
         p.write_bytes(
@@ -38,27 +38,49 @@ class ReadAndWriteAPIMixin(BaseTest):
         )
         assert p.read_bytes() == b
         assert p.metadata == {"file-type": "binary"}
-        assert p.get_tags() == {"key1": "value1", "key2": "alice=bob"}
+        assert p.get_tags()[1] == {"key1": "value1", "key2": "alice=bob"}
 
-    def _test_metadata_tags(self):
-        s3dir_root = self.s3dir_root
+    def _test_text_bytes_io_with_metadata_and_tags(self):
+        p = S3Path(self.s3dir_root, "write_with_metadata_and_tags", "hello.txt")
+        p.delete_if_exists()
+        p.clear_cache()
 
-        p = S3Path(s3dir_root, "log.txt")
-
-        # put metadata and tags
-        p.write_text(
-            "hello",
-            metadata={"creator": "s3pathlib"},
-            tags={"creator": "s3pathlib"},
-        )
-        assert p.metadata == {"creator": "s3pathlib"}
-        assert p.get_tags() == {"creator": "s3pathlib"}
-
-        # put content without metadata and tags
+        # --- put object without metadata and tags
         p.write_text("hello")
-        p.head_object()
+
+        # size is not 0
+        assert p.size != 0
+
+        # metadata is empty
         assert p.metadata == {}
-        assert p.get_tags() == {}
+
+        # tags is empty
+        assert p.get_tags()[1] == {}
+
+        # --- use put_object API
+        p.write_text(
+            "",
+            metadata={"file-type": "txt"},
+            tags={"k1": "v1"},
+        )
+        p.clear_cache()
+
+        assert p.size == 0  # content erased, because we just put_object without body
+        assert p.metadata == {"file-type": "txt"}
+        assert p.get_tags()[1] == {"k1": "v1"}
+
+        # --- use put_object API again
+        p.write_text(
+            "", metadata={"creator": "s3pathlib"}, tags={"k2": "v2", "k3": "v3"}
+        )
+        p.clear_cache()
+
+        # put object tagging is a full replacement
+        assert p.metadata == {"creator": "s3pathlib"}
+        assert p.get_tags()[1] == {
+            "k2": "v2",
+            "k3": "v3",
+        }
 
     def _test_touch(self):
         s3dir_root = self.s3dir_root
@@ -122,7 +144,7 @@ class ReadAndWriteAPIMixin(BaseTest):
 
     def test(self):
         self._test_text_bytes_io()
-        self._test_metadata_tags()
+        self._test_text_bytes_io_with_metadata_and_tags()
         self._test_touch()
         self._test_mkdir()
 
