@@ -2,29 +2,35 @@
 
 """
 Read and write related API.
+
+.. _put_object: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.put_object
 """
 
 import typing as T
 from datetime import datetime
 
-from func_args import NOTHING
+from func_args import NOTHING, resolve_kwargs
 
-from .. import utils, client as better_client
 from ..type import TagType, MetadataType
+from ..tag import encode_url_query
 from ..aws import context
+from ..better_client.head_object import head_object
 
 from .resolve_s3_client import resolve_s3_client
 
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
     from boto_session_manager import BotoSesManager
-    from mypy_boto3_s3.type_defs import PutObjectOutputTypeDef
+    from mypy_boto3_s3.type_defs import (
+        PutObjectOutputTypeDef,
+    )
 
 
 class ReadAndWriteAPIMixin:
     """
     A mixin class that implements the Text / Bytes, Read / Write methods.
     """
+
     def read_bytes(
         self: "S3Path",
         bsm: T.Optional["BotoSesManager"] = None,
@@ -111,6 +117,38 @@ class ReadAndWriteAPIMixin:
         :param data: the text you want to write.
         :param metadata: the s3 object metadata in string key value pair dict.
         :param tags: the s3 object tags in string key value pair dict.
+        :param bsm: ``boto_session_manager.BotoSesManager`` object.
+        :param acl: See put_object_.
+        :param cache_control: See put_object_.
+        :param content_disposition: See put_object_.
+        :param content_encoding: See put_object_.
+        :param content_language: See put_object_.
+        :param content_length: See put_object_.
+        :param content_md5: See put_object_.
+        :param content_type: See put_object_.
+        :param checksum_algorithm: See put_object_.
+        :param checksum_crc32: See put_object_.
+        :param checksum_crc32c: See put_object_.
+        :param checksum_sha1: See put_object_.
+        :param checksum_sha256: See put_object_.
+        :param expires_datetime: See put_object_.
+        :param grant_full_control: See put_object_.
+        :param grant_read: See put_object_.
+        :param grant_read_acp: See put_object_.
+        :param grant_write_acp: See put_object_.
+        :param server_side_encryption: See put_object_.
+        :param storage_class: See put_object_.
+        :param website_redirect_location: See put_object_.
+        :param sse_customer_algorithm: See put_object_.
+        :param sse_customer_key: See put_object_.
+        :param sse_kms_key_id: See put_object_.
+        :param sse_kms_encryption_context: See put_object_.
+        :param bucket_key_enabled: See put_object_.
+        :param request_payer: See put_object_.
+        :param object_lock_mode: See put_object_.
+        :param object_lock_retain_until_datetime: See put_object_.
+        :param object_lock_legal_hold_status: See put_object_.
+        :param expected_bucket_owner: See put_object_.
 
         .. versionadded:: 1.0.3
 
@@ -119,44 +157,45 @@ class ReadAndWriteAPIMixin:
             allow update metadata and tags as well
         """
         s3_client = resolve_s3_client(context, bsm)
-        response = better_client.put_object(
-            s3_client=s3_client,
-            bucket=self.bucket,
-            key=self.key,
-            body=data,
-            metadata=metadata,
-            tags=tags,
-            acl=acl,
-            cache_control=cache_control,
-            content_disposition=content_disposition,
-            content_encoding=content_encoding,
-            content_language=content_language,
-            content_length=content_length,
-            content_md5=content_md5,
-            content_type=content_type,
-            checksum_algorithm=checksum_algorithm,
-            checksum_crc32=checksum_crc32,
-            checksum_crc32c=checksum_crc32c,
-            checksum_sha1=checksum_sha1,
-            checksum_sha256=checksum_sha256,
-            expires_datetime=expires_datetime,
-            grant_full_control=grant_full_control,
-            grant_read=grant_read,
-            grant_read_acp=grant_read_acp,
-            grant_write_acp=grant_write_acp,
-            server_side_encryption=server_side_encryption,
-            storage_class=storage_class,
-            website_redirect_location=website_redirect_location,
-            sse_customer_algorithm=sse_customer_algorithm,
-            sse_customer_key=sse_customer_key,
-            sse_kms_key_id=sse_kms_key_id,
-            sse_kms_encryption_context=sse_kms_encryption_context,
-            bucket_key_enabled=bucket_key_enabled,
-            request_payer=request_payer,
-            object_lock_mode=object_lock_mode,
-            object_lock_retain_until_datetime=object_lock_retain_until_datetime,
-            object_lock_legal_hold_status=object_lock_legal_hold_status,
-            expected_bucket_owner=expected_bucket_owner,
+        response = s3_client.put_object(
+            **resolve_kwargs(
+                Bucket=self.bucket,
+                Key=self.key,
+                Body=data,
+                Metadata=metadata,
+                Tagging=tags if tags is NOTHING else encode_url_query(tags),
+                ACL=acl,
+                CacheControl=cache_control,
+                ContentDisposition=content_disposition,
+                ContentEncoding=content_encoding,
+                ContentLanguage=content_language,
+                ContentLength=content_length,
+                ContentMD5=content_md5,
+                ContentType=content_type,
+                ChecksumAlgorithm=checksum_algorithm,
+                ChecksumCRC32=checksum_crc32,
+                ChecksumCRC32C=checksum_crc32c,
+                ChecksumSHA1=checksum_sha1,
+                ChecksumSHA256=checksum_sha256,
+                Expires=expires_datetime,
+                GrantFullControl=grant_full_control,
+                GrantRead=grant_read,
+                GrantReadACP=grant_read_acp,
+                GrantWriteACP=grant_write_acp,
+                ServerSideEncryption=server_side_encryption,
+                StorageClass=storage_class,
+                WebsiteRedirectLocation=website_redirect_location,
+                SSECustomerAlgorithm=sse_customer_algorithm,
+                SSECustomerKey=sse_customer_key,
+                SSEKMSKeyId=sse_kms_key_id,
+                SSEKMSEncryptionContext=sse_kms_encryption_context,
+                BucketKeyEnabled=bucket_key_enabled,
+                RequestPayer=request_payer,
+                ObjectLockMode=object_lock_mode,
+                ObjectLockRetainUntilDate=object_lock_retain_until_datetime,
+                ObjectLockLegalHoldStatus=object_lock_legal_hold_status,
+                ExpectedBucketOwner=expected_bucket_owner,
+            )
         )
         self._meta = response
         self._meta["Metadata"] = metadata
@@ -165,8 +204,8 @@ class ReadAndWriteAPIMixin:
     def write_text(
         self: "S3Path",
         data: str,
-        encoding="utf-8",
-        errors="strict",
+        encoding: str = "utf-8",
+        errors: str = "strict",
         metadata: T.Optional[MetadataType] = NOTHING,
         tags: T.Optional[TagType] = NOTHING,
         bsm: T.Optional["BotoSesManager"] = None,
@@ -369,22 +408,22 @@ class ReadAndWriteAPIMixin:
             raise ValueError(f"{self.uri} is not a directory, you cannot make dir!")
 
         s3_client = resolve_s3_client(context, bsm)
-        dct = utils.head_object_if_exists(
+        response = head_object(
             s3_client=s3_client,
             bucket=self.bucket,
             key=self.key,
         )
-        if dct:
-            if exist_ok:
-                pass
-            else:
-                raise FileExistsError(f"{self.uri} already exists!")
-        else:
+        if response is None:
             s3_client.put_object(
                 Bucket=self.bucket,
                 Key=self.key,
                 Body="",
             )
+        else:
+            if exist_ok:
+                pass
+            else:
+                raise FileExistsError(f"{self.uri} already exists!")
 
         if parents:
             for p in self.parents:

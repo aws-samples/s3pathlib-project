@@ -85,7 +85,7 @@ class ReadAndWriteAPIMixin(BaseTest):
         p_root = S3Path(s3dir_root, "mkdir/")
 
         # clear off all existing folders
-        p_root.delete_if_exists(include_folder=True)
+        p_root.delete_if_exists()
 
         p_f3 = S3Path(p_root, "f1", "f2", "f3/")
         p_f2 = p_f3.parent

@@ -2,14 +2,16 @@
 
 """
 Delete S3 file or folder.
+
+.. _delete_object: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/client/delete_object.html
 """
 
 import typing as T
 from func_args import NOTHING
 
 from .resolve_s3_client import resolve_s3_client
-from .. import utils
 from ..aws import context
+from ..better_client.delete_object import delete_object, delete_dir
 
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
@@ -23,30 +25,26 @@ class DeleteAPIMixin:
 
     def delete_if_exists(
         self: "S3Path",
-        mfa: str = None,
-        version_id: str = None,
-        request_payer: str = None,
-        bypass_governance_retention: bool = None,
-        expected_bucket_owner: str = None,
-        include_folder: bool = True,
+        version_id: str = NOTHING,
+        mfa: str = NOTHING,
+        request_payer: str = NOTHING,
+        bypass_governance_retention: bool = NOTHING,
+        expected_bucket_owner: str = NOTHING,
         bsm: T.Optional["BotoSesManager"] = None,
     ) -> int:
         """
-        Delete an object or an entire directory. Will do nothing
-        if it doesn't exist.
-
-        .. _delete_object: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client
+        Delete an object or an entire directory. Will do nothing if it doesn't exist.
 
         Reference:
 
         - delete_object_
 
-        :param mfa: see delete_object_ API doc
-        :param version_id: see delete_object_ API doc
-        :param request_payer: see delete_object_ API doc
-        :param bypass_governance_retention: see delete_object_ API doc
-        :param expected_bucket_owner: see delete_object_ API doc
-        :param include_folder: see :meth:`iter_objects`
+        :param mfa: see delete_object_.
+        :param version_id: see delete_object_.
+        :param request_payer: see delete_object_.
+        :param bypass_governance_retention: see delete_object_.
+        :param expected_bucket_owner: see delete_object_.
+        :param bsm: ``boto_session_manager.BotoSesManager`` object.
 
         :return: number of object is deleted
 
@@ -55,24 +53,22 @@ class DeleteAPIMixin:
         s3_client = resolve_s3_client(context, bsm)
         if self.is_file():
             if self.exists(bsm=bsm):
-                kwargs = dict(
-                    Bucket=self.bucket,
-                    Key=self.key,
+                delete_object(
+                    s3_client=s3_client,
+                    bucket=self.bucket,
+                    key=self.key,
+                    version_id=mfa,
+                    mfa=version_id,
+                    request_payer=request_payer,
+                    bypass_governance_retention=bypass_governance_retention,
+                    expected_bucket_owner=expected_bucket_owner,
+                    ignore_not_found=True,
                 )
-                additional_kwargs = utils.collect_not_null_kwargs(
-                    MFA=mfa,
-                    VersionId=version_id,
-                    RequestPayer=request_payer,
-                    BypassGovernanceRetention=bypass_governance_retention,
-                    ExpectedBucketOwner=expected_bucket_owner,
-                )
-                kwargs.update(additional_kwargs)
-                s3_client.delete_object(**kwargs)
                 return 1
             else:
                 return 0
         elif self.is_dir():
-            return utils.delete_dir(
+            return delete_dir(
                 s3_client=s3_client,
                 bucket=self.bucket,
                 prefix=self.key,
@@ -80,7 +76,6 @@ class DeleteAPIMixin:
                 request_payer=request_payer,
                 bypass_governance_retention=bypass_governance_retention,
                 expected_bucket_owner=expected_bucket_owner,
-                include_folder=include_folder,
             )
         else:  # pragma: no cover
             raise ValueError

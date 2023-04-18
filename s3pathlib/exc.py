@@ -43,6 +43,10 @@ class _UriRelatedError:
         return cls(cls._tpl.format(uri=uri))
 
 
+class S3NotExist(FileNotFoundError, _UriRelatedError):
+    _tpl = "{uri!r} does not exist!"
+
+
 class S3BucketNotExist(FileNotFoundError, _UriRelatedError):
     _tpl = "S3 bucket {uri!r} does not exist!"
 
@@ -53,6 +57,10 @@ class S3FolderNotExist(FileNotFoundError, _UriRelatedError):
 
 class S3ObjectNotExist(FileNotFoundError, _UriRelatedError):
     _tpl = "S3 object {uri!r} does not exist!"
+
+
+class S3AlreadyExist(FileExistsError, _UriRelatedError):
+    _tpl = "{uri!r} already exist!"
 
 
 class S3BucketAlreadyExist(FileExistsError, _UriRelatedError):

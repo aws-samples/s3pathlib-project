@@ -5,11 +5,13 @@ Tagging related API.
 """
 
 import typing as T
-import botocore.exceptions
+
+from .. import exc
+from ..better_client.head_bucket import is_bucket_exists
+from ..better_client.head_object import head_object
+from ..aws import context
 
 from .resolve_s3_client import resolve_s3_client
-from .. import utils, client as better_client
-from ..aws import context
 
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
@@ -20,6 +22,7 @@ class ExistsAPIMixin:
     """
     A mixin class that implements the exists test related methods.
     """
+
     def exists(
         self: "S3Path",
         bsm: T.Optional["BotoSesManager"] = None,
@@ -35,25 +38,27 @@ class ExistsAPIMixin:
         """
         if self.is_bucket():
             s3_client = resolve_s3_client(context, bsm)
-            return better_client.is_bucket_exists(s3_client, self.bucket)
+            return is_bucket_exists(s3_client, self.bucket)
         elif self.is_file():
             s3_client = resolve_s3_client(context, bsm)
-            dct = utils.head_object_if_exists(
+            dct = head_object(
                 s3_client=s3_client,
                 bucket=self.bucket,
                 key=self.key,
+                ignore_not_found=True,
             )
-            if isinstance(dct, dict):
+            if dct is None:
+                return False
+            else:
+                if "ResponseMetadata" in dct:
+                    del dct["ResponseMetadata"]
                 self._meta = dct
                 return True
-            else:
-                return False
         elif self.is_dir():
             l = list(
                 self.iter_objects(
                     batch_size=1,
                     limit=1,
-                    include_folder=True,
                     bsm=bsm,
                 )
             )
@@ -74,4 +79,9 @@ class ExistsAPIMixin:
         .. versionadded:: 1.0.1
         """
         if self.exists(bsm=bsm):
-            utils.raise_file_exists_error(self.uri)
+            raise exc.S3AlreadyExist(
+                (
+                    "cannot write to {}, s3 object ALREADY EXISTS! "
+                    "open console for more details {}."
+                ).format(self.uri, self.console_url)
+            )

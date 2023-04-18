@@ -8,10 +8,12 @@ import typing as T
 import warnings
 from datetime import datetime
 
+from .. import utils
+from ..better_client.head_object import head_object
+from ..aws import context
+
 from .resolve_s3_client import resolve_s3_client
 from .filterable_property import FilterableProperty
-from .. import utils, client as better_client
-from ..aws import context
 
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
@@ -56,7 +58,7 @@ class MetadataAPIMixin:
         Call head_object() api, store metadata value.
         """
         s3_client = resolve_s3_client(context, bsm)
-        dct = better_client.head_object(s3_client, self.bucket, self.key)
+        dct = head_object(s3_client, self.bucket, self.key)
         self._meta = dct
         return dct
 
