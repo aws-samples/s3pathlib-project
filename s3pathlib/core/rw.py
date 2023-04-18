@@ -75,8 +75,8 @@ class ReadAndWriteAPIMixin:
     def write_bytes(
         self: "S3Path",
         data: bytes,
-        metadata: T.Optional[MetadataType] = NOTHING,
-        tags: T.Optional[TagType] = NOTHING,
+        metadata: MetadataType = NOTHING,
+        tags: TagType = NOTHING,
         bsm: T.Optional["BotoSesManager"] = None,
         acl: str = NOTHING,
         cache_control: str = NOTHING,
@@ -198,7 +198,8 @@ class ReadAndWriteAPIMixin:
             )
         )
         self._meta = response
-        self._meta["Metadata"] = metadata
+        if metadata is not NOTHING:
+            self._meta["Metadata"] = metadata
         return response
 
     def write_text(
@@ -206,8 +207,8 @@ class ReadAndWriteAPIMixin:
         data: str,
         encoding: str = "utf-8",
         errors: str = "strict",
-        metadata: T.Optional[MetadataType] = NOTHING,
-        tags: T.Optional[TagType] = NOTHING,
+        metadata: MetadataType = NOTHING,
+        tags: TagType = NOTHING,
         bsm: T.Optional["BotoSesManager"] = None,
         acl: str = NOTHING,
         cache_control: str = NOTHING,
@@ -301,8 +302,8 @@ class ReadAndWriteAPIMixin:
     def touch(
         self: "S3Path",
         exist_ok: bool = True,
-        metadata: T.Optional[MetadataType] = NOTHING,
-        tags: T.Optional[TagType] = NOTHING,
+        metadata: MetadataType = NOTHING,
+        tags: TagType = NOTHING,
         bsm: T.Optional["BotoSesManager"] = None,
         acl: str = NOTHING,
         cache_control: str = NOTHING,
