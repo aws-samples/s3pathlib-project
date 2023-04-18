@@ -14,12 +14,14 @@ import botocore.exceptions
 from func_args import NOTHING, resolve_kwargs
 
 from .. import exc
-from ..utils import grouper_list
-from .list_objects import paginate_list_objects_v2, filter_object_only
+from ..utils import grouper_list, ensure_s3_dir
+from .list_objects import paginate_list_objects_v2, is_content_an_object
 
 if T.TYPE_CHECKING: # pragma: no cover
     from mypy_boto3_s3 import S3Client
-    from mypy_boto3_s3.type_defs import DeleteObjectsOutputTypeDef
+    from mypy_boto3_s3.type_defs import (
+        DeleteObjectOutputTypeDef,
+    )
 
 
 def delete_object(
@@ -32,7 +34,7 @@ def delete_object(
     bypass_governance_retention: bool = NOTHING,
     expected_bucket_owner: str = NOTHING,
     ignore_not_found: bool = False,
-) -> T.Optional["DeleteObjectsOutputTypeDef"]:
+) -> T.Optional["DeleteObjectOutputTypeDef"]:
     """
     Wrapper of delete_object_.
 
@@ -83,15 +85,15 @@ def delete_dir(
     bypass_governance_retention: bool = NOTHING,
     expected_bucket_owner: str = NOTHING,
     check_sum_algorithm: str = NOTHING,
-    include_folder: bool = True,
 ) -> int:
     """
     Recursively delete all objects under a s3 prefix. It is a wrapper of
-    delete_objects_.
+    delete_objects_. Include the hard folder itself.
 
     :param s3_client: ``boto3.session.Session().client("s3")`` object.
     :param bucket: S3 bucket name.
-    :param prefix: The s3 prefix (logic directory) you want to calculate.
+    :param prefix: The s3 prefix (logic directory) you want to delete,
+        it has to be a directory (end with "/").
     :param batch_size: Number of s3 object to delete per micro-batch,
         valid value is from 1 ~ 1000. large number can reduce IO.
     :param limit: Total Number of s3 object to delete.
@@ -100,13 +102,12 @@ def delete_dir(
     :param bypass_governance_retention: See delete_object_.
     :param expected_bucket_owner: See delete_object_.
     :param check_sum_algorithm: See delete_object_.
-    :param include_folder: Default False, whether deleting the hard folder
-        (an empty "/" object).
 
     :return: number of deleted objects
 
     .. versionadded:: 2.1.1
     """
+    ensure_s3_dir(prefix)
     to_delete_keys = list()
     contents_iterproxy = paginate_list_objects_v2(
         s3_client=s3_client,
@@ -117,8 +118,6 @@ def delete_dir(
         request_payer = request_payer,
         expected_bucket_owner = expected_bucket_owner,
     ).contents()
-    if include_folder is False:
-        contents_iterproxy = contents_iterproxy.filter(filter_object_only)
 
     count = 0
     for contents in grouper_list(contents_iterproxy, 1000):

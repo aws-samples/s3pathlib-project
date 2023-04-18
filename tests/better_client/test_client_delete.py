@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from s3pathlib.better_client.head_object import is_object_exists
 from s3pathlib.better_client.list_objects import (
     calculate_total_size,
     count_objects,
@@ -20,7 +21,6 @@ class BetterDeleteObject(DummyData):
     @classmethod
     def custom_setup_class(cls):
         cls.setup_list_objects_folder()
-        cls.setup_dummy_data()
 
     def _test_delete_object(self):
         s3_client = self.s3_client
@@ -88,39 +88,79 @@ class BetterDeleteObject(DummyData):
         assert total_size == 0
 
     def _test_with_dummy_data(self):
+        self.setup_dummy_data()
+
         s3_client = self.s3_client
         bucket = self.bucket
 
-        # first delete, only delete files
+        # delete a hard folder, the hard folder object should be deleted too
+        assert (
+            is_object_exists(
+                s3_client=s3_client,
+                bucket=bucket,
+                key=self.prefix_hard_folder,
+            )
+            is True
+        )
         delete_dir(
             s3_client=s3_client,
             bucket=bucket,
-            prefix=self.prefix_dummy_data,
-            include_folder=False,
+            prefix=self.prefix_hard_folder,
         )
-        count, total_size = calculate_total_size(
-            s3_client=s3_client,
-            bucket=bucket,
-            prefix=self.prefix_dummy_data,
-            include_folder=True,
+        assert (
+            is_object_exists(
+                s3_client=s3_client,
+                bucket=bucket,
+                key=self.prefix_hard_folder,
+            )
+            is False
         )
-        assert count == 2
-        assert total_size == 0
 
-        # second delete, also delete hard folders
+        # delete an empty hard folder, the hard folder object should be deleted too
+        assert (
+            is_object_exists(
+                s3_client=s3_client,
+                bucket=bucket,
+                key=self.prefix_empty_hard_folder,
+            )
+            is True
+        )
         delete_dir(
             s3_client=s3_client,
             bucket=bucket,
-            prefix=self.prefix_dummy_data,
+            prefix=self.prefix_empty_hard_folder,
         )
-        count, total_size = calculate_total_size(
+        assert (
+            is_object_exists(
+                s3_client=s3_client,
+                bucket=bucket,
+                key=self.prefix_empty_hard_folder,
+            )
+            is False
+        )
+
+        # delete a soft folder
+        assert (
+            is_object_exists(
+                s3_client=s3_client,
+                bucket=bucket,
+                key=self.prefix_soft_folder,
+            )
+            is False
+        )
+        delete_dir(
             s3_client=s3_client,
             bucket=bucket,
-            prefix=self.prefix_dummy_data,
-            include_folder=True,
+            prefix=self.prefix_soft_folder,
         )
-        assert count == 0
-        assert total_size == 0
+        assert (
+            count_objects(
+                s3_client=s3_client,
+                bucket=bucket,
+                prefix=self.prefix_soft_folder,
+            )
+            == 0
+        )
 
     def test(self):
         self._test_delete_object()
