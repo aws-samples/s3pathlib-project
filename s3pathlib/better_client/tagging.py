@@ -16,7 +16,7 @@ from func_args import NOTHING, resolve_kwargs
 from .. import tag
 
 
-if T.TYPE_CHECKING: # pragma: no cover
+if T.TYPE_CHECKING:  # pragma: no cover
     from mypy_boto3_s3 import S3Client
 
 
@@ -79,16 +79,15 @@ def update_object_tagging(
             RequestPayer=request_payer,
         )
     )
-    existing_version_id = res.get("VersionId", NOTHING)
+    existing_version_id = res.get("VersionId", None)
     existing_tags = tag.parse_tags(res.get("TagSet", []))
     existing_tags.update(tags)
     s3_client.put_object_tagging(
         **resolve_kwargs(
-            s3_client=s3_client,
             Bucket=bucket,
             Key=key,
-            Tagging=tag.encode_for_put_object_tagging(existing_tags),
-            VersionId=existing_version_id,
+            Tagging=dict(TagSet=tag.encode_for_put_object_tagging(existing_tags)),
+            VersionId=res.get("VersionId", NOTHING),
             ContentMD5=content_md5,
             ChecksumAlgorithm=checksum_algorithm,
             ExpectedBucketOwner=expected_bucket_owner,

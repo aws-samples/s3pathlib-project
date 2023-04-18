@@ -9,7 +9,7 @@ from s3pathlib.tests.mock import BaseTest
 class TaggingAPIMixin(BaseTest):
     module = "core.tagging"
 
-    def test_attributes(self):
+    def test_get_put_update(self):
         s3path_file = S3Path(self.s3dir_root, "hello.txt")
 
         better_client.put_object(
@@ -20,7 +20,7 @@ class TaggingAPIMixin(BaseTest):
         )
 
         # tags is empty
-        assert s3path_file.get_tags() == {}
+        assert s3path_file.get_tags()[1] == {}
 
         # use put_object API
         better_client.put_object(
@@ -30,18 +30,18 @@ class TaggingAPIMixin(BaseTest):
             body=b"Hello World!",
             tags={"k1": "v1"},
         )
-        assert s3path_file.get_tags() == {"k1": "v1"}
+        assert s3path_file.get_tags()[1] == {"k1": "v1"}
 
         # put object tagging is a full replacement
-        s3path_file.put_tags(tags={"k2": "v2", "k3": "v3"})
-        assert s3path_file.get_tags() == {"k2": "v2", "k3": "v3"}
+        _, tags = s3path_file.put_tags(tags={"k2": "v2", "k3": "v3"})
+        assert tags == {"k2": "v2", "k3": "v3"}
+        assert s3path_file.get_tags()[1] == {"k2": "v2", "k3": "v3"}
 
         # update object is a "true update" operation
-        tags = s3path_file.update_tags(tags={"k1": "v1", "k2": "v22"})
+        _, tags = s3path_file.update_tags(tags={"k1": "v1", "k2": "v22"})
         assert tags == {"k1": "v1", "k2": "v22", "k3": "v3"}
 
-        existing_tags = s3path_file.get_tags()
-        assert existing_tags == {"k1": "v1", "k2": "v22", "k3": "v3"}
+        assert s3path_file.get_tags()[1] == {"k1": "v1", "k2": "v22", "k3": "v3"}
 
 
 class Test(TaggingAPIMixin):
