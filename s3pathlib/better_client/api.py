@@ -17,7 +17,7 @@ from .list_objects import (
     CommonPrefixTypeDefIterproxy,
     ListObjectsV2OutputTypeDefIterproxy,
     paginate_list_objects_v2,
-    filter_object_only,
+    is_content_an_object,
     calculate_total_size,
     count_objects,
 )
