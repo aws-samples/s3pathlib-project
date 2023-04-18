@@ -5,10 +5,10 @@ Metadata related API.
 """
 
 import typing as T
-import warnings
 from datetime import datetime
 
 from .. import utils
+from ..metadata import warn_upper_case_in_metadata_key
 from ..better_client.head_object import head_object
 from ..aws import context
 
@@ -18,25 +18,6 @@ from .filterable_property import FilterableProperty
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
     from boto_session_manager import BotoSesManager
-
-
-def alert_upper_case(metadata: dict):
-    """
-    Alert if there is upper case used in user defined metadata.
-
-    Ref:
-
-    - https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html#UserMetadata
-    """
-    for k, v in metadata.items():
-        if k.lower() != k:
-            msg = (
-                f"based on this document "
-                f"https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html#UserMetadata "
-                f"Amazon will automatically convert user defined metadata to lower case, "
-                f"but you have a key: {k!r} in metadata"
-            )
-            warnings.warn(msg, UserWarning)
 
 
 class MetadataAPIMixin:

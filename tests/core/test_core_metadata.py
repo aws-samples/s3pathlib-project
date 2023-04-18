@@ -2,18 +2,10 @@
 
 from datetime import datetime
 
-import pytest
-
 from s3pathlib.core import S3Path
-from s3pathlib.core.metadata import alert_upper_case
 from s3pathlib.utils import md5_binary
 from s3pathlib.tests import run_cov_test
 from s3pathlib.tests.mock import BaseTest
-
-
-def test_alert_upper_case():
-    with pytest.warns(UserWarning):
-        alert_upper_case(metadata={"Hello": "World"})
 
 
 class MetadataAPIMixin(BaseTest):
