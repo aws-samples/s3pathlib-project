@@ -7,10 +7,17 @@ Tagging related API.
 import typing as T
 
 from iterproxy import IterProxy
+from func_args import NOTHING, resolve_kwargs
 
-from .resolve_s3_client import resolve_s3_client
 from .. import utils
 from ..aws import context
+from ..better_client.list_objects import (
+    paginate_list_objects_v2,
+    is_content_an_object,
+    calculate_total_size,
+    count_objects,
+)
+from .resolve_s3_client import resolve_s3_client
 
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
@@ -83,36 +90,16 @@ class IterObjectsAPIMixin:
     """
     A mixin class that implements the iter objects methods.
     """
-
-    def _iter_objects(
-        self: "S3Path",
-        batch_size: int = 1000,
-        limit: int = None,
-        recursive: bool = True,
-        include_folder: bool = False,
-        bsm: T.Optional["BotoSesManager"] = None,
-    ) -> T.Iterable["S3Path"]:
-        s3_client = resolve_s3_client(context, bsm)
-        for dct in utils.iter_objects(
-            s3_client=s3_client,
-            bucket=self.bucket,
-            prefix=self.key,
-            batch_size=batch_size,
-            limit=limit,
-            recursive=recursive,
-            include_folder=include_folder,
-        ):
-            yield self._from_content_dict(
-                bucket=self.bucket,
-                dct=dct,
-            )
-
     def iter_objects(
         self: "S3Path",
         batch_size: int = 1000,
-        limit: int = None,
+        limit: int = NOTHING,
+        encoding_type: str = NOTHING,
+        fetch_owner: bool = NOTHING,
+        start_after: str = NOTHING,
+        request_payer: str = NOTHING,
+        expected_bucket_owner: str = NOTHING,
         recursive: bool = True,
-        include_folder: bool = False,
         bsm: T.Optional["BotoSesManager"] = None,
     ) -> S3PathIterProxy:
         """
@@ -122,24 +109,39 @@ class IterObjectsAPIMixin:
             valid value is from 1 ~ 1000. large number can reduce IO.
         :param limit: total number of s3 object to return
         :param recursive: if True, it won't include files in sub folders
-        :param include_folder: AWS S3 consider object that key endswith "/"
-            and size = 0 as a logical folder. But physically it is still object.
-            By default ``list_objects_v2`` API returns logical folder object,
-            you can use this flag to filter it out.
 
         .. versionadded:: 1.0.1
 
+        .. versionchanged:: 2.1.1
+
+            remove ``include_folder`` argument
+
         TODO: add unix glob liked syntax for pattern matching
         """
-        return S3PathIterProxy(
-            iterable=self._iter_objects(
+        s3_client = resolve_s3_client(context, bsm)
+        bucket = self.bucket
+
+        def _iter_s3path() -> T.Iterable["S3Path"]:
+            kwargs = dict(
+                s3_client=s3_client,
+                bucket=bucket,
+                prefix=self.key,
                 batch_size=batch_size,
                 limit=limit,
-                recursive=recursive,
-                include_folder=include_folder,
-                bsm=bsm,
+                encoding_type=encoding_type,
+                fetch_owner=fetch_owner,
+                start_after=start_after,
+                request_payer=request_payer,
+                expected_bucket_owner=expected_bucket_owner,
             )
-        )
+            if recursive is False:
+                kwargs["delimiter"] = "/"
+            for content in (
+                paginate_list_objects_v2(**kwargs).contents().filter(is_content_an_object)
+            ):
+                yield self._from_content_dict(bucket, dct=content)
+
+        return S3PathIterProxy(_iter_s3path())
 
     def _iterdir(
         self: "S3Path",
@@ -208,7 +210,7 @@ class IterObjectsAPIMixin:
         """
         self.ensure_dir()
         s3_client = resolve_s3_client(context, bsm)
-        count, size = utils.calculate_total_size(
+        count, size = calculate_total_size(
             s3_client=s3_client,
             bucket=self.bucket,
             prefix=self.key,
@@ -234,7 +236,7 @@ class IterObjectsAPIMixin:
         """
         self.ensure_dir()
         s3_client = resolve_s3_client(context, bsm)
-        return utils.count_objects(
+        return count_objects(
             s3_client=s3_client,
             bucket=self.bucket,
             prefix=self.key,

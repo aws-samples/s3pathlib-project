@@ -31,7 +31,14 @@ class IterObjectsAPIMixin(BaseTest):
             overwrite=True,
         )
 
-    def _test_fetcher_methods(self):
+    def _test_iter_objects(self):
+        proxy = self.s3dir_test_iter_objects.iter_objects()
+        assert len(proxy.all()) == 11
+
+        proxy = self.s3dir_test_iter_objects.iter_objects(recursive=False)
+        assert len(proxy.all()) == 2
+
+    def _test_iterproxy(self):
         """
         - one
         - one_or_none
@@ -220,7 +227,8 @@ class IterObjectsAPIMixin(BaseTest):
         assert s3dir_empty_folder.count_objects() == 0
 
     def test(self):
-        self._test_fetcher_methods()
+        self._test_iter_objects()
+        self._test_iterproxy()
         self._test_filter()
         self._test_metadata_filter()
         self._test_iterdir()
