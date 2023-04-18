@@ -351,7 +351,7 @@ class AttributeAPIMixin:
                 return f"S3RelPath({key!r})"
             else:  # pragma: no cover
                 return "S3RelPath()"
-        else:
+        else: # bucket, folder or object
             uri = self.uri
             return "{}('{}')".format(classname, uri)
 
