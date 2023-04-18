@@ -73,14 +73,14 @@ class S3PathIterProxy(IterProxy):
         elif n == 1:
             ext = exts[0].lower()
 
-            def f(p: 'S3Path') -> bool:
+            def f(p: "S3Path") -> bool:
                 return p.ext.lower() == ext
 
             return self.filter(f)
         else:
             valid_exts = set([ext.lower() for ext in exts])
 
-            def f(p: 'S3Path') -> bool:
+            def f(p: "S3Path") -> bool:
                 return p.ext.lower() in valid_exts
 
             return self.filter(f)
@@ -90,6 +90,7 @@ class IterObjectsAPIMixin:
     """
     A mixin class that implements the iter objects methods.
     """
+
     def iter_objects(
         self: "S3Path",
         batch_size: int = 1000,
@@ -114,7 +115,8 @@ class IterObjectsAPIMixin:
 
         .. versionchanged:: 2.1.1
 
-            remove ``include_folder`` argument
+            Remove ``include_folder`` argument. Support all list_objects_v2
+            arguments.
 
         TODO: add unix glob liked syntax for pattern matching
         """
@@ -137,40 +139,23 @@ class IterObjectsAPIMixin:
             if recursive is False:
                 kwargs["delimiter"] = "/"
             for content in (
-                paginate_list_objects_v2(**kwargs).contents().filter(is_content_an_object)
+                paginate_list_objects_v2(**kwargs)
+                .contents()
+                .filter(is_content_an_object)
             ):
                 yield self._from_content_dict(bucket, dct=content)
 
         return S3PathIterProxy(_iter_s3path())
 
-    def _iterdir(
-        self: "S3Path",
-        batch_size: int = 1000,
-        limit: int = None,
-        bsm: T.Optional["BotoSesManager"] = None,
-    ) -> T.Iterable["S3Path"]:
-        s3_client = resolve_s3_client(context, bsm)
-        paginator = s3_client.get_paginator("list_objects_v2")
-        pagination_config = dict(PageSize=batch_size)
-        if limit:  # pragma: no cover
-            pagination_config["MaxItems"] = limit
-
-        for res in paginator.paginate(
-            Bucket=self.bucket,
-            Prefix=self.key,
-            Delimiter="/",
-            PaginationConfig=pagination_config,
-        ):
-            for dct in res.get("CommonPrefixes", list()):
-                yield self.root.joinpath(dct["Prefix"])
-
-            for dct in res.get("Contents", list()):
-                yield self._from_content_dict(self.bucket, dct)
-
     def iterdir(
         self: "S3Path",
         batch_size: int = 1000,
-        limit: int = None,
+        limit: int = NOTHING,
+        encoding_type: str = NOTHING,
+        fetch_owner: bool = NOTHING,
+        start_after: str = NOTHING,
+        request_payer: str = NOTHING,
+        expected_bucket_owner: str = NOTHING,
         bsm: T.Optional["BotoSesManager"] = None,
     ) -> S3PathIterProxy:
         """
@@ -182,14 +167,36 @@ class IterObjectsAPIMixin:
         :param limit: total number of s3 object (not folder)to return
 
         .. versionadded:: 1.0.6
+
+        .. versionchanged:: 2.1.1
+
+            Support all list_objects_v2 arguments.
         """
-        return S3PathIterProxy(
-            iterable=self._iterdir(
+        s3_client = resolve_s3_client(context, bsm)
+        bucket = self.bucket
+
+        def _iter_s3path() -> T.Iterable["S3Path"]:
+            proxy = paginate_list_objects_v2(
+                s3_client=s3_client,
+                bucket=bucket,
+                prefix=self.key,
                 batch_size=batch_size,
                 limit=limit,
-                bsm=bsm,
+                delimiter="/",
+                encoding_type=encoding_type,
+                fetch_owner=fetch_owner,
+                start_after=start_after,
+                request_payer=request_payer,
+                expected_bucket_owner=expected_bucket_owner,
             )
-        )
+            for res in proxy:
+                for dct in res.get("CommonPrefixes", list()):
+                    yield self.root.joinpath(dct["Prefix"])
+
+                for dct in res.get("Contents", list()):
+                    yield self._from_content_dict(self.bucket, dct)
+
+        return S3PathIterProxy(_iter_s3path())
 
     def calculate_total_size(
         self: "S3Path",
