@@ -117,7 +117,7 @@ class MetadataAPIMixin:
         if self._meta is None:
             return None
         else:
-            return self._meta.get("VersionId", default="null")
+            return self._meta.get("VersionId", None)
 
     @FilterableProperty
     def version_id(self: "S3Path") -> T.Optional[str]:

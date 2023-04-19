@@ -30,7 +30,8 @@ class MetadataAPIMixin(BaseTest):
         _ = p.last_modified_at
         assert p.size == 12
         assert p.size_for_human == "12 B"
-        assert p.version_id is None
+        assert p._static_version_id is None
+        assert p.version_id == "null"
         assert p.expire_at is None
         assert p.metadata == {"creator": "Alice"}
 
