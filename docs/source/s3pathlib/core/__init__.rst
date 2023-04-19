@@ -19,6 +19,7 @@ sub packages and modules
     exists <exists>
     filterable_property <filterable_property>
     is_test <is_test>
+    iter_object_versions <iter_object_versions>
     iter_objects <iter_objects>
     joinpath <joinpath>
     metadata <metadata>

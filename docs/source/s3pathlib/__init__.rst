@@ -10,12 +10,13 @@ sub packages and modules
 .. toctree::
     :maxdepth: 1
 
+    better_client <better_client/__init__>
     core <core/__init__>
     aws <aws>
-    client <client>
     compat <compat>
     exc <exc>
     marker <marker>
+    metadata <metadata>
     tag <tag>
     type <type>
     utils <utils>
