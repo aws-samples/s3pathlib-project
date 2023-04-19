@@ -93,7 +93,7 @@ def head_object(
             if ignore_not_found:
                 return None
             else:
-                raise exc.S3ObjectNotExist.make(f"s3://{bucket}/{key}")
+                raise exc.S3FileNotExist.make(f"s3://{bucket}/{key}")
         else:  # pragma: no cover
             raise e
 
