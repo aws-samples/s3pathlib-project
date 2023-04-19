@@ -4,7 +4,7 @@
 Improve the list_objects_v2_ and ListObjectsV2_ API.
 
 .. _list_objects_v2: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.list_objects_v2
-.. _ListObjectsV2 :https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/paginator/ListObjectsV2.html
+.. _ListObjectsV2: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/paginator/ListObjectsV2.html
 """
 
 import typing as T
@@ -34,7 +34,7 @@ class ObjectTypeDefIterproxy(IterProxy["ObjectTypeDef"]):
 
 class CommonPrefixTypeDefIterproxy(IterProxy["CommonPrefixTypeDef"]):
     """
-    An iterproxy that yields the "CommonPrefixes" part of the  ListObjectsV2_ response.
+    An iterproxy that yields the "CommonPrefixes" part of the ListObjectsV2_ response.
 
     .. versionadded:: 2.1.1
     """
@@ -124,16 +124,16 @@ def paginate_list_objects_v2(
         ...
 
     :param s3_client: ``boto3.session.Session().client("s3")`` object.
-    :param bucket: See ListObjectV2_.
-    :param prefix: See ListObjectV2_.
-    :param batch_size: See ListObjectV2_.
-    :param limit: See ListObjectV2_.
-    :param delimiter: See ListObjectV2_.
-    :param encoding_type: See ListObjectV2_.
-    :param fetch_owner: See ListObjectV2_.
-    :param start_after: See ListObjectV2_.
-    :param request_payer: See ListObjectV2_.
-    :param expected_bucket_owner: See ListObjectV2_.
+    :param bucket: See ListObjectsV2_.
+    :param prefix: See ListObjectsV2_.
+    :param batch_size: See ListObjectsV2_.
+    :param limit: See ListObjectsV2_.
+    :param delimiter: See ListObjectsV2_.
+    :param encoding_type: See ListObjectsV2_.
+    :param fetch_owner: See ListObjectsV2_.
+    :param start_after: See ListObjectsV2_.
+    :param request_payer: See ListObjectsV2_.
+    :param expected_bucket_owner: See ListObjectsV2_.
 
     :return: a :class:`ListObjectsV2OutputTypeDefIterproxy` object.
 
