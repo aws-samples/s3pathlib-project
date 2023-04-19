@@ -25,7 +25,7 @@ class BetterHeadObject(DummyData):
         key = smart_join_s3_key([self.prefix, "file.txt"], is_dir=False)
         assert is_object_exists(self.s3_client, bucket=bucket, key=key) is False
 
-        with pytest.raises(exc.S3ObjectNotExist):
+        with pytest.raises(exc.S3FileNotExist):
             head_object(self.s3_client, bucket=bucket, key=key)
 
         assert (
