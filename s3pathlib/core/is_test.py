@@ -11,6 +11,12 @@ Is the S3Path a XYZ testing.
 
 import typing as T
 
+from ..exc import (
+    S3PathIsNotBucketError,
+    S3PathIsNotFolderError,
+    S3PathIsNotFileError,
+)
+
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
 
@@ -87,7 +93,7 @@ class IsTestAPIMixin:
         .. versionadded:: 1.0.1
         """
         if self.is_file() is not True:
-            raise TypeError(f"S3 URI: {self} IS NOT a valid s3 object!")
+            raise S3PathIsNotFileError.make(self.uri)
 
     def ensure_file(self: "S3Path") -> None:
         """
@@ -121,7 +127,7 @@ class IsTestAPIMixin:
         .. versionadded:: 1.0.1
         """
         if self.is_dir() is not True:
-            raise TypeError(f"{self} IS NOT a valid s3 directory!")
+            raise S3PathIsNotFolderError.make(self.uri)
 
     def ensure_not_dir(self: "S3Path") -> None:
         """

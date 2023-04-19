@@ -11,6 +11,7 @@ Update S3 bucket, object tagging.
 """
 
 import typing as T
+import botocore.exceptions
 from func_args import NOTHING, resolve_kwargs
 
 from .. import tag
@@ -33,18 +34,25 @@ def update_bucket_tagging(
 
     :return: the updated tags in Python dict.
     """
-    res = s3_client.get_bucket_tagging(
-        **resolve_kwargs(
-            Bucket=bucket,
-            ExpectedBucketOwner=expected_bucket_owner,
+    try:
+        res = s3_client.get_bucket_tagging(
+            **resolve_kwargs(
+                Bucket=bucket,
+                ExpectedBucketOwner=expected_bucket_owner,
+            )
         )
-    )
-    existing_tags = tag.parse_tags(res.get("TagSet", []))
+        existing_tags = tag.parse_tags(res.get("TagSet", []))
+    except botocore.exceptions.ClientError as e:
+        if "NoSuchTagSet" in str(e):
+            existing_tags = {}
+        else: # pragma: no cover
+            raise e
+
     existing_tags.update(tags)
     s3_client.put_bucket_tagging(
         **resolve_kwargs(
             Bucket=bucket,
-            Tagging=tag.encode_for_put_bucket_tagging(existing_tags),
+            Tagging=dict(TagSet=tag.encode_for_put_bucket_tagging(existing_tags)),
             ChecksumAlgorithm=checksum_algorithm,
             ExpectedBucketOwner=expected_bucket_owner,
         )

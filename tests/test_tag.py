@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from s3pathlib.tag import parse_tags, encode_tag_set, encode_url_query
+from s3pathlib.tag import (
+    parse_tags,
+    encode_tag_set,
+    encode_url_query,
+    encode_for_put_object,
+    encode_for_put_bucket_tagging,
+    encode_for_put_object_tagging,
+)
 
 
 def test_parse_tags():
@@ -16,6 +23,13 @@ def test_encode_tag_set():
 
 def test_encode_url_query():
     assert encode_url_query(dict(k="v", message="a=b")) == "k=v&message=a%3Db"
+
+
+def test_encode_for_xyz():
+    tags = {"k": "v"}
+    assert encode_for_put_object(tags) == "k=v"
+    assert encode_for_put_bucket_tagging(tags) == [{"Key": "k", "Value": "v"}]
+    assert encode_for_put_object_tagging(tags) == [{"Key": "k", "Value": "v"}]
 
 
 if __name__ == "__main__":

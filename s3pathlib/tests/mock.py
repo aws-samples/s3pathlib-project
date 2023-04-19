@@ -64,7 +64,7 @@ class BaseTest:
     module: str
 
     bsm: BotoSesManager
-    force_use_mock: bool = True
+    force_use_mock: bool = False
 
     @classmethod
     def custom_setup_class(cls):
