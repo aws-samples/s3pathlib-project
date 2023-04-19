@@ -74,7 +74,7 @@ def upload_dir(
         for abspath, key in todo:
             if is_object_exists(s3_client, bucket, key) is True:
                 s3_uri = join_s3_uri(bucket, key)
-                raise exc.S3ObjectAlreadyExist.make(s3_uri)
+                raise exc.S3FileAlreadyExist.make(s3_uri)
 
     # execute upload
     for abspath, key in todo:
