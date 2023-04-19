@@ -28,7 +28,6 @@ class DeleteAPIMixin:
     """
     A mixin class that implements delete method.
     """
-
     def delete(
         self: "S3Path",
         version_id: str = NOTHING,
@@ -41,20 +40,35 @@ class DeleteAPIMixin:
         bsm: T.Optional["BotoSesManager"] = None,
     ) -> "S3Path":
         """
-        Delete an object or an entire directory. Will do nothing if it doesn't exist.
-        You can delete a specific version of an object, or remove a delete-marker
-        using the ``version_id`` parameter. Not that it will permanenatly delete
-        the data.
+        Can delete:
+
+        - an object.
+        - all objects in a directory.
+        - specific version or delete marker of an object.
+        - all historical versions and delete markers of an object.
+        - all objects, all versions in a directory.
+
+        It won't raise any error if the object or the directory doesn't exist.
 
         Example:
 
-            >>> S3Path.from_s3_uri("s3://my-bucket/my-file.txt").delete_if_exists()
-            1 # number of object deleted
-            >>> S3Path.from_s3_uri("s3://my-bucket/my-folder/").delete_if_exists()
-            3 # number of object deleted
+            >>> s3path = S3Path.from_s3_uri("s3://my-bucket/my-file.txt")
+            >>> s3dir = S3Path.from_s3_uri("s3://my-bucket/my-folder/")
+            # Delete an object
+            # for versioning enabled bucket, it just creates a delete maker
+            >>> s3path.delete()
+            # Delete all objects in a directory
+            # for versioning enabled bucket, it just creates delete makers for all objects
+            >>> s3path.delete()
+            # Delete specific version or delete marker of an object
+            >>> s3path.delete(version_id="v123456")
+            # Delete all historical versions and delete markers of an object
+            >>> s3path.delete(is_hard_delete=True)
+            # Delete all objects, all versions in a directory
+            >>> s3dir.delete(is_hard_delete=True)
 
-        :param mfa: see delete_object_.
         :param version_id: see delete_object_.
+        :param mfa: see delete_object_.
         :param request_payer: see delete_object_.
         :param bypass_governance_retention: see delete_object_.
         :param expected_bucket_owner: see delete_object_.
@@ -75,6 +89,8 @@ class DeleteAPIMixin:
             - if it's a directory, then it will return the deleted folder itself.
 
         .. versionadded:: 2.1.1
+
+            Use this method to replace the :meth:`DeleteAPIMixin.delete_if_exists` method.
         """
         s3_client = resolve_s3_client(context, bsm)
         bucket = self.bucket

@@ -158,7 +158,7 @@ class DeleteAPIMixin(BaseTest):
         self._test_delete_if_exists()
         self._test_delete()
 
-        if self.use_mock is False:  # moto has bug for delete object with versioning
+        if self.use_mock is False:  # moto has a bug for deleting object with versioning
             self._test_delete_with_versioning()
             self._test_delete_with_hard_delete()
 

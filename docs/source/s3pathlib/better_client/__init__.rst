@@ -14,6 +14,7 @@ sub packages and modules
     delete_object <delete_object>
     head_bucket <head_bucket>
     head_object <head_object>
+    list_object_versions <list_object_versions>
     list_objects <list_objects>
     tagging <tagging>
     upload <upload>

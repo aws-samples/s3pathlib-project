@@ -187,9 +187,9 @@ def paginate_list_object_versions(
     .. versionadded:: 2.1.1
     """
     # validate arguments
-    if batch_size < 1 or batch_size > 1000:
+    if batch_size < 1 or batch_size > 1000:  # pragma: no cover
         raise ValueError("``batch_size`` has to be 1 ~ 1000.")
-    if (limit is not NOTHING) and (batch_size > limit):
+    if (limit is not NOTHING) and (batch_size > limit):  # pragma: no cover
         batch_size = limit
 
     def _paginate_list_objects_v2():
