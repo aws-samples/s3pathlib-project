@@ -21,6 +21,12 @@ from .list_objects import (
     calculate_total_size,
     count_objects,
 )
+from .list_object_versions import (
+    ObjectVersionTypeDefIterproxy,
+    DeleteMarkerEntryTypeDefIterproxy,
+    ListObjectVersionsOutputTypeDefIterproxy,
+    paginate_list_object_versions,
+)
 from .delete_object import (
     delete_object,
     delete_dir,
