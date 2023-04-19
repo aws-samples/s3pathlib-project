@@ -3,6 +3,7 @@
 """
 Delete S3 file or folder.
 
+.. _bsm: https://github.com/aws-samples/boto-session-manager-project
 .. _delete_object: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/client/delete_object.html
 """
 
@@ -11,7 +12,12 @@ from func_args import NOTHING
 
 from .resolve_s3_client import resolve_s3_client
 from ..aws import context
-from ..better_client.delete_object import delete_object, delete_dir
+from ..better_client.delete_object import (
+    delete_object,
+    delete_dir,
+    delete_object_versions,
+)
+from ..better_client.list_object_versions import paginate_list_object_versions
 
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
@@ -22,6 +28,122 @@ class DeleteAPIMixin:
     """
     A mixin class that implements delete method.
     """
+
+    def delete(
+        self: "S3Path",
+        version_id: str = NOTHING,
+        mfa: str = NOTHING,
+        request_payer: str = NOTHING,
+        bypass_governance_retention: bool = NOTHING,
+        expected_bucket_owner: str = NOTHING,
+        check_sum_algorithm: str = NOTHING,
+        is_hard_delete: bool = False,
+        bsm: T.Optional["BotoSesManager"] = None,
+    ) -> "S3Path":
+        """
+        Delete an object or an entire directory. Will do nothing if it doesn't exist.
+        You can delete a specific version of an object, or remove a delete-marker
+        using the ``version_id`` parameter. Not that it will permanenatly delete
+        the data.
+
+        Example:
+
+            >>> S3Path.from_s3_uri("s3://my-bucket/my-file.txt").delete_if_exists()
+            1 # number of object deleted
+            >>> S3Path.from_s3_uri("s3://my-bucket/my-folder/").delete_if_exists()
+            3 # number of object deleted
+
+        :param mfa: see delete_object_.
+        :param version_id: see delete_object_.
+        :param request_payer: see delete_object_.
+        :param bypass_governance_retention: see delete_object_.
+        :param expected_bucket_owner: see delete_object_.
+        :param check_sum_algorithm: See delete_object_.
+        :param is_hard_delete: if ``True``, then it will delete all versions
+            of the object, then the data is permanently deleted.
+        :param bsm: See bsm_.
+
+        :return: a new ``S3Path`` object representing the deleted object
+
+            - if it's a file and the versioning is NOT enabled, then it will
+                return the deleted file itself.
+            - if it's a file and the versioning is ENABLED,
+                - if ``version_id`` is not given, then it will return the
+                    ``S3Path`` representing the delete-marker.
+                - if ``version_id`` is given, then it will return the ``S3Path``
+                    representing the deleted version.
+            - if it's a directory, then it will return the deleted folder itself.
+
+        .. versionadded:: 2.1.1
+        """
+        s3_client = resolve_s3_client(context, bsm)
+        bucket = self.bucket
+        if self.is_file():
+            if is_hard_delete:
+                delete_object_versions(
+                    s3_client=s3_client,
+                    bucket=bucket,
+                    prefix=self.key,
+                    mfa=mfa,
+                    request_payer=request_payer,
+                    bypass_governance_retention=bypass_governance_retention,
+                    expected_bucket_owner=expected_bucket_owner,
+                    check_sum_algorithm=check_sum_algorithm,
+                )
+                return self
+
+            response = delete_object(
+                s3_client=s3_client,
+                bucket=bucket,
+                key=self.key,
+                version_id=version_id,
+                mfa=mfa,
+                request_payer=request_payer,
+                bypass_governance_retention=bypass_governance_retention,
+                expected_bucket_owner=expected_bucket_owner,
+                ignore_not_found=True,
+            )
+            # delete_object API succeeded
+            if bool(response):
+                del response["ResponseMetadata"]
+                # print(response)
+                # it could be a delete marker or a deleted version
+                if "VersionId" in response:
+                    s3path = self.copy()
+                    s3path._meta = response
+                    return s3path
+                # not a versioned bucket
+                else:
+                    return self
+            # object not exists, nothing happen
+            else:  # pragma: no cover
+                return self
+        elif self.is_dir():
+            if is_hard_delete:
+                delete_object_versions(
+                    s3_client=s3_client,
+                    bucket=bucket,
+                    prefix=self.key,
+                    mfa=mfa,
+                    request_payer=request_payer,
+                    bypass_governance_retention=bypass_governance_retention,
+                    expected_bucket_owner=expected_bucket_owner,
+                    check_sum_algorithm=check_sum_algorithm,
+                )
+                return self
+
+            delete_dir(
+                s3_client=s3_client,
+                bucket=bucket,
+                prefix=self.key,
+                mfa=mfa,
+                request_payer=request_payer,
+                bypass_governance_retention=bypass_governance_retention,
+                expected_bucket_owner=expected_bucket_owner,
+            )
+            return self
+        else:  # pragma: no cover
+            raise ValueError
 
     def delete_if_exists(
         self: "S3Path",
@@ -34,21 +156,31 @@ class DeleteAPIMixin:
     ) -> int:
         """
         Delete an object or an entire directory. Will do nothing if it doesn't exist.
+        You can delete a specific version of an object, or remove a delete-marker
+        using the ``version_id`` parameter. Not that it will permanenatly delete
+        the data.
 
-        Reference:
+        Example:
 
-        - delete_object_
+            >>> S3Path.from_s3_uri("s3://my-bucket/my-file.txt").delete_if_exists()
+            1 # number of object deleted
+            >>> S3Path.from_s3_uri("s3://my-bucket/my-folder/").delete_if_exists()
+            3 # number of object deleted
 
         :param mfa: see delete_object_.
         :param version_id: see delete_object_.
         :param request_payer: see delete_object_.
         :param bypass_governance_retention: see delete_object_.
         :param expected_bucket_owner: see delete_object_.
-        :param bsm: ``boto_session_manager.BotoSesManager`` object.
+        :param bsm: See bsm_.
 
         :return: number of object is deleted
 
         .. versionadded:: 1.0.1
+
+        .. deprecated:: 2.1.1
+
+            This method will be removed in 3.X. Use ``delete`` instead.
         """
         s3_client = resolve_s3_client(context, bsm)
         if self.is_file():
