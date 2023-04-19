@@ -55,7 +55,7 @@ class S3FolderNotExist(FileNotFoundError, _UriRelatedError):
     _tpl = "S3 folder {uri!r} does not exist!"
 
 
-class S3ObjectNotExist(FileNotFoundError, _UriRelatedError):
+class S3FileNotExist(FileNotFoundError, _UriRelatedError):
     _tpl = "S3 object {uri!r} does not exist!"
 
 
@@ -71,7 +71,7 @@ class S3FolderAlreadyExist(FileExistsError, _UriRelatedError):
     _tpl = "S3 folder {uri!r} already exist!"
 
 
-class S3ObjectAlreadyExist(FileExistsError, _UriRelatedError):
+class S3FileAlreadyExist(FileExistsError, _UriRelatedError):
     _tpl = "S3 object {uri!r} already exist!"
 
 
