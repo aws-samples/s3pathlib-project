@@ -76,7 +76,7 @@ class BetterListObjectVersions(DummyData):
         delete("README.txt")
         put("README.txt", "this is read me v2")
 
-        put("hard_folder", "this is a hard folder")
+        put("hard_folder/", "")
 
         put("hard_folder/hard_copy.txt", "hard copy v1")
         delete("hard_folder/hard_copy.txt")
@@ -110,7 +110,7 @@ class BetterListObjectVersions(DummyData):
             delete_markers,
             common_prefixes,
         ) = list_object_versions("/").versions_and_delete_markers_and_common_prefixes()
-        assert len(versions) == 3
+        assert len(versions) == 2
         assert len(delete_markers) == 1
         assert len(common_prefixes) == 2
 
