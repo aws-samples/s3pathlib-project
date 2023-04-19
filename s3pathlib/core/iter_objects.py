@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 """
-Tagging related API.
+List objects related API.
+
+.. _bsm: https://github.com/aws-samples/boto-session-manager-project
+.. _ListObjectsV2: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/paginator/ListObjectsV2.html
 """
 
 import typing as T
@@ -17,6 +20,9 @@ from ..better_client.list_objects import (
     calculate_total_size,
     count_objects,
 )
+from ..better_client.list_object_versions import (
+    paginate_list_object_versions,
+)
 from .resolve_s3_client import resolve_s3_client
 
 if T.TYPE_CHECKING:  # pragma: no cover
@@ -24,7 +30,7 @@ if T.TYPE_CHECKING:  # pragma: no cover
     from boto_session_manager import BotoSesManager
 
 
-class S3PathIterProxy(IterProxy):
+class S3PathIterProxy(IterProxy["S3Path"]):
     """
     An iterator proxy utility class provide client side in-memory filter.
     It is highly inspired by sqlalchemy Result Proxy that depends on SQL server
@@ -106,10 +112,16 @@ class IterObjectsAPIMixin:
         """
         Recursively iterate objects under this prefix, yield :class:`S3Path`.
 
-        :param batch_size: number of s3 object returned per paginator,
+        :param batch_size: Number of s3 object returned per paginator,
             valid value is from 1 ~ 1000. large number can reduce IO.
-        :param limit: total number of s3 object to return
-        :param recursive: if True, it won't include files in sub folders
+        :param limit: Total number of s3 object to return.
+        :param encoding_type: See ListObjectsV2_.
+        :param fetch_owner: See ListObjectsV2_.
+        :param start_after: See ListObjectsV2_.
+        :param request_payer: See ListObjectsV2_.
+        :param expected_bucket_owner: See ListObjectsV2_.
+        :param recursive: if True, it won't include files in sub folders.
+        :param bsm: See bsm_.
 
         .. versionadded:: 1.0.1
 
@@ -165,6 +177,12 @@ class IterObjectsAPIMixin:
         :param batch_size: number of s3 object returned per paginator,
             valid value is from 1 ~ 1000. large number can reduce IO.
         :param limit: total number of s3 object (not folder)to return
+        :param encoding_type: See ListObjectsV2_.
+        :param fetch_owner: See ListObjectsV2_.
+        :param start_after: See ListObjectsV2_.
+        :param request_payer: See ListObjectsV2_.
+        :param expected_bucket_owner: See ListObjectsV2_.
+        :param bsm: See bsm_.
 
         .. versionadded:: 1.0.6
 
@@ -176,6 +194,8 @@ class IterObjectsAPIMixin:
         bucket = self.bucket
 
         def _iter_s3path() -> T.Iterable["S3Path"]:
+            root = self.root
+
             proxy = paginate_list_objects_v2(
                 s3_client=s3_client,
                 bucket=bucket,
@@ -191,7 +211,7 @@ class IterObjectsAPIMixin:
             )
             for res in proxy:
                 for dct in res.get("CommonPrefixes", list()):
-                    yield self.root.joinpath(dct["Prefix"])
+                    yield root.joinpath(dct["Prefix"])
 
                 for dct in res.get("Contents", list()):
                     yield self._from_content_dict(self.bucket, dct)
@@ -207,8 +227,10 @@ class IterObjectsAPIMixin:
         """
         Perform the "Calculate Total Size" action in AWS S3 console
 
-        :param for_human: if true, returns human readable string for "size"
-        :param include_folder: see :meth:`iter_objects`
+        :param for_human: If true, returns human readable string for "size".
+        :param include_folder: Default False, whether counting the hard folder
+        (an empty "/" object).
+        :param bsm: See bsm_.
 
         :return: a tuple, first value is number of objects,
             second value is total size in bytes
@@ -235,7 +257,9 @@ class IterObjectsAPIMixin:
         """
         Count how many objects are under this s3 directory.
 
-        :param include_folder: see :meth:`iter_objects`
+        :param include_folder: Default False, whether counting the hard folder
+        (an empty "/" object).
+        :param bsm: See bsm_.
 
         :return: an integer represents the number of objects
 
