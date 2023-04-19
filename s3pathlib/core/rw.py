@@ -331,6 +331,7 @@ class ReadAndWriteAPIMixin:
                 ExpectedBucketOwner=expected_bucket_owner,
             )
         )
+        del response["ResponseMetadata"]
         self._meta = response
         if metadata is not NOTHING:
             self._meta["Metadata"] = metadata
