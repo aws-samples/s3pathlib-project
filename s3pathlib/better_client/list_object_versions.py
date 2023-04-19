@@ -164,13 +164,13 @@ def paginate_list_object_versions(
         ...
 
     :param s3_client: ``boto3.session.Session().client("s3")`` object.
-    :param bucket: See ListObjectsV2_.
-    :param prefix: See ListObjectsV2_.
-    :param batch_size: See ListObjectsV2_.
-    :param limit: See ListObjectsV2_.
-    :param delimiter: See ListObjectsV2_.
-    :param encoding_type: See ListObjectsV2_.
-    :param expected_bucket_owner: See ListObjectsV2_.
+    :param bucket: See ListObjectVersions_.
+    :param prefix: See ListObjectVersions_.
+    :param batch_size: See ListObjectVersions_.
+    :param limit: See ListObjectVersions_.
+    :param delimiter: See ListObjectVersions_.
+    :param encoding_type: See ListObjectVersions_.
+    :param expected_bucket_owner: See ListObjectVersions_.
 
     :return: a :class:`ListObjectVersionsOutputTypeDefIterproxy` object.
 
