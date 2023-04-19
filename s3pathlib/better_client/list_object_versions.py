@@ -151,14 +151,14 @@ def paginate_list_object_versions(
 
     Example::
 
-        >>> result = paginate_list_objects_v2(
+        >>> proxy = paginate_list_object_versions(
         ...     s3_client=s3_client,
         ...     bucket="my-bucket",
         ...     prefix="my-folder",
         ... )
-        >>> for content in result.contents():
-        ...     print(content)
-        {"Key": "1.json", "ETag": "...", "Size": 123, "LastModified": datetime(2015, 1, 1), "StorageClass": "...", "Owner", {...}}
+        >>> for versions, delete_markers, common_prefixes in proxy.versions_and_delete_markers_and_common_prefixes():
+        ...
+        {"Key": "1.json", "Versions": "v1", "ETag": "...", "Size": 123, "LastModified": datetime(2015, 1, 1), "StorageClass": "...", "Owner", {...}}
         {"Key": "2.json", "ETag": "...", "Size": 123, "LastModified": datetime(2015, 1, 1), "StorageClass": "...", "Owner", {...}}
         {"Key": "3.json", "ETag": "...", "Size": 123, "LastModified": datetime(2015, 1, 1), "StorageClass": "...", "Owner", {...}}
         ...
@@ -170,9 +170,6 @@ def paginate_list_object_versions(
     :param limit: See ListObjectsV2_.
     :param delimiter: See ListObjectsV2_.
     :param encoding_type: See ListObjectsV2_.
-    :param fetch_owner: See ListObjectsV2_.
-    :param start_after: See ListObjectsV2_.
-    :param request_payer: See ListObjectsV2_.
     :param expected_bucket_owner: See ListObjectsV2_.
 
     :return: a :class:`ListObjectVersionsOutputTypeDefIterproxy` object.
