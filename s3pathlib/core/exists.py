@@ -5,6 +5,7 @@ Tagging related API.
 """
 
 import typing as T
+from func_args import NOTHING
 
 from .. import exc
 from ..better_client.head_bucket import is_bucket_exists
@@ -25,6 +26,7 @@ class ExistsAPIMixin:
 
     def exists(
         self: "S3Path",
+        version_id: str = NOTHING,
         bsm: T.Optional["BotoSesManager"] = None,
     ) -> bool:
         """
@@ -33,8 +35,14 @@ class ExistsAPIMixin:
         - For S3 object: check if the object exists
         - For S3 directory: check if the directory exists, it returns ``True``
             even if the folder doesn't have any object.
+        - For versioning enabled bucket, you can explicitly check if a specific
+            version exists, otherwise it will check the latest version.
 
         .. versionadded:: 1.0.1
+
+        .. versionchanged:: 2.1.1
+
+            Add ``version_id`` parameter.
         """
         if self.is_bucket():
             s3_client = resolve_s3_client(context, bsm)
@@ -45,6 +53,7 @@ class ExistsAPIMixin:
                 s3_client=s3_client,
                 bucket=self.bucket,
                 key=self.key,
+                version_id=version_id,
                 ignore_not_found=True,
             )
             if dct is None:
@@ -71,14 +80,19 @@ class ExistsAPIMixin:
 
     def ensure_not_exists(
         self: "S3Path",
+        version_id: str = NOTHING,
         bsm: T.Optional["BotoSesManager"] = None,
     ) -> None:
         """
         A validator method ensure that it doesn't exists.
 
         .. versionadded:: 1.0.1
+
+        .. versionchanged:: 2.1.1
+
+            Add ``version_id`` parameter.
         """
-        if self.exists(bsm=bsm):
+        if self.exists(version_id=version_id, bsm=bsm):
             raise exc.S3AlreadyExist(
                 (
                     "cannot write to {}, s3 object ALREADY EXISTS! "
