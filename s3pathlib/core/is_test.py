@@ -86,6 +86,21 @@ class IsTestAPIMixin:
             and (self._is_dir is True)
         )
 
+    def is_delete_marker(self: "S3Path") -> bool:
+        """
+        Test if it is a delete-marker. A delete-marker is just a version of
+        an object without content.
+
+        .. versionadded:: 2.1.1
+        """
+        if self.is_file():
+            if (self.version_id is not None) and (self.etag is None):
+                return True
+            else:
+                return False
+        else:
+            return False
+
     def ensure_object(self: "S3Path") -> None:
         """
         A validator method that ensure it represents a S3 object.
