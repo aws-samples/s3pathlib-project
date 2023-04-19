@@ -15,9 +15,14 @@ from func_args import NOTHING, resolve_kwargs
 
 from .. import exc
 from ..utils import grouper_list, ensure_s3_dir
-from .list_objects import paginate_list_objects_v2, is_content_an_object
+from .list_objects import (
+    paginate_list_objects_v2,
+    is_content_an_object,
+)
+from .list_object_versions import paginate_list_object_versions
 
-if T.TYPE_CHECKING: # pragma: no cover
+
+if T.TYPE_CHECKING:  # pragma: no cover
     from mypy_boto3_s3 import S3Client
     from mypy_boto3_s3.type_defs import (
         DeleteObjectOutputTypeDef,
@@ -64,7 +69,7 @@ def delete_object(
             )
         )
         return response
-    except botocore.exceptions.ClientError as e: # pragma: no cover
+    except botocore.exceptions.ClientError as e:  # pragma: no cover
         if "Not Found" in str(e):
             if ignore_not_found:
                 return None
@@ -115,20 +120,15 @@ def delete_dir(
         prefix=prefix,
         batch_size=batch_size,
         limit=limit,
-        request_payer = request_payer,
-        expected_bucket_owner = expected_bucket_owner,
+        request_payer=request_payer,
+        expected_bucket_owner=expected_bucket_owner,
     ).contents()
 
     count = 0
     for contents in grouper_list(contents_iterproxy, 1000):
         kwargs = resolve_kwargs(
             Bucket=bucket,
-            Delete={
-                "Objects": [
-                    dict(Key=dct["Key"])
-                    for dct in contents
-                ]
-            },
+            Delete={"Objects": [dict(Key=dct["Key"]) for dct in contents]},
             MFA=mfa,
             RequestPayer=request_payer,
             BypassGovernanceRetention=bypass_governance_retention,
@@ -138,4 +138,70 @@ def delete_dir(
         s3_client.delete_objects(**kwargs)
         count += len(contents)
 
+    return count
+
+
+def delete_object_versions(
+    s3_client: "S3Client",
+    bucket: str,
+    prefix: str,
+    batch_size: int = 1000,
+    limit: int = NOTHING,
+    mfa: str = NOTHING,
+    request_payer: str = NOTHING,
+    bypass_governance_retention: bool = NOTHING,
+    expected_bucket_owner: str = NOTHING,
+    check_sum_algorithm: str = NOTHING,
+) -> int:
+    """
+    Recursively delete all objects and their versions under a s3 prefix.
+    It is a wrapper of delete_objects_. It will delete all historical versions
+    and hard folder permanently.
+
+    :param s3_client: ``boto3.session.Session().client("s3")`` object.
+    :param bucket: S3 bucket name.
+    :param prefix: The s3 prefix (logic directory) you want to delete,
+        it has to be a directory (end with "/").
+    :param batch_size: Number of s3 object to delete per micro-batch,
+        valid value is from 1 ~ 1000. large number can reduce IO.
+    :param limit: Total Number of s3 object to delete.
+    :param mfa: See delete_object_.
+    :param request_payer: See delete_object_.
+    :param bypass_governance_retention: See delete_object_.
+    :param expected_bucket_owner: See delete_object_.
+    :param check_sum_algorithm: See delete_object_.
+
+    :return: number of deleted objects
+
+    .. versionadded:: 2.1.1
+    """
+    proxy = paginate_list_object_versions(
+        s3_client=s3_client,
+        bucket=bucket,
+        prefix=prefix,
+        batch_size=batch_size,
+        limit=limit,
+        expected_bucket_owner=expected_bucket_owner,
+    )
+    count = 0
+    for key_and_version_id_pairs in grouper_list(
+        proxy.iterate_key_and_version(),
+        1000,
+    ):
+        kwargs = resolve_kwargs(
+            Bucket=bucket,
+            Delete={
+                "Objects": [
+                    dict(Key=key, VersionId=version_id)
+                    for key, version_id in key_and_version_id_pairs
+                ]
+            },
+            MFA=mfa,
+            RequestPayer=request_payer,
+            BypassGovernanceRetention=bypass_governance_retention,
+            ExpectedBucketOwner=expected_bucket_owner,
+            ChecksumAlgorithm=check_sum_algorithm,
+        )
+        s3_client.delete_objects(**kwargs)
+        count += len(key_and_version_id_pairs)
     return count
