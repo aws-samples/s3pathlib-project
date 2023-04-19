@@ -117,12 +117,19 @@ class UriAPIMixin:
         Return an AWS S3 Console url that can inspect the details.
 
         .. versionadded:: 1.0.1
+
+        .. versionchanged:: 2.1.1
+
+            now take the version id into consideration.
         """
         uri: str = self.uri
         if uri is None:
             return None
         else:
-            console_url = utils.make_s3_console_url(s3_uri=uri)
+            console_url = utils.make_s3_console_url(
+                s3_uri=uri,
+                version_id=self._static_version_id,
+            )
             return console_url
 
     @property
@@ -142,7 +149,7 @@ class UriAPIMixin:
         else:
             console_url = utils.make_s3_console_url(
                 s3_uri=uri,
-                version_id=self.version_id,
+                version_id=self._static_version_id,
                 is_us_gov_cloud=True,
             )
             return console_url

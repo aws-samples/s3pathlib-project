@@ -108,6 +108,13 @@ class MetadataAPIMixin:
         """
         return utils.repr_data_size(self.size)
 
+    @property
+    def _static_version_id(self: "S3Path") -> T.Optional[str]:
+        if self._meta is None:
+            return None
+        else:
+            return self._meta.get("VersionId")
+
     @FilterableProperty
     def version_id(self: "S3Path") -> int:
         """
@@ -124,6 +131,7 @@ class MetadataAPIMixin:
         """
         Only available if you turned on TTL
 
+                version_id=self.version_id,
         Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_Object.html
 
         .. versionadded:: 1.0.1
