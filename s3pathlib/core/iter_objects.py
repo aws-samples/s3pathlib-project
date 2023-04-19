@@ -20,9 +20,6 @@ from ..better_client.list_objects import (
     calculate_total_size,
     count_objects,
 )
-from ..better_client.list_object_versions import (
-    paginate_list_object_versions,
-)
 from .resolve_s3_client import resolve_s3_client
 
 if T.TYPE_CHECKING:  # pragma: no cover

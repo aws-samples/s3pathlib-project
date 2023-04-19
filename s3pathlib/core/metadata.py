@@ -199,6 +199,35 @@ class MetadataAPIMixin:
             "ETag": dct["ETag"],
             "ContentLength": dct["Size"],
             "StorageClass": dct["StorageClass"],
+            "ChecksumAlgorithm": dct.get("ChecksumAlgorithm", []),
+            "Owner": dct.get("Owner", {}),
+        }
+        return p
+
+    @classmethod
+    def _from_version_dict(cls: T.Type["S3Path"], bucket: str, dct: dict) -> "S3Path":
+        p = cls(bucket, dct["Key"])
+        p._meta = {
+            "Key": dct["Key"],
+            "VersionId": dct["VersionId"],
+            "LastModified": dct["LastModified"],
+            "ETag": dct["ETag"],
+            "ContentLength": dct["Size"],
+            "StorageClass": dct["StorageClass"],
+            "IsLatest": dct["IsLatest"],
+            "ChecksumAlgorithm": dct.get("ChecksumAlgorithm", []),
+            "Owner": dct.get("Owner", {}),
+        }
+        return p
+
+    @classmethod
+    def _from_delete_marker(cls: T.Type["S3Path"], bucket: str, dct: dict) -> "S3Path":
+        p = cls(bucket, dct["Key"])
+        p._meta = {
+            "Key": dct["Key"],
+            "VersionId": dct["VersionId"],
+            "LastModified": dct["LastModified"],
+            "IsLatest": dct["IsLatest"],
             "Owner": dct.get("Owner", {}),
         }
         return p

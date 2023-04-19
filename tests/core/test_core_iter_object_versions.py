@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import pytest
-
+import time
 from pathlib_mate import Path
-from iterproxy import and_
 
 from s3pathlib.core import S3Path
 from s3pathlib.tests import run_cov_test
@@ -14,31 +12,28 @@ dir_here = Path.dir_here(__file__)
 
 
 class IterObjectsAPIMixin(BaseTest):
-    module = "core.iter_objects"
+    module = "core.iter_object_versions"
 
-    # @classmethod
-    # def custom_setup_class(cls):
-    #     s3dir_root = cls.get_s3dir_root()
-    #
-    #     s3dir_hard_empty_folder = S3Path(s3dir_root, "hard_empty_folder").to_dir()
-    #     s3dir_hard_empty_folder.mkdir()
-    #
-    #     s3dir_hard_folder = S3Path(s3dir_root, "hard_folder").to_dir()
-    #     s3dir_hard_folder.mkdir()
-    #
-    #     s3dir_soft_folder = S3Path(s3dir_root, "soft_folder").to_dir()
-    #     s3dir_soft_folder_file = S3Path(s3dir_soft_folder, "file.txt")
-    #     s3dir_soft_folder_file.write_text("content v1")
-    #     s3dir_soft_folder_file.write_text("content v2")
-    #
-    #     s3path_log = S3Path(s3dir_root, "log.txt").to_dir()
-    #     s3path_log.write_text("content v1")
-    #     s3path_log.write_text("content v2")
-    #     s3path_log.delete_if_exists()
+    def _test_list_object_versions(self):
+        s3path = S3Path(
+            self.s3dir_root_with_versioning, "list_object_versions", "file.txt"
+        )
+        v1 = s3path.write_text("v1").version_id
+        time.sleep(1)
+        s3path.delete_if_exists()
+        time.sleep(1)
+        v2 = s3path.write_text("v2").version_id
+        time.sleep(1)
+        v3 = s3path.write_text("v3").version_id
 
+        s3path_list = s3path.list_object_versions().all()
+        versions = [s3path.version_id for s3path in s3path_list]
+        assert versions[0] == v3
+        assert versions[1] == v2
+        assert versions[3] == v1
 
     def test(self):
-        pass
+        self._test_list_object_versions()
 
 
 # class Test(IterObjectsAPIMixin):

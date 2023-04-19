@@ -42,7 +42,7 @@ class S3Path(
     BucketAPIMixin,
     TaggingAPIMixin,
     IterObjectsAPIMixin,
-    # IterObjectVersionsAPIMixin,
+    IterObjectVersionsAPIMixin,
     ExistsAPIMixin,
     ReadAndWriteAPIMixin,
     DeleteAPIMixin,
