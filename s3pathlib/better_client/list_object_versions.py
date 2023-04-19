@@ -134,6 +134,16 @@ class ListObjectVersionsOutputTypeDefIterproxy(
             common_prefixes.extend(response.get("CommonPrefixes", []))
         return versions, delete_markers, common_prefixes
 
+    def iterate_key_and_version(self) -> T.Iterator[T.Tuple[str, str]]:
+        """
+        Iterate the key and version pairs.
+        """
+        for response in self:
+            for version in response.get("Versions", []):
+                yield (version["Key"], version["VersionId"])
+            for delete_marker in response.get("DeleteMarkers", []):
+                yield (delete_marker["Key"], delete_marker["VersionId"])
+
 
 def paginate_list_object_versions(
     s3_client: "S3Client",

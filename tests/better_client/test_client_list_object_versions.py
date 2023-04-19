@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import typing as T
 import pytest
 from s3pathlib.better_client.list_object_versions import (
     paginate_list_object_versions,
 )
+from s3pathlib.utils import smart_join_s3_key
 from s3pathlib.tests import run_cov_test
 
 from dummy_data import DummyData
@@ -13,9 +15,15 @@ class BetterListObjectVersions(DummyData):
     module = "better_client.list_object_versions"
 
     def _test_paginate_list_object_versions_for_object(self):
+        # prepare data
         s3_client = self.s3_client
         bucket = self.bucket_with_versioning
-        key = f"{self.get_prefix()}/for_object/file.txt"
+        prefix = smart_join_s3_key(
+            [self.get_prefix(), "list_object_versions"], is_dir=True
+        )
+        key = smart_join_s3_key([prefix, "for_object/file.txt"], is_dir=False)
+
+        # create 5 version and 2 delete markers
         for i in [1, 2]:
             s3_client.put_object(Bucket=bucket, Key=key, Body=f"v{i}")
         s3_client.delete_object(Bucket=bucket, Key=key)
@@ -25,25 +33,44 @@ class BetterListObjectVersions(DummyData):
         for i in [5]:
             s3_client.put_object(Bucket=bucket, Key=key, Body=f"v{i}")
 
-        (versions, delete_markers, common_prefixes,) = paginate_list_object_versions(
+        # check the number of versions, delete markers and common prefixes
+        proxy = paginate_list_object_versions(
             s3_client=s3_client,
             bucket=bucket,
             prefix=key,
-        ).versions_and_delete_markers_and_common_prefixes()
+        )
+        (
+            versions,
+            delete_markers,
+            common_prefixes,
+        ) = proxy.versions_and_delete_markers_and_common_prefixes()
         assert len(versions) == 5
         assert len(delete_markers) == 2
         assert len(common_prefixes) == 0
 
     def _test_paginate_list_object_versions_for_folder(self):
+        # prepare data
         s3_client = self.s3_client
         bucket = self.bucket_with_versioning
-        prefix = f"{self.get_prefix()}/for_folder/"
+        prefix = smart_join_s3_key(
+            [self.get_prefix(), "list_object_versions_for_folder"], is_dir=True
+        )
 
         def put(suffix: str, content: str):
             s3_client.put_object(Bucket=bucket, Key=f"{prefix}{suffix}", Body=content)
 
         def delete(suffix: str):
             s3_client.delete_object(Bucket=bucket, Key=f"{prefix}{suffix}")
+
+        def list_object_versions(delimiter: T.Optional[str] = None):
+            kwargs = dict(
+                s3_client=s3_client,
+                bucket=bucket,
+                prefix=prefix,
+            )
+            if delimiter:
+                kwargs["delimiter"] = delimiter
+            return paginate_list_object_versions(**kwargs)
 
         put("README.txt", "this is read me v1")
         delete("README.txt")
@@ -62,26 +89,30 @@ class BetterListObjectVersions(DummyData):
 
         put("soft_folder/sub_folder/password.txt", "pwd v1")
 
-        (versions, delete_markers, common_prefixes,) = paginate_list_object_versions(
-            s3_client=s3_client,
-            bucket=bucket,
-            prefix=prefix,
-        ).versions_and_delete_markers_and_common_prefixes()
-
+        # check the number of versions, delete markers and common prefixes
+        (
+            versions,
+            delete_markers,
+            common_prefixes,
+        ) = list_object_versions().versions_and_delete_markers_and_common_prefixes()
         assert len(versions) == 9
         assert len(delete_markers) == 3
+        assert len(common_prefixes) == 0
 
-        (versions, delete_markers, common_prefixes,) = paginate_list_object_versions(
-            s3_client=s3_client, bucket=bucket, prefix=prefix, delimiter="/"
-        ).versions_and_delete_markers_and_common_prefixes()
+        # check the number of versions, delete markers and common prefixes
+        assert len(list_object_versions().versions().all()) == 9
+        assert len(list_object_versions().delete_markers().all()) == 3
+        assert len(list_object_versions().common_prefixes().all()) == 0
 
+        # check the number of versions, delete markers and common prefixes
+        (
+            versions,
+            delete_markers,
+            common_prefixes,
+        ) = list_object_versions("/").versions_and_delete_markers_and_common_prefixes()
         assert len(versions) == 3
         assert len(delete_markers) == 1
         assert len(common_prefixes) == 2
-
-        # self.rprint(versions)
-        # self.rprint(delete_markers)
-        # self.rprint(common_prefixes)
 
     def test(self):
         self._test_paginate_list_object_versions_for_object()
