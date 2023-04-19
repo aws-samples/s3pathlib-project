@@ -2,9 +2,6 @@
 
 import typing as T
 import hashlib
-from pathlib_mate import Path
-
-from .type import PathType
 
 try:
     import botocore.exceptions
@@ -96,6 +93,7 @@ def make_s3_console_url(
     bucket: T.Optional[str] = None,
     prefix: T.Optional[str] = None,
     s3_uri: T.Optional[str] = None,
+    version_id: T.Optional[str] = None,
     is_us_gov_cloud: bool = False,
 ) -> str:
     """
@@ -111,6 +109,10 @@ def make_s3_console_url(
         https://s3.console.aws.amazon.com/s3/object/my-bucket?prefix=my-folder/data.json
 
     .. versionadded:: 1.0.1
+
+    .. versionchanged:: 2.1.1
+
+        add ``version_id`` parameter.
     """
     if s3_uri is None:
         if not ((bucket is not None) and (prefix is not None)):
@@ -126,19 +128,23 @@ def make_s3_console_url(
         )
     elif prefix.endswith("/"):
         s3_type = "buckets"
+        prefix_part = f"prefix={prefix}"
     else:
         s3_type = "object"
+        prefix_part = f"prefix={prefix}"
 
     if is_us_gov_cloud:
         endpoint = "console.amazonaws-us-gov.com"
     else:
         endpoint = "console.aws.amazon.com"
 
-    return "https://{endpoint}/s3/{s3_type}/{bucket}?prefix={prefix}".format(
-        endpoint=endpoint,
-        s3_type=s3_type,
-        bucket=bucket,
-        prefix=prefix
+    if version_id is None:
+        version_part = ""
+    else:
+        version_part = f"&versionId={version_id}"
+
+    return (
+        f"https://{endpoint}/s3/{s3_type}/{bucket}?{prefix_part}{version_part}"
     )
 
 

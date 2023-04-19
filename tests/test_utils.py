@@ -53,18 +53,25 @@ def test_s3_key_smart_join():
 
 
 def test_make_s3_console_url():
+    # object
     url = utils.make_s3_console_url("my-bucket", "my-file.zip")
     assert "object" in url
 
+    # folder
     url = utils.make_s3_console_url("my-bucket", "my-folder/")
     assert "bucket" in url
 
+    # uri
     url = utils.make_s3_console_url(s3_uri="s3://my-bucket/my-folder/data.json")
     assert url == "https://console.aws.amazon.com/s3/object/my-bucket?prefix=my-folder/data.json"
 
     # s3 bucket root
     url = utils.make_s3_console_url(s3_uri="s3://my-bucket/")
     assert url == "https://console.aws.amazon.com/s3/buckets/my-bucket?tab=objects"
+
+    # version id
+    url = utils.make_s3_console_url(s3_uri="s3://my-bucket/my-folder/my-file.zip", version_id="v123")
+    assert url == "https://console.aws.amazon.com/s3/object/my-bucket?prefix=my-folder/my-file.zip&versionId=v123"
 
     # us gov cloud
     url = utils.make_s3_console_url(

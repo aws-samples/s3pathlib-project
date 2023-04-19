@@ -131,13 +131,19 @@ class UriAPIMixin:
         Return an AWS US Gov Cloud S3 Console url that can inspect the details.
 
         .. versionadded:: 1.0.5
+
+        .. versionchanged:: 2.1.1
+
+            now take the version id into consideration.
         """
         uri: str = self.uri
         if uri is None:
             return None
         else:
             console_url = utils.make_s3_console_url(
-                s3_uri=uri, is_us_gov_cloud=True
+                s3_uri=uri,
+                version_id=self.version_id,
+                is_us_gov_cloud=True,
             )
             return console_url
 

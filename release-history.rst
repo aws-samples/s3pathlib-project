@@ -17,6 +17,21 @@ Backlog (TODO)
 - add JupyterNotebook document
 
 
+2.1.1 (TODO)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- most of methods now supports ``version_id`` argument for S3 versioning enabled bucket.
+- :meth:`s3pathlib.core.rw.ReadAndWriteAPIMixin.read_bytes` and :meth:`s3pathlib.core.rw.ReadAndWriteAPIMixin.read_text` now support ``version_id`` and full list of ``get_object`` boto3 arguments.
+- :meth:`s3pathlib.core.uri.UriAPIMixin.console_url` now take the version id into consideration.
+- add ``s3pathlib.better_client`` to the public API, it is a collection of more user friendly boto3 API, with type hint.
+
+**Minor Improvements**
+
+- use moto for unit test.
+- add tons of more unit test for edge cases.
+
+
 1.4.1 (2023-02-16)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
