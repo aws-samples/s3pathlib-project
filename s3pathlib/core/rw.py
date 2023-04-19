@@ -529,7 +529,7 @@ class ReadAndWriteAPIMixin:
 
     def touch(
         self: "S3Path",
-        exist_ok: bool = True,
+        exist_ok: bool = False,
         metadata: MetadataType = NOTHING,
         tags: TagType = NOTHING,
         acl: str = NOTHING,
@@ -661,12 +661,13 @@ class ReadAndWriteAPIMixin:
             expected_bucket_owner=expected_bucket_owner,
             bsm=bsm,
         )
+
         if exist_ok:
             self.write_text(**kwargs)
         elif self.exists(bsm=bsm) is False:
             self.write_text(**kwargs)
         else:
-            raise exc.S3ObjectAlreadyExist.make(self.uri)
+            raise exc.S3FileAlreadyExist.make(self.uri)
 
     def mkdir(
         self: "S3Path",
@@ -683,8 +684,7 @@ class ReadAndWriteAPIMixin:
 
         .. versionadded:: 1.0.6
         """
-        if not self.is_dir():
-            raise exc.S3PathIsNotFolderError.make(self)
+        self.ensure_dir()
 
         if exist_ok:
             self.write_text("", bsm=bsm)

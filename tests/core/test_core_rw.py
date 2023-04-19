@@ -91,33 +91,74 @@ class ReadAndWriteAPIMixin(BaseTest):
             "k3": "v3",
         }
 
+    def _test_text_bytes_io_with_versioning(self):
+        s3path = S3Path(self.s3dir_root_with_versioning, "with_versioning", "test.txt")
+        if self.use_mock:
+            with pytest.raises(exc.S3FileNotExist):
+                _ = s3path.version_id
+
+        s3path_new = s3path.write_text("v1")
+        v1 = s3path_new.version_id
+        assert v1 != "null"
+        assert s3path_new.is_delete_marker() is False
+        assert s3path_new.size == 2
+        assert s3path_new.etag is not None
+        assert s3path_new.last_modified_at is not None
+
+        s3path_new = s3path.write_text("v22")
+        v2 = s3path_new.version_id
+        assert v2 != "null"
+        assert v2 != v1
+        assert s3path_new.size == 3
+        assert s3path_new.etag is not None
+        assert s3path_new.last_modified_at is not None
+        assert s3path_new.is_delete_marker() is False
+
     def _test_touch(self):
-        s3dir_root = self.s3dir_root
+        s3dir_root = S3Path(self.s3dir_root, "touch")
 
-        p = S3Path(s3dir_root, "touch", "test.txt")
+        # --- test with a file
+        # prepare, clear off all existing files
+        p = S3Path(s3dir_root, "test.txt")
         p.delete_if_exists()
-
         assert p.exists() is False
+
+        # touch it, then it should exist
         p.touch()
         assert p.exists() is True
         assert p.size == 0
-        with pytest.raises(exc.S3ObjectAlreadyExist):
-            p.touch(exist_ok=False)
-        p.touch()
 
-        p = S3Path(s3dir_root, "touch", "folder/")
-        with pytest.raises(TypeError):
+        # touch it again, since it already exists, then it should raise error
+        with pytest.raises(exc.S3FileAlreadyExist):
+            p.touch()
+
+        # touch it again, since we set exist_ok=True, then it should not raise error
+        p.touch(exist_ok=True)
+
+        # --- test with a folder
+        # prepare, clear off all existing files
+        p = S3Path(s3dir_root, "folder/")
+        p.delete_if_exists()
+        with pytest.raises(exc.S3PathIsNotFileError):
             p.touch()
 
     def _test_mkdir(self):
-        s3dir_root = self.s3dir_root
+        s3dir_root = S3Path(self.s3dir_root, "mkdir")
 
-        # case 1, exists_ok = False, parents = True
-        p_root = S3Path(s3dir_root, "mkdir/")
-
-        # clear off all existing folders
+        # --- test with a file
+        # prepare and clear off all existing files
+        p_root = S3Path(s3dir_root, "file.txt")
         p_root.delete_if_exists()
 
+        with pytest.raises(exc.S3PathIsNotFolderError):
+            p_root.mkdir()
+
+        # --- test with a folder
+        # prepare and clear off all existing files
+        p_root = S3Path(s3dir_root, "folder/")
+        p_root.delete_if_exists()
+
+        # case 1, exists_ok = False, parents = True
         p_f3 = S3Path(p_root, "f1", "f2", "f3/")
         p_f2 = p_f3.parent
         p_f1 = p_f2.parent
@@ -151,35 +192,12 @@ class ReadAndWriteAPIMixin(BaseTest):
         with pytest.raises(exc.S3PathIsNotFolderError):
             S3Path(p_root, "test.txt").mkdir()
 
-    def _test_with_versioning(self):
-        s3path = S3Path(self.s3dir_root_with_versioning, "with_versioning", "test.txt")
-        if self.use_mock:
-            with pytest.raises(exc.S3ObjectNotExist):
-                _ = s3path.version_id
-
-        s3path_new = s3path.write_text("v1")
-        v1 = s3path_new.version_id
-        assert v1 != "null"
-        assert s3path_new.is_delete_marker() is False
-        assert s3path_new.size == 2
-        assert s3path_new.etag is not None
-        assert s3path_new.last_modified_at is not None
-
-        s3path_new = s3path.write_text("v22")
-        v2 = s3path_new.version_id
-        assert v2 != "null"
-        assert v2 != v1
-        assert s3path_new.size == 3
-        assert s3path_new.etag is not None
-        assert s3path_new.last_modified_at is not None
-        assert s3path_new.is_delete_marker() is False
-
     def test(self):
         self._test_text_bytes_io()
         self._test_text_bytes_io_with_metadata_and_tags()
+        self._test_text_bytes_io_with_versioning()
         self._test_touch()
         self._test_mkdir()
-        self._test_with_versioning()
 
 
 class Test(ReadAndWriteAPIMixin):
