@@ -143,12 +143,12 @@ class ReadAndWriteAPIMixin(BaseTest):
 
         # case 2
         # by default, it doesn't allow make dir if already exists
-        with pytest.raises(FileExistsError):
+        with pytest.raises(exc.S3FolderAlreadyExist):
             p_f3.mkdir()
 
         p_f3.mkdir(exist_ok=True)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(exc.S3PathIsNotFolderError):
             S3Path(p_root, "test.txt").mkdir()
 
     def _test_with_versioning(self):

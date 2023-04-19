@@ -625,7 +625,6 @@ class ReadAndWriteAPIMixin:
         """
         self.ensure_object()
         kwargs = dict(
-
             data="",
             metadata=metadata,
             tags=tags,
@@ -678,29 +677,21 @@ class ReadAndWriteAPIMixin:
         """
         Make an S3 folder (empty "/" file)
 
+        :param exist_ok: If True, it won't raise error when the S3 folder already exists.
+        :param parents: If True, all parent folders will be created.
+        :param bsm: See bsm_.
+
         .. versionadded:: 1.0.6
         """
         if not self.is_dir():
-            raise ValueError(f"{self.uri} is not a directory, you cannot make dir!")
+            raise exc.S3PathIsNotFolderError.make(self)
 
-        s3_client = resolve_s3_client(context, bsm)
-        response = head_object(
-            s3_client=s3_client,
-            bucket=self.bucket,
-            key=self.key,
-            ignore_not_found=True,
-        )
-        if response is None:
-            s3_client.put_object(
-                Bucket=self.bucket,
-                Key=self.key,
-                Body="",
-            )
+        if exist_ok:
+            self.write_text("", bsm=bsm)
+        elif self.exists(bsm=bsm) is False:
+            self.write_text("", bsm=bsm)
         else:
-            if exist_ok:
-                pass
-            else:
-                raise FileExistsError(f"{self.uri} already exists!")
+            raise exc.S3FolderAlreadyExist.make(self.uri)
 
         if parents:
             for p in self.parents:
