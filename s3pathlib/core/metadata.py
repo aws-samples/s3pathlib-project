@@ -102,7 +102,7 @@ class MetadataAPIMixin:
     @property
     def size_for_human(self: "S3Path") -> str:
         """
-        A human readable string version of the size.
+        A human-readable string version of the size.
 
         .. versionadded:: 1.0.1
         """
@@ -110,21 +110,29 @@ class MetadataAPIMixin:
 
     @property
     def _static_version_id(self: "S3Path") -> T.Optional[str]:
+        """
+        This method use the ``self._meta`` to get the version id. Unlike
+        other metadata property methods, this method does not call head_object().
+        """
         if self._meta is None:
             return None
         else:
-            return self._meta.get("VersionId")
+            return self._meta.get("VersionId", default="null")
 
     @FilterableProperty
-    def version_id(self: "S3Path") -> int:
+    def version_id(self: "S3Path") -> T.Optional[str]:
         """
         Only available if you turned on versioning for the bucket.
 
         Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_Object.html
 
         .. versionadded:: 1.0.1
+
+        .. versionchanged:: 2.1.1
+
+            return 'null' if it is not a version enabled bucket
         """
-        return self._get_meta_value(key="VersionId")
+        return self._get_meta_value(key="VersionId", default="null")
 
     @FilterableProperty
     def expire_at(self: "S3Path") -> datetime:
