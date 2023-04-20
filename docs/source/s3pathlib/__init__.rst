@@ -14,6 +14,7 @@ sub packages and modules
     core <core/__init__>
     aws <aws>
     compat <compat>
+    constants <constants>
     exc <exc>
     marker <marker>
     metadata <metadata>
