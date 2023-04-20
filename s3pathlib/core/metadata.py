@@ -8,6 +8,7 @@ import typing as T
 from datetime import datetime
 
 from .. import utils
+from ..constants import IS_DELETE_MARKER
 from ..metadata import warn_upper_case_in_metadata_key
 from ..better_client.head_object import head_object
 from ..aws import context
@@ -49,6 +50,11 @@ class MetadataAPIMixin:
         default: T.Any = None,
         bsm: T.Optional["BotoSesManager"] = None,
     ) -> T.Any:
+        """
+        Note:
+
+            This method is for those metadata fields that conditionally exists.
+        """
         if self._meta is None:
             self.head_object(bsm=bsm)
         return self._meta.get(key, default)
@@ -69,7 +75,7 @@ class MetadataAPIMixin:
         return self._meta[key]
 
     @FilterableProperty
-    def etag(self: "S3Path") -> str:
+    def etag(self: "S3Path") -> T.Optional[str]:
         """
         For small file, it is the md5 check sum. For large file, because it is
         created from multi part upload, it is the sum of md5 for each part and
@@ -79,7 +85,11 @@ class MetadataAPIMixin:
 
         .. versionadded:: 1.0.1
         """
-        return self._get_or_pull_meta_value(key="ETag")[1:-1]
+        v = self._get_meta_value(key="ETag", default=None)
+        if v is None:
+            return v
+        else:
+            return v[1:-1]
 
     @FilterableProperty
     def last_modified_at(self: "S3Path") -> datetime:
@@ -97,7 +107,7 @@ class MetadataAPIMixin:
 
         .. versionadded:: 1.0.1
         """
-        return self._get_or_pull_meta_value(key="ContentLength")
+        return self._get_meta_value(key="ContentLength", default=0)
 
     @property
     def size_for_human(self: "S3Path") -> str:
@@ -229,6 +239,7 @@ class MetadataAPIMixin:
             "LastModified": dct["LastModified"],
             "IsLatest": dct["IsLatest"],
             "Owner": dct.get("Owner", {}),
+            IS_DELETE_MARKER: True,
         }
         return p
 

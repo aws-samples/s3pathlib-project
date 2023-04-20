@@ -12,10 +12,10 @@ Is the S3Path a XYZ testing.
 import typing as T
 
 from ..exc import (
-    S3PathIsNotBucketError,
     S3PathIsNotFolderError,
     S3PathIsNotFileError,
 )
+from ..constants import IS_DELETE_MARKER
 
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
@@ -94,7 +94,7 @@ class IsTestAPIMixin:
         .. versionadded:: 2.1.1
         """
         if self.is_file():
-            if (self.version_id is not None) and (self.etag is None):
+            if (self.version_id is not None) and (IS_DELETE_MARKER in self._meta):
                 return True
             else:
                 return False
