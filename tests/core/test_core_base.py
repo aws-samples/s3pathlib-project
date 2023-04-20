@@ -74,6 +74,23 @@ class BaseS3Path(BaseTest):
             assert p._is_dir is None
             assert p.parts == []
 
+    def _test_uri_and_arn(self):
+        for p in [
+            S3Path("s3://bucket/folder/file.txt"),
+            S3Path("arn:aws:s3:::bucket/folder/file.txt"),
+        ]:
+            assert p._bucket == "bucket"
+            assert p._parts == ["folder", "file.txt"]
+            assert p._is_dir is False
+
+        for p in [
+            S3Path("s3://bucket/folder/subfolder/"),
+            S3Path("arn:aws:s3:::bucket/folder/subfolder/"),
+        ]:
+            assert p._bucket == "bucket"
+            assert p._parts == ["folder", "subfolder"]
+            assert p._is_dir is True
+
     def _test_type_error(self):
         with pytest.raises(TypeError):
             S3Path(1, "a", "b", "c")
@@ -89,6 +106,7 @@ class BaseS3Path(BaseTest):
         self._test_logical_aws_s3_directory()
         self._test_aws_s3_bucket()
         self._test_void_aws_s3_path()
+        self._test_uri_and_arn()
         self._test_type_error()
 
 
