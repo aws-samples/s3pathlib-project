@@ -12,7 +12,6 @@ Read and write related API.
 
 import typing as T
 from datetime import datetime
-from pprint import pprint
 
 from func_args import NOTHING, resolve_kwargs
 
@@ -20,7 +19,6 @@ from .. import exc
 from ..type import TagType, MetadataType
 from ..tag import encode_url_query
 from ..aws import context
-from ..better_client.head_object import head_object
 
 from .resolve_s3_client import resolve_s3_client
 

@@ -52,9 +52,19 @@ class OpenerAPIMixin(BaseTest):
         assert s3path.metadata == {"creator": "s3pathlib"}
         assert s3path.get_tags()[1] == {"project": "s3pathlib"}
 
+    def _test_open_with_versioning(self):
+        s3path = S3Path(self.s3dir_root_with_versioning, "log.txt")
+        s3path_v1 = s3path.write_text("v1")
+        s3path_v2 = s3path.write_text("v2")
+        with s3path.open("r", version_id=s3path_v1.version_id) as f:
+            assert f.read() == "v1"
+        with s3path.open("r", version_id=s3path_v2.version_id) as f:
+            assert f.read() == "v2"
+
     def test(self):
         self._test_open()
         self._test_open_with_additional_kwargs()
+        self._test_open_with_versioning()
 
 
 class Test(OpenerAPIMixin):
