@@ -54,6 +54,20 @@ class MutateAPIMixin:
         Create a new S3Path by replacing part of the attributes. If no argument
         is given, it behaves like :meth:`copy`.
 
+        Example:
+
+            >>> s3path = S3Path("bucket", "folder", "file.txt")
+            >>> s3path.change(new_bucket="new_bucket")
+            S3Path('s3://new_bucket/folder/file.txt')
+
+            >>> s3path = S3Path("bucket", "folder", "file.txt")
+            >>> s3path.change(new_basename="data.json")
+            S3Path('s3://bucket/folder/data.json')
+
+            >>> s3path = S3Path("bucket", "folder", "file.txt")
+            >>> s3path.change(new_fname="log")
+            S3Path('s3://bucket/folder/log.txt')
+
         :param new_bucket: The new bucket name
         :param new_abspath:
         :param new_dirpath:
@@ -126,6 +140,15 @@ class MutateAPIMixin:
         return p
 
     def to_dir(self: "S3Path") -> "S3Path":
+        """
+        Convert the S3Path to a directory. If the S3Path is a file, then append
+        a "/" at the end. If the S3Path is already a directory, then do nothing.
+
+        Example:
+
+            >>> S3Path.from_s3_uri("s3://bucket/folder").to_dir()
+            S3Path('s3://bucket/folder/')
+        """
         if self.is_dir():
             return self.copy()
         elif self.is_file():
@@ -134,6 +157,15 @@ class MutateAPIMixin:
             raise ValueError("only concrete file or folder S3Path can do .to_dir()")
 
     def to_file(self: "S3Path") -> "S3Path":
+        """
+        Convert the S3Path to a file. If the S3Path is a directory, then strip
+        out the last "/". If the S3Path is already a file, then do nothing.
+
+        Example:
+
+            >>> S3Path.from_s3_uri("s3://bucket/file/").to_dir()
+            S3Path('s3://bucket/file/')
+        """
         if self.is_file():
             return self.copy()
         elif self.is_dir():
