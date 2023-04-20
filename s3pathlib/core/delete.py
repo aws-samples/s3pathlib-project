@@ -37,6 +37,7 @@ class DeleteAPIMixin:
         expected_bucket_owner: str = NOTHING,
         check_sum_algorithm: str = NOTHING,
         is_hard_delete: bool = False,
+        skip_prompt: bool = False,
         bsm: T.Optional["BotoSesManager"] = None,
     ) -> "S3Path":
         """
@@ -75,6 +76,8 @@ class DeleteAPIMixin:
         :param check_sum_algorithm: See delete_object_.
         :param is_hard_delete: if ``True``, then it will delete all versions
             of the object, then the data is permanently deleted.
+        :param skip_prompt: Default False, it will prompt you to confirm when deleting
+            everything in an S3 bucket.
         :param bsm: See bsm_.
 
         :return: a new ``S3Path`` object representing the deleted object
@@ -145,6 +148,7 @@ class DeleteAPIMixin:
                     bypass_governance_retention=bypass_governance_retention,
                     expected_bucket_owner=expected_bucket_owner,
                     check_sum_algorithm=check_sum_algorithm,
+                    skip_prompt=skip_prompt,
                 )
                 return self
 
@@ -156,6 +160,7 @@ class DeleteAPIMixin:
                 request_payer=request_payer,
                 bypass_governance_retention=bypass_governance_retention,
                 expected_bucket_owner=expected_bucket_owner,
+                skip_prompt=skip_prompt,
             )
             return self
         else:  # pragma: no cover

@@ -32,6 +32,7 @@ Backlog (TODO)
 
 - use moto for unit test.
 - add tons of more unit test for edge cases.
+- prompt to confirm when delete everything in a bucket.
 
 **Bugfixes**
 

@@ -90,6 +90,7 @@ def delete_dir(
     bypass_governance_retention: bool = NOTHING,
     expected_bucket_owner: str = NOTHING,
     check_sum_algorithm: str = NOTHING,
+    skip_prompt: bool = False,
 ) -> int:
     """
     Recursively delete all objects under a s3 prefix. It is a wrapper of
@@ -107,12 +108,24 @@ def delete_dir(
     :param bypass_governance_retention: See delete_object_.
     :param expected_bucket_owner: See delete_object_.
     :param check_sum_algorithm: See delete_object_.
+    :param skip_prompt: Default False, it will prompt you to confirm when deleting
+        everything in an S3 bucket.
 
     :return: number of deleted objects
 
     .. versionadded:: 2.1.1
     """
-    ensure_s3_dir(prefix)
+    if prefix == "": # pragma: no cover
+        if skip_prompt is False:
+            answer = input(
+                "You are deleting everything in an S3 Bucket, "
+                "are you sure you want to do this? (YES/NO): "
+            ).strip()
+            if answer != "YES":
+                print("Aborting")
+                return 0
+    else:
+        ensure_s3_dir(prefix)
 
     contents_iterproxy = paginate_list_objects_v2(
         s3_client=s3_client,
@@ -152,6 +165,7 @@ def delete_object_versions(
     bypass_governance_retention: bool = NOTHING,
     expected_bucket_owner: str = NOTHING,
     check_sum_algorithm: str = NOTHING,
+    skip_prompt: bool = False,
 ) -> int:
     """
     Recursively delete all objects and their versions under a s3 prefix.
@@ -170,11 +184,24 @@ def delete_object_versions(
     :param bypass_governance_retention: See delete_object_.
     :param expected_bucket_owner: See delete_object_.
     :param check_sum_algorithm: See delete_object_.
+    :param skip_prompt: Default False, it will prompt you to confirm when deleting
+        everything in an S3 bucket.
 
     :return: number of deleted objects
 
     .. versionadded:: 2.1.1
     """
+    if prefix == "": # pragma: no cover
+        if skip_prompt is False:
+            answer = input(
+                "You are deleting everything in an S3 Bucket, "
+                "including all historical versions, "
+                "are you sure you want to do this? (YES/NO): "
+            ).strip()
+            if answer != "YES":
+                print("Aborting")
+                return 0
+
     proxy = paginate_list_object_versions(
         s3_client=s3_client,
         bucket=bucket,
