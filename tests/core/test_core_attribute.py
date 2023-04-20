@@ -210,6 +210,11 @@ class AttributeAPIMixin(BaseTest):
         with pytest.raises(TypeError):
             _ = S3Path.make_relpath("folder").root
 
+    def _test_set_attribute(self):
+        s3path = S3Path("bkt/a/b/c")
+        with pytest.raises(AttributeError):
+            s3path.bucket = "new-bkt"
+
     def test(self):
         self._test_properties()
         self._test_parent()
@@ -219,6 +224,7 @@ class AttributeAPIMixin(BaseTest):
         self._test_is_parent_of()
         self._test_is_prefix_of()
         self._test_root()
+        self._test_set_attribute()
 
 
 class Test(AttributeAPIMixin):

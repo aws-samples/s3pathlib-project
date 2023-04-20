@@ -114,7 +114,7 @@ class UriAPIMixin:
     @property
     def console_url(self: 'S3Path') -> T.Optional[str]:
         """
-        Return an AWS S3 Console url that can inspect the details.
+        Return an url that can inspect the object, directory details in AWS Console.
 
         .. versionadded:: 1.0.1
 
@@ -135,7 +135,8 @@ class UriAPIMixin:
     @property
     def us_gov_cloud_console_url(self: 'S3Path') -> T.Optional[str]:
         """
-        Return an AWS US Gov Cloud S3 Console url that can inspect the details.
+        Return a Gov Cloud url that can inspect the object, directory details
+        in AWS Console.
 
         .. versionadded:: 1.0.5
 
@@ -224,9 +225,15 @@ class UriAPIMixin:
     @classmethod
     def from_s3_arn(cls: T.Type['S3Path'], arn: str) -> 'S3Path':
         """
+        Construct an :class:`S3Path` from S3 ARN.
 
-        :param arn:
-        :return:
+        >>> p = S3Path.from_s3_arn("arn:aws:s3:::bucket/folder/file.txt")
+
+        >>> p
+        S3Path('s3://bucket/folder/file.txt')
+
+        >>> p.arn
+        'arn:aws:s3:::bucket/folder/file.txt'
         """
         validate.validate_s3_arn(arn)
         return cls._from_parts([arn.replace("arn:aws:s3:::", "", 1), ])

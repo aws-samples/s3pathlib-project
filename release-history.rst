@@ -28,11 +28,14 @@ Backlog (TODO)
 - :meth:`s3pathlib.core.base.BaseS3Path.__new__` now can take S3 URI and ARN directly without using the ``from_s3_uri`` and ``from_s3_arn`` method.
 - add ``s3pathlib.better_client`` to the public API, it is a collection of more user friendly boto3 API, with type hint.
 
-
 **Minor Improvements**
 
 - use moto for unit test.
 - add tons of more unit test for edge cases.
+
+**Bugfixes**
+
+- fix a bug that should not allow user to set value to attributes like ``bucket``, ``key``.
 
 
 1.4.1 (2023-02-16)

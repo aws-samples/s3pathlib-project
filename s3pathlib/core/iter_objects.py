@@ -10,7 +10,7 @@ List objects related API.
 import typing as T
 
 from iterproxy import IterProxy
-from func_args import NOTHING, resolve_kwargs
+from func_args import NOTHING
 
 from .. import utils
 from ..aws import context
@@ -109,6 +109,26 @@ class IterObjectsAPIMixin:
         """
         Recursively iterate objects under this prefix, yield :class:`S3Path`.
 
+        Assuming we have the following folder structure::
+
+            s3://my-bucket/
+            s3://my-bucket/README.txt
+            s3://my-bucket/hard-folder/ (this is a hard folder)
+            s3://my-bucket/hard-folder/1.txt
+            s3://my-bucket/soft-folder/ (this is a soft folder)
+            s3://my-bucket/soft-folder/2.txt
+
+        Example:
+
+            >>> s3dir = S3Path("s3://my-bucket/")
+            >>> s3dir.iter_objects().all()
+            [
+                S3Path('s3://my-bucket/README.txt'),
+                S3Path('s3://my-bucket/hard-folder/'),
+                S3Path('s3://my-bucket/hard-folder/1.txt'),
+                S3Path('s3://my-bucket/soft-folder/2.txt'),
+            ]
+
         :param batch_size: Number of s3 object returned per paginator,
             valid value is from 1 ~ 1000. large number can reduce IO.
         :param limit: Total number of s3 object to return.
@@ -171,6 +191,25 @@ class IterObjectsAPIMixin:
         iterate objects and folder under this prefix non-recursively,
         yield :class:`S3Path`.
 
+        Assuming we have the following folder structure::
+
+            s3://my-bucket/
+            s3://my-bucket/README.txt
+            s3://my-bucket/hard-folder/ (this is a hard folder)
+            s3://my-bucket/hard-folder/1.txt
+            s3://my-bucket/soft-folder/ (this is a soft folder)
+            s3://my-bucket/soft-folder/2.txt
+
+        Example:
+
+            >>> s3dir = S3Path("s3://my-bucket/")
+            >>> s3dir.iterdir().all()
+            [
+                S3Path('s3://my-bucket/hard-folder/'),
+                S3Path('s3://my-bucket/soft-folder/'),
+                S3Path('s3://my-bucket/README.txt'),
+            ]
+
         :param batch_size: number of s3 object returned per paginator,
             valid value is from 1 ~ 1000. large number can reduce IO.
         :param limit: total number of s3 object (not folder)to return
@@ -224,7 +263,26 @@ class IterObjectsAPIMixin:
         """
         Perform the "Calculate Total Size" action in AWS S3 console
 
-        :param for_human: If true, returns human readable string for "size".
+        Assuming we have the following folder structure::
+
+            s3://my-bucket/
+            s3://my-bucket/README.txt
+            s3://my-bucket/hard-folder/ (this is a hard folder)
+            s3://my-bucket/hard-folder/1.txt
+            s3://my-bucket/soft-folder/ (this is a soft folder)
+            s3://my-bucket/soft-folder/2.txt
+
+        Example:
+
+            >>> s3dir = S3Path("s3://my-bucket/")
+            >>> s3dir.calculate_total_size()
+            (3, 15360) # README.txt, hard-folder/1.txt, soft-folder/2.txt
+            >>> s3dir.calculate_total_size(for_human=True)
+            (3, 15 KB) # README.txt, hard-folder/1.txt, soft-folder/2.txt
+            >>> s3dir.count_objects(include_folder=True)
+            (4, 15 KB) # README.txt, hard-folder/, hard-folder/1.txt, soft-folder/2.txt
+
+        :param for_human: Default False. If true, returns human readable string for "size".
         :param include_folder: Default False, whether counting the hard folder
         (an empty "/" object).
         :param bsm: See bsm_.
@@ -253,6 +311,23 @@ class IterObjectsAPIMixin:
     ) -> int:
         """
         Count how many objects are under this s3 directory.
+
+        Assuming we have the following folder structure::
+
+            s3://my-bucket/
+            s3://my-bucket/README.txt
+            s3://my-bucket/hard-folder/ (this is a hard folder)
+            s3://my-bucket/hard-folder/1.txt
+            s3://my-bucket/soft-folder/ (this is a soft folder)
+            s3://my-bucket/soft-folder/2.txt
+
+        Example:
+
+            >>> s3dir = S3Path("s3://my-bucket/")
+            >>> s3dir.count_objects()
+            3 # README.txt, hard-folder/1.txt, soft-folder/2.txt
+            >>> s3dir.count_objects(include_folder=True)
+            4 # README.txt, hard-folder/, hard-folder/1.txt, soft-folder/2.txt
 
         :param include_folder: Default False, whether counting the hard folder
         (an empty "/" object).

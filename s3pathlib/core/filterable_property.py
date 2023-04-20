@@ -52,6 +52,9 @@ class FilterableProperty(T.Generic[FilterableType]):
             return self
         return self._func(obj)
 
+    def __set__(self, obj: T.Union['FilterableType', None], value: T.Any):
+        raise AttributeError(f"can't set attribute S3Path.{self.__name__}")
+
     def __eq__(self, other):
         def filter_(obj):
             return self._func(obj) == other
