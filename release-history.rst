@@ -11,15 +11,9 @@ Backlog (TODO)
 **Features and Improvements**
 
 - make :class:`s3pathlib.aws.Context` multi-thread safe.
-- add ``acl`` management feature
-- add ``legal_hold`` management feature
-
-**Minor Improvements**
-
-- add JupyterNotebook document
 
 
-2.0.1 (TODO)
+2.0.1 (2023-04-21)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
