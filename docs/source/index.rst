@@ -19,7 +19,7 @@ To upgrade to latest version:
     $ pip install --upgrade s3pathlib
 
 
-Table of Content
+Comprehensive Guide
 ------------------------------------------------------------------------------
 
 .. toctree::
@@ -29,6 +29,8 @@ Table of Content
     01-Pure-S3-Path-Manipulation.ipynb
     02-S3-Read-API.ipynb
     03-S3-Write-API.ipynb
+    04-Example-App-Sync-Two-S3-Folders.ipynb
+    05-Example-App-Reinvent-Cloud-Drive.ipynb
 
 
 API Document
