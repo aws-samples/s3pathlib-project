@@ -91,7 +91,7 @@ class IsTestAPIMixin:
         Test if it is a delete-marker. A delete-marker is just a version of
         an object without content.
 
-        .. versionadded:: 2.1.1
+        .. versionadded:: 2.0.1
         """
         if self.is_file():
             if (self.version_id is not None) and (IS_DELETE_MARKER in self._meta):

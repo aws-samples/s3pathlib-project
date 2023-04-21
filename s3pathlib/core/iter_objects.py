@@ -140,7 +140,7 @@ class IterObjectsAPIMixin:
 
         .. versionadded:: 1.0.1
 
-        .. versionchanged:: 2.1.1
+        .. versionchanged:: 2.0.1
 
             Remove ``include_folder`` argument. Support all list_objects_v2
             arguments.
@@ -220,7 +220,7 @@ class IterObjectsAPIMixin:
 
         .. versionadded:: 1.0.6
 
-        .. versionchanged:: 2.1.1
+        .. versionchanged:: 2.0.1
 
             Support all list_objects_v2 arguments.
         """

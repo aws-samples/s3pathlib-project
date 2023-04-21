@@ -40,7 +40,7 @@ class ExistsAPIMixin:
 
         .. versionadded:: 1.0.1
 
-        .. versionchanged:: 2.1.1
+        .. versionchanged:: 2.0.1
 
             Add ``version_id`` parameter.
         """
@@ -88,7 +88,7 @@ class ExistsAPIMixin:
 
         .. versionadded:: 1.0.1
 
-        .. versionchanged:: 2.1.1
+        .. versionchanged:: 2.0.1
 
             Add ``version_id`` parameter.
         """

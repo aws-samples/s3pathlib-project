@@ -118,7 +118,7 @@ class UriAPIMixin:
 
         .. versionadded:: 1.0.1
 
-        .. versionchanged:: 2.1.1
+        .. versionchanged:: 2.0.1
 
             now take the version id into consideration.
         """
@@ -140,7 +140,7 @@ class UriAPIMixin:
 
         .. versionadded:: 1.0.5
 
-        .. versionchanged:: 2.1.1
+        .. versionchanged:: 2.0.1
 
             now take the version id into consideration.
         """

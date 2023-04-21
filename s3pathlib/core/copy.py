@@ -87,7 +87,7 @@ class CopyAPIMixin:
 
             add ``metadata`` and ``tags`` argument
 
-        .. versionchanged:: 2.1.1
+        .. versionchanged:: 2.0.1
 
             add ``version_id`` argument
         """
@@ -329,7 +329,7 @@ class CopyAPIMixin:
 
             add ``metadata`` and ``tags`` argument
 
-        .. versionchanged:: 2.1.1
+        .. versionchanged:: 2.0.1
 
             add ``version_id`` argument
         """

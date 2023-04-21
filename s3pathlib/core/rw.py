@@ -99,7 +99,7 @@ class ReadAndWriteAPIMixin:
 
             automatically store metadata in cache.
             
-        .. versionchanged:: 2.1.1
+        .. versionchanged:: 2.0.1
         
             add ``version_id`` parameter, and now support full list of get_object_
             arguments.
@@ -209,7 +209,7 @@ class ReadAndWriteAPIMixin:
 
             automatically store metadata in cache.
 
-        .. versionchanged:: 2.1.1
+        .. versionchanged:: 2.0.1
 
             add ``version_id`` parameter, and now support full list of get_object_
             arguments.

@@ -67,7 +67,7 @@ class OpenerAPIMixin:
 
             add ``metadata`` and ``tags`` parameters
 
-        .. versionchanged:: 2.1.1
+        .. versionchanged:: 2.0.1
 
             add ``version_id`` parameter
         """

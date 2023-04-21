@@ -28,7 +28,7 @@ class ObjectTypeDefIterproxy(IterProxy["ObjectTypeDef"]):
     """
     An iterproxy that yields the "Contents" part of the ListObjectsV2_ response.
 
-    .. versionadded:: 2.1.1
+    .. versionadded:: 2.0.1
     """
 
 
@@ -36,7 +36,7 @@ class CommonPrefixTypeDefIterproxy(IterProxy["CommonPrefixTypeDef"]):
     """
     An iterproxy that yields the "CommonPrefixes" part of the ListObjectsV2_ response.
 
-    .. versionadded:: 2.1.1
+    .. versionadded:: 2.0.1
     """
 
 
@@ -45,7 +45,7 @@ class ListObjectsV2OutputTypeDefIterproxy(IterProxy["ListObjectsV2OutputTypeDef"
     An iterproxy that yields the original ListObjectsV2_ response.
     It has two utility methods to get the contents and common prefixes.
 
-    .. versionadded:: 2.1.1
+    .. versionadded:: 2.0.1
     """
 
     def _yield_content(self) -> T.Iterator["ObjectTypeDef"]:
@@ -57,7 +57,7 @@ class ListObjectsV2OutputTypeDefIterproxy(IterProxy["ListObjectsV2OutputTypeDef"
         """
         Iterate object contents.
 
-        .. versionadded:: 2.1.1
+        .. versionadded:: 2.0.1
         """
         return ObjectTypeDefIterproxy(self._yield_content())
 
@@ -70,7 +70,7 @@ class ListObjectsV2OutputTypeDefIterproxy(IterProxy["ListObjectsV2OutputTypeDef"
         """
         Iterate folders.
 
-        .. versionadded:: 2.1.1
+        .. versionadded:: 2.0.1
         """
         return CommonPrefixTypeDefIterproxy(self._yield_common_prefixes())
 
@@ -80,7 +80,7 @@ class ListObjectsV2OutputTypeDefIterproxy(IterProxy["ListObjectsV2OutputTypeDef"
         """
         Return the list of object contents and folders.
 
-        .. versionadded:: 2.1.1
+        .. versionadded:: 2.0.1
         """
         contents = list()
         common_prefixs = list()
@@ -137,7 +137,7 @@ def paginate_list_objects_v2(
 
     :return: a :class:`ListObjectsV2OutputTypeDefIterproxy` object.
 
-    .. versionadded:: 2.1.1
+    .. versionadded:: 2.0.1
     """
     # validate arguments
     if batch_size < 1 or batch_size > 1000:
@@ -199,7 +199,7 @@ def calculate_total_size(
     :return: Tuple of ``(count, total_size)``. First value is number of objects,
         Second value is total size in bytes.
 
-    .. versionadded:: 2.1.1
+    .. versionadded:: 2.0.1
     """
     count = 0
     total_size = 0
@@ -233,7 +233,7 @@ def count_objects(
 
     :return: Number of objects under prefix.
 
-    .. versionadded:: 2.1.1
+    .. versionadded:: 2.0.1
     """
     contents_iterproxy = paginate_list_objects_v2(
         s3_client=s3_client,

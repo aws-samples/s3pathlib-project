@@ -138,7 +138,7 @@ class MetadataAPIMixin:
 
         .. versionadded:: 1.0.1
 
-        .. versionchanged:: 2.1.1
+        .. versionchanged:: 2.0.1
 
             return 'null' if it is not a version enabled bucket
         """

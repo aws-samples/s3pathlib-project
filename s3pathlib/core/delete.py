@@ -91,7 +91,7 @@ class DeleteAPIMixin:
                     representing the deleted version.
             - if it's a directory, then it will return the deleted folder itself.
 
-        .. versionadded:: 2.1.1
+        .. versionadded:: 2.0.1
 
             Use this method to replace the :meth:`DeleteAPIMixin.delete_if_exists` method.
         """
@@ -199,7 +199,7 @@ class DeleteAPIMixin:
 
         .. versionadded:: 1.0.1
 
-        .. deprecated:: 2.1.1
+        .. deprecated:: 2.0.1
 
             This method will be removed in 3.X. Use ``delete`` instead.
         """

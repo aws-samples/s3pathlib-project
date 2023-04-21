@@ -91,7 +91,7 @@ class BaseS3Path:
 
     .. versionadded:: 1.0.1
 
-    .. versionchanged:: 2.1.1
+    .. versionchanged:: 2.0.1
 
         You can create S3Path from s3 uri or arn directly.
     """

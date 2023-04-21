@@ -46,7 +46,7 @@ class IterObjectVersionsAPIMixin:
         :param expected_bucket_owner: See ListObjectVersions_.
         :param bsm: See bsm_.
 
-        .. versionadded:: 2.1.1
+        .. versionadded:: 2.0.1
         """
         s3_client = resolve_s3_client(context, bsm)
         bucket = self.bucket

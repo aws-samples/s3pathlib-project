@@ -42,7 +42,7 @@ class TaggingAPIMixin:
 
         .. versionadded:: 1.1.1
 
-        .. versionchanged:: 2.1.1
+        .. versionchanged:: 2.0.1
 
             Add ``version_id``, ``expected_bucket_owner``, ``request_payer`` parameter.
         """
@@ -80,7 +80,7 @@ class TaggingAPIMixin:
 
         .. versionadded:: 1.1.1
 
-        .. versionchanged:: 2.1.1
+        .. versionchanged:: 2.0.1
 
             Add ``version_id``, ``expected_bucket_owner``, ``request_payer`` parameter.
         """

@@ -113,7 +113,7 @@ def delete_dir(
 
     :return: number of deleted objects
 
-    .. versionadded:: 2.1.1
+    .. versionadded:: 2.0.1
     """
     if prefix == "": # pragma: no cover
         if skip_prompt is False:
@@ -189,7 +189,7 @@ def delete_object_versions(
 
     :return: number of deleted objects
 
-    .. versionadded:: 2.1.1
+    .. versionadded:: 2.0.1
     """
     if prefix == "": # pragma: no cover
         if skip_prompt is False:
