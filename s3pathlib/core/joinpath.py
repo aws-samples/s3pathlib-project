@@ -55,7 +55,7 @@ class JoinPathAPIMixin:
         """
         warn_deprecate(
             func_name="S3Path.join_path",
-            version="2.1.1",
+            version="2.0.1",
             message="S3Path.joinpath",
         )
         args = [

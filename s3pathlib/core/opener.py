@@ -2,9 +2,13 @@
 
 """
 Smart open library integration.
+
+.. _bsm: https://github.com/aws-samples/boto-session-manager-project
 """
 
 import typing as T
+
+from func_args import NOTHING, resolve_kwargs
 
 from .resolve_s3_client import resolve_s3_client
 from ..aws import context
@@ -24,6 +28,7 @@ class OpenerAPIMixin:
     def open(
         self: 'S3Path',
         mode: T.Optional[str] = "r",
+        version_id: T.Optional[str] = NOTHING,
         buffering: T.Optional[int] = -1,
         encoding: T.Optional[str] = None,
         errors: T.Optional[str] = None,
@@ -33,35 +38,50 @@ class OpenerAPIMixin:
         ignore_ext: bool = False,
         compression: T.Optional[str] = None,
         multipart_upload: bool = True,
-        metadata: T.Optional[MetadataType] = None,
-        tags: T.Optional[TagType] = None,
+        metadata: T.Optional[MetadataType] = NOTHING,
+        tags: T.Optional[TagType] = NOTHING,
         transport_params: T.Optional[dict] = None,
         bsm: T.Optional['BotoSesManager'] = None,
     ):
         """
         Open S3Path as a file-liked object.
 
-        :param mode: "r", "w", "rb", "wb"
-        :param compression: whether do you want to compress the content
+        :param mode: "r", "w", "rb", "wb".
+        :param version_id: optional version id you want to read from.
+        :param compression: whether do you want to compress the content.
         :param multipart_upload: do you want to use multi-parts upload,
-            by default it is True
-        :param metadata: also put the user defined metadata dictionary
-        :param tags: also put the tag dictionary
-        :param bsm: optional ``boto_session_manager.BotoSesManager`` object
+            by default it is True.
+        :param metadata: also put the user defined metadata dictionary.
+        :param tags: also put the tag dictionary.
+        :param bsm: See bsm_.
 
         :return: a file-like object that has ``read()`` and ``write()`` method.
 
         See https://github.com/RaRe-Technologies/smart_open for more info.
+        Also see https://github.com/RaRe-Technologies/smart_open/blob/develop/howto.md#how-to-access-s3-anonymously
+        for S3 related info.
 
         .. versionadded:: 1.0.1
 
         .. versionchanged:: 1.2.1
+
+            add ``metadata`` and ``tags`` parameters
+
+        .. versionchanged:: 2.0.1
+
+            add ``version_id`` parameter
         """
         s3_client = resolve_s3_client(context, bsm)
         if transport_params is None:
             transport_params = dict()
         transport_params["client"] = s3_client
         transport_params["multipart_upload"] = multipart_upload
+        # write API doesn't take version_id parameter
+        # set it to NOTHING in case human made a mistake
+        if mode.startswith("r") is False:  # pragma: no cover
+            version_id = NOTHING
+        if version_id is not NOTHING:
+            transport_params["version_id"] = version_id
 
         open_kwargs = dict(
             uri=self.uri,
@@ -83,16 +103,14 @@ class OpenerAPIMixin:
 
         # if any of additional parameters exists, we need additional handling
         if sum([metadata is not None, tags is not None]) > 0:
-            kwargs = {}
-            if metadata is not None:
-                kwargs["Metadata"] = metadata
-            if tags is not None:
-                kwargs["Tagging"] = encode_url_query(tags)
-
+            s3_client_kwargs = resolve_kwargs(
+                Metadata=metadata,
+                Tagging=tags if tags is NOTHING else encode_url_query(tags),
+            )
             if multipart_upload:
-                client_kwargs = {"S3.Client.create_multipart_upload": kwargs}
+                client_kwargs = {"S3.Client.create_multipart_upload": s3_client_kwargs}
             else:
-                client_kwargs = {"S3.Client.put_object": kwargs}
+                client_kwargs = {"S3.Client.put_object": s3_client_kwargs}
             if "client_kwargs" in transport_params: # pragma: no cover
                 transport_params["client_kwargs"].update(client_kwargs)
             else:

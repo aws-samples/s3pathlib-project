@@ -9,13 +9,14 @@ import typing as T
 from pathlib_mate import Path
 
 from .resolve_s3_client import resolve_s3_client
-from .. import utils
+from ..better_client.upload import upload_dir
 from ..type import PathType
 from ..aws import context
 
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
     from boto_session_manager import BotoSesManager
+    from mypy_boto3_s3.type_defs import UploadFile
 
 
 class UploadAPIMixin:
@@ -31,7 +32,7 @@ class UploadAPIMixin:
         callback: callable = None,
         config=None,
         bsm: T.Optional["BotoSesManager"] = None,
-    ) -> dict:
+    ):
         """
         Upload a file from local file system to targeted S3 path
 
@@ -53,7 +54,7 @@ class UploadAPIMixin:
         p = Path(path)
         s3_client = resolve_s3_client(context, bsm)
         return s3_client.upload_file(
-            p.abspath,
+            Filename=p.abspath,
             Bucket=self.bucket,
             Key=self.key,
             ExtraArgs=extra_args,
@@ -92,7 +93,7 @@ class UploadAPIMixin:
         """
         self.ensure_dir()
         s3_client = resolve_s3_client(context, bsm)
-        return utils.upload_dir(
+        return upload_dir(
             s3_client=s3_client,
             bucket=self.bucket,
             prefix=self.key,

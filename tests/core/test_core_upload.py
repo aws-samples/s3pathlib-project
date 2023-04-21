@@ -2,20 +2,20 @@
 
 import pytest
 from pathlib_mate import Path
-from s3pathlib import client as better_client
 from s3pathlib.core import S3Path
-from s3pathlib.tests import s3_client, bucket, prefix, run_cov_test
+from s3pathlib.tests import run_cov_test
+from s3pathlib.tests.mock import BaseTest
 
 
 dir_here = Path.dir_here(__file__)
 
-s3dir_root = S3Path(bucket, prefix, "core", "upload").to_dir()
 
+class UploadAPIMixin(BaseTest):
+    module = "core.upload"
 
-class TestUploadAPIMixin:
-    def test_upload_file(self):
+    def _test_upload_file(self):
         # before state
-        p = S3Path(s3dir_root, "upload-file", "test.py")
+        p = S3Path(self.s3dir_root, "upload-file", "test.py")
         p.delete_if_exists()
         assert p.exists() is False
 
@@ -34,9 +34,9 @@ class TestUploadAPIMixin:
             p = S3Path("bucket", "folder/")
             p.upload_file("/tmp/file.txt")
 
-    def test_upload_dir(self):
+    def _test_upload_dir(self):
         # before state
-        p = S3Path(s3dir_root, "upload-dir/")
+        p = S3Path(self.s3dir_root, "upload-dir/")
         p.delete_if_exists()
         assert p.count_objects() == 0
 
@@ -64,6 +64,18 @@ class TestUploadAPIMixin:
             p = S3Path("bucket", "file.txt")
             p.upload_dir("/tmp/folder")
 
+    def test(self):
+        self._test_upload_file()
+        self._test_upload_dir()
+
+
+class Test(UploadAPIMixin):
+    use_mock = False
+
+
+class TestUseMock(UploadAPIMixin):
+    use_mock = True
+
 
 if __name__ == "__main__":
-    run_cov_test(__file__, module="s3pathlib.core.upload", open_browser=False)
+    run_cov_test(__file__, module="s3pathlib.core.upload", preview=False)

@@ -49,6 +49,8 @@ extensions = [
     'sphinx_jinja',
     'sphinx_copybutton',
     'sphinx_inline_tabs',
+    'sphinx_design',
+    'nbsphinx',
     'docfly.directives',
 ]
 

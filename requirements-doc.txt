@@ -3,14 +3,17 @@
 sphinx
 
 # Extensions
-sphinx-inline-tabs        # allow inline tab
-sphinx-jinja                     # allow jinja2 template
-sphinx-copybutton                # add copy to clipboard button for code block
+sphinx-inline-tabs                      # allow inline tab
+sphinx-jinja                            # allow jinja2 template
+sphinx-copybutton                       # add copy to clipboard button for code block
+sphinx_design                           # better sphinx design pattern
+nbsphinx                                # embed jupyter notebook
+readthedocs-sphinx-search               # auto complete in search
 rstobj==0.0.7                           # generate list table from data
-readthedocs-sphinx-search
 
 # docfly                                # auto API manual, auto Table of Content
 docfly==1.0.2                           # sphinx-doc automation
 
 # Theme
-furo                         # modern doc theme
+furo                                    # modern doc theme
+IPython

@@ -18,6 +18,7 @@ from .metadata import MetadataAPIMixin
 from .bucket import BucketAPIMixin
 from .tagging import TaggingAPIMixin
 from .iter_objects import IterObjectsAPIMixin
+from .iter_object_versions import IterObjectVersionsAPIMixin
 from .exists import ExistsAPIMixin
 from .rw import ReadAndWriteAPIMixin
 from .delete import DeleteAPIMixin
@@ -41,6 +42,7 @@ class S3Path(
     BucketAPIMixin,
     TaggingAPIMixin,
     IterObjectsAPIMixin,
+    IterObjectVersionsAPIMixin,
     ExistsAPIMixin,
     ReadAndWriteAPIMixin,
     DeleteAPIMixin,

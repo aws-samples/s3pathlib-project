@@ -5,11 +5,14 @@ Tagging related API.
 """
 
 import typing as T
-import botocore.exceptions
+from func_args import NOTHING
+
+from .. import exc
+from ..better_client.head_bucket import is_bucket_exists
+from ..better_client.head_object import head_object
+from ..aws import context
 
 from .resolve_s3_client import resolve_s3_client
-from .. import utils, client as better_client
-from ..aws import context
 
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
@@ -20,8 +23,10 @@ class ExistsAPIMixin:
     """
     A mixin class that implements the exists test related methods.
     """
+
     def exists(
         self: "S3Path",
+        version_id: str = NOTHING,
         bsm: T.Optional["BotoSesManager"] = None,
     ) -> bool:
         """
@@ -30,30 +35,39 @@ class ExistsAPIMixin:
         - For S3 object: check if the object exists
         - For S3 directory: check if the directory exists, it returns ``True``
             even if the folder doesn't have any object.
+        - For versioning enabled bucket, you can explicitly check if a specific
+            version exists, otherwise it will check the latest version.
 
         .. versionadded:: 1.0.1
+
+        .. versionchanged:: 2.0.1
+
+            Add ``version_id`` parameter.
         """
         if self.is_bucket():
             s3_client = resolve_s3_client(context, bsm)
-            return better_client.is_bucket_exists(s3_client, self.bucket)
+            return is_bucket_exists(s3_client, self.bucket)
         elif self.is_file():
             s3_client = resolve_s3_client(context, bsm)
-            dct = utils.head_object_if_exists(
+            dct = head_object(
                 s3_client=s3_client,
                 bucket=self.bucket,
                 key=self.key,
+                version_id=version_id,
+                ignore_not_found=True,
             )
-            if isinstance(dct, dict):
+            if dct is None:
+                return False
+            else:
+                if "ResponseMetadata" in dct:
+                    del dct["ResponseMetadata"]
                 self._meta = dct
                 return True
-            else:
-                return False
         elif self.is_dir():
             l = list(
-                self.iter_objects(
+                self.iterdir(
                     batch_size=1,
                     limit=1,
-                    include_folder=True,
                     bsm=bsm,
                 )
             )
@@ -66,12 +80,22 @@ class ExistsAPIMixin:
 
     def ensure_not_exists(
         self: "S3Path",
+        version_id: str = NOTHING,
         bsm: T.Optional["BotoSesManager"] = None,
     ) -> None:
         """
         A validator method ensure that it doesn't exists.
 
         .. versionadded:: 1.0.1
+
+        .. versionchanged:: 2.0.1
+
+            Add ``version_id`` parameter.
         """
-        if self.exists(bsm=bsm):
-            utils.raise_file_exists_error(self.uri)
+        if self.exists(version_id=version_id, bsm=bsm):
+            raise exc.S3AlreadyExist(
+                (
+                    "cannot write to {}, s3 object ALREADY EXISTS! "
+                    "open console for more details {}."
+                ).format(self.uri, self.console_url)
+            )

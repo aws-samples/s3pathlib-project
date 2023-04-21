@@ -58,6 +58,11 @@ class AttributeAPIMixin:
         An immutable sequence providing access to the logical ancestors of
         the path.
 
+        Examples::
+
+            >>> S3Path("my-bucket", "my-folder", "my-file.json").parents
+            s3://my-bucket/my-folder/
+
         .. versionadded:: 1.0.6
         """
         if self.is_void():
@@ -351,7 +356,7 @@ class AttributeAPIMixin:
                 return f"S3RelPath({key!r})"
             else:  # pragma: no cover
                 return "S3RelPath()"
-        else:
+        else: # bucket, folder or object
             uri = self.uri
             return "{}('{}')".format(classname, uri)
 

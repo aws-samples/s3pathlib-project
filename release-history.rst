@@ -3,6 +3,8 @@
 Release and Version History
 ==============================================================================
 
+:orphan:
+
 
 Backlog (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -15,6 +17,40 @@ Backlog (TODO)
 **Minor Improvements**
 
 - add JupyterNotebook document
+
+
+2.0.1 (TODO)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+Changes:
+
+- most of methods now supports ``version_id`` argument for S3 versioning enabled bucket.
+- :meth:`s3pathlib.core.rw.ReadAndWriteAPIMixin.read_bytes` and :meth:`s3pathlib.core.rw.ReadAndWriteAPIMixin.read_text` now support ``version_id`` and full list of ``get_object`` boto3 arguments.
+- :meth:`s3pathlib.core.uri.UriAPIMixin.console_url` now take the version id into consideration.
+- add :meth:`s3pathlib.core.is_test.IsTestAPIMixin.is_delete_marker` method.
+- :meth:`s3pathlib.core.base.BaseS3Path.__new__` now can take S3 URI and ARN directly without using the ``from_s3_uri`` and ``from_s3_arn`` method.
+
+New APIs:
+
+- add ``s3pathlib.better_client`` to the public API, it is a collection of more user friendly boto3 API, with type hint.
+- add :meth:`~s3pathlib.core.iter_object_versions.IterObjectVersionsAPIMixin.list_object_versions` method. It will return all objects, all versions, all delete markers in reverse chronological order.
+- The :meth:`~s3pathlib.core.is_test.IsTestAPIMixin.is_delete_marker` method can be used to check if the version is a delete marker.
+- :meth:`~s3pathlib.core.delete.DeleteAPIMixin.delete`: delete object, directory (recursively), specific object version, object versions, all objects all versions in directory. This API will replace the old :meth:`~s3pathlib.core.delete.DeleteAPIMixin.delete_if_exists` API in 3.X.Y.
+
+**Minor Improvements**
+
+- use moto for unit test.
+- add tons of more unit test for edge cases.
+- prompt to confirm when delete everything in a bucket.
+
+**Bugfixes**
+
+- fix a bug that should not allow user to set value to attributes like ``bucket``, ``key``.
+
+**Miscellaneous**
+
+- completely rewrite the documentation in Jupyter notebook to provide interactive reading experience.
 
 
 1.4.1 (2023-02-16)

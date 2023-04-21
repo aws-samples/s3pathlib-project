@@ -56,11 +56,12 @@ class BaseS3Path:
         >>> s3path
         S3Path('s3://bucket/folder/file.txt')
 
-        # last argument defines that it is a file
+        # If the last argument has a trailing slash ("/"), it indicates that
+        # it refers to a directory. Otherwise, it is assumed to be a file.
         >>> s3path.is_file()
         True
         >>> s3path.is_dir()
-        True
+        False
 
         # "/" separator will be automatically handled
         >>> S3Path("bucket", "folder/file.txt")
@@ -81,7 +82,18 @@ class BaseS3Path:
         >>> s3path.is_file()
         False
 
+    You can also create it from S3 URI or ARN::
+
+        >>> S3Path("s3://bucket/folder/file.txt")
+        S3Path('s3://bucket/folder/file.txt')
+        >>> S3Path("arn:aws:s3:::bucket/folder/file.txt"),
+        S3Path('s3://bucket/folder/file.txt')
+
     .. versionadded:: 1.0.1
+
+    .. versionchanged:: 2.0.1
+
+        You can create S3Path from s3 uri or arn directly.
     """
 
     __slots__ = (
@@ -97,6 +109,9 @@ class BaseS3Path:
         cls: T.Type["S3Path"],
         *args: T.Union[str, "S3Path"],
     ) -> "S3Path":
+        """
+        The constructor of :class:`S3Path`.
+        """
         return cls._from_parts(args)
 
     @classmethod
@@ -105,6 +120,9 @@ class BaseS3Path:
         args: T.List[T.Union[str, "S3Path"]],
         init: bool = True,
     ) -> "S3Path":
+        """
+        Low level implementation of the constructor.
+        """
         _bucket = None
         _parts = list()
         _is_dir = None
@@ -118,7 +136,16 @@ class BaseS3Path:
 
         # resolve self._bucket
         arg = args[0]
+
         if isinstance(arg, str):
+            # handle S3 URI and ARN
+            if arg.startswith("s3://"):
+                arg = arg[5:]
+            elif arg.startswith("arn:aws:s3:::"):
+                arg = arg[13:]
+            else:
+                pass
+
             utils.validate_s3_bucket(arg)
             parts = utils.split_parts(arg)
             _bucket = parts[0]

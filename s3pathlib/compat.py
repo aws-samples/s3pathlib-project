@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 
+"""
+Provide compatibility with older versions of Python and dependent libraries.
+"""
+
+import sys
+
 try:
     import smart_open
 
@@ -17,6 +23,11 @@ except ImportError:  # pragma: no cover
     smart_open_version_minor = None
 except:  # pragma: no cover
     raise
+
+if sys.version_info.minor < 8:
+    from cached_property import cached_property
+else:
+    from functools import cached_property
 
 
 class Compat:  # pragma: no cover

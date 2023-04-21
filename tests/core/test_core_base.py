@@ -3,9 +3,10 @@
 import pytest
 from s3pathlib.core import S3Path
 from s3pathlib.tests import run_cov_test
+from s3pathlib.tests.mock import BaseTest
 
 
-class TestBaseS3Path:
+class BaseS3Path(BaseTest):
     """
     Test strategy, try different construction method, inspect internal
     implementation variables.
@@ -18,7 +19,7 @@ class TestBaseS3Path:
     变种在内部实现上都是一致的.
     """
 
-    def test_classic_aws_s3_object(self):
+    def _test_classic_aws_s3_object(self):
         # these s3path are equivalent
         p_list = [
             S3Path("bucket", "a", "b", "c"),
@@ -33,7 +34,7 @@ class TestBaseS3Path:
             assert p._is_dir is False
             assert p.parts == ["a", "b", "c"]
 
-    def test_logical_aws_s3_directory(self):
+    def _test_logical_aws_s3_directory(self):
         # these s3path are equivalent
         p_list = [
             S3Path("bucket", "a", "b", "c/"),
@@ -50,7 +51,7 @@ class TestBaseS3Path:
             assert p._is_dir is True
             assert p.parts == ["a", "b", "c"]
 
-    def test_aws_s3_bucket(self):
+    def _test_aws_s3_bucket(self):
         # these s3path are equivalent
         p_list = [
             S3Path("bucket"),
@@ -64,7 +65,7 @@ class TestBaseS3Path:
             assert p._is_dir is True
             assert p.parts == []
 
-    def test_void_aws_s3_path(self):
+    def _test_void_aws_s3_path(self):
         # these s3path are equivalent
         p_list = [S3Path(), S3Path(S3Path(), S3Path(), S3Path())]
         for p in p_list:
@@ -73,7 +74,24 @@ class TestBaseS3Path:
             assert p._is_dir is None
             assert p.parts == []
 
-    def test_type_error(self):
+    def _test_uri_and_arn(self):
+        for p in [
+            S3Path("s3://bucket/folder/file.txt"),
+            S3Path("arn:aws:s3:::bucket/folder/file.txt"),
+        ]:
+            assert p._bucket == "bucket"
+            assert p._parts == ["folder", "file.txt"]
+            assert p._is_dir is False
+
+        for p in [
+            S3Path("s3://bucket/folder/subfolder/"),
+            S3Path("arn:aws:s3:::bucket/folder/subfolder/"),
+        ]:
+            assert p._bucket == "bucket"
+            assert p._parts == ["folder", "subfolder"]
+            assert p._is_dir is True
+
+    def _test_type_error(self):
         with pytest.raises(TypeError):
             S3Path(1, "a", "b", "c")
 
@@ -83,6 +101,22 @@ class TestBaseS3Path:
         with pytest.raises(TypeError):
             S3Path(S3Path("bucket"), S3Path("a", "b", "c"))
 
+    def test(self):
+        self._test_classic_aws_s3_object()
+        self._test_logical_aws_s3_directory()
+        self._test_aws_s3_bucket()
+        self._test_void_aws_s3_path()
+        self._test_uri_and_arn()
+        self._test_type_error()
+
+
+class Test(BaseS3Path):
+    use_mock = False
+
+
+class TestUseMock(BaseS3Path):
+    use_mock = True
+
 
 if __name__ == "__main__":
-    run_cov_test(__file__, module="s3pathlib.core.base", open_browser=False)
+    run_cov_test(__file__, module="s3pathlib.core.base", preview=False)

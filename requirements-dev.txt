@@ -4,3 +4,4 @@ twine                                   # make distribution archive
 wheel                                   # make pre-compiled distribution package
 rich
 awscli
+boto3-stubs[s3,sts]

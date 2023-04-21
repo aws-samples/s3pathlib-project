@@ -114,30 +114,44 @@ class UriAPIMixin:
     @property
     def console_url(self: 'S3Path') -> T.Optional[str]:
         """
-        Return an AWS S3 Console url that can inspect the details.
+        Return an url that can inspect the object, directory details in AWS Console.
 
         .. versionadded:: 1.0.1
-        """
-        uri: str = self.uri
-        if uri is None:
-            return None
-        else:
-            console_url = utils.make_s3_console_url(s3_uri=uri)
-            return console_url
 
-    @property
-    def us_gov_cloud_console_url(self: 'S3Path') -> T.Optional[str]:
-        """
-        Return an AWS US Gov Cloud S3 Console url that can inspect the details.
+        .. versionchanged:: 2.0.1
 
-        .. versionadded:: 1.0.5
+            now take the version id into consideration.
         """
         uri: str = self.uri
         if uri is None:
             return None
         else:
             console_url = utils.make_s3_console_url(
-                s3_uri=uri, is_us_gov_cloud=True
+                s3_uri=uri,
+                version_id=self._static_version_id,
+            )
+            return console_url
+
+    @property
+    def us_gov_cloud_console_url(self: 'S3Path') -> T.Optional[str]:
+        """
+        Return a Gov Cloud url that can inspect the object, directory details
+        in AWS Console.
+
+        .. versionadded:: 1.0.5
+
+        .. versionchanged:: 2.0.1
+
+            now take the version id into consideration.
+        """
+        uri: str = self.uri
+        if uri is None:
+            return None
+        else:
+            console_url = utils.make_s3_console_url(
+                s3_uri=uri,
+                version_id=self._static_version_id,
+                is_us_gov_cloud=True,
             )
             return console_url
 
@@ -211,9 +225,15 @@ class UriAPIMixin:
     @classmethod
     def from_s3_arn(cls: T.Type['S3Path'], arn: str) -> 'S3Path':
         """
+        Construct an :class:`S3Path` from S3 ARN.
 
-        :param arn:
-        :return:
+        >>> p = S3Path.from_s3_arn("arn:aws:s3:::bucket/folder/file.txt")
+
+        >>> p
+        S3Path('s3://bucket/folder/file.txt')
+
+        >>> p.arn
+        'arn:aws:s3:::bucket/folder/file.txt'
         """
         validate.validate_s3_arn(arn)
         return cls._from_parts([arn.replace("arn:aws:s3:::", "", 1), ])

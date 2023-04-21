@@ -11,6 +11,12 @@ Is the S3Path a XYZ testing.
 
 import typing as T
 
+from ..exc import (
+    S3PathIsNotFolderError,
+    S3PathIsNotFileError,
+)
+from ..constants import IS_DELETE_MARKER
+
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
 
@@ -80,6 +86,21 @@ class IsTestAPIMixin:
             and (self._is_dir is True)
         )
 
+    def is_delete_marker(self: "S3Path") -> bool:
+        """
+        Test if it is a delete-marker. A delete-marker is just a version of
+        an object without content.
+
+        .. versionadded:: 2.0.1
+        """
+        if self.is_file():
+            if (self.version_id is not None) and (IS_DELETE_MARKER in self._meta):
+                return True
+            else:
+                return False
+        else:
+            return False
+
     def ensure_object(self: "S3Path") -> None:
         """
         A validator method that ensure it represents a S3 object.
@@ -87,7 +108,7 @@ class IsTestAPIMixin:
         .. versionadded:: 1.0.1
         """
         if self.is_file() is not True:
-            raise TypeError(f"S3 URI: {self} IS NOT a valid s3 object!")
+            raise S3PathIsNotFileError.make(self.uri)
 
     def ensure_file(self: "S3Path") -> None:
         """
@@ -121,7 +142,7 @@ class IsTestAPIMixin:
         .. versionadded:: 1.0.1
         """
         if self.is_dir() is not True:
-            raise TypeError(f"{self} IS NOT a valid s3 directory!")
+            raise S3PathIsNotFolderError.make(self.uri)
 
     def ensure_not_dir(self: "S3Path") -> None:
         """

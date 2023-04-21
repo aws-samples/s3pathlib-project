@@ -7,7 +7,7 @@ from s3pathlib.tests import run_cov_test
 
 
 class TestIsTestAPIMixin:
-    def test_type_test(self):
+    def _test_type_test(self):
         """
         Test if the instance is a ...
 
@@ -22,6 +22,7 @@ class TestIsTestAPIMixin:
         assert p.is_dir() is False
         assert p.is_file() is True
         assert p.is_bucket() is False
+
         p.ensure_file()
         with pytest.raises(Exception):
             p.ensure_not_file()
@@ -35,6 +36,8 @@ class TestIsTestAPIMixin:
         assert p.is_dir() is True
         assert p.is_file() is False
         assert p.is_bucket() is False
+        assert p.is_delete_marker() is False
+
         with pytest.raises(Exception):
             p.ensure_file()
         p.ensure_not_file()
@@ -48,6 +51,7 @@ class TestIsTestAPIMixin:
         assert p.is_dir() is True
         assert p.is_file() is False
         assert p.is_bucket() is True
+        assert p.is_delete_marker() is False
 
         # void path
         p = S3Path()
@@ -56,6 +60,9 @@ class TestIsTestAPIMixin:
         assert p.is_file() is False
         assert p.is_bucket() is False
 
+    def test(self):
+        self._test_type_test()
+
 
 if __name__ == "__main__":
-    run_cov_test(__file__, module="s3pathlib.core.is_test", open_browser=False)
+    run_cov_test(__file__, module="s3pathlib.core.is_test", preview=False)

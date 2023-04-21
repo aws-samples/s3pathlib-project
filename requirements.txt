@@ -1,6 +1,7 @@
 boto3
 iterproxy
 func_args
-pathlib_mate>=1.0.1
-boto_session_manager>=1.2.1
-smart_open>=5.1.0
+pathlib_mate>=1.0.1,<2.0.0
+boto_session_manager>=1.5.1,<2.0.0
+smart_open>=5.1.0,<7.0.0
+cached-property>=1.5.2; python_version < '3.8'
