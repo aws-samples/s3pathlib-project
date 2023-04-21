@@ -17,7 +17,8 @@ from ..better_client.delete_object import (
     delete_dir,
     delete_object_versions,
 )
-from ..better_client.list_object_versions import paginate_list_object_versions
+from ..marker import warn_deprecate
+
 
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
@@ -203,6 +204,12 @@ class DeleteAPIMixin:
 
             This method will be removed in 3.X. Use ``delete`` instead.
         """
+        warn_deprecate(
+            func_name="S3Path.delete_if_exists",
+            version="3.0.1",
+            message="use S3Path.delete instead",
+        )
+
         s3_client = resolve_s3_client(context, bsm)
         if self.is_file():
             if self.exists(bsm=bsm):

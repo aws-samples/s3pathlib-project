@@ -9,6 +9,7 @@ def test():
     _ = s3pathlib.S3Path
     _ = s3pathlib.context
     _ = s3pathlib.utils
+    _ = s3pathlib.api
 
 
 if __name__ == "__main__":

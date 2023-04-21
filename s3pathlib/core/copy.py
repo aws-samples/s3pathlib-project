@@ -515,5 +515,5 @@ class CopyAPIMixin:
             expected_bucket_owner=expected_bucket_owner,
             expected_source_bucket_owner=expected_source_bucket_owner,
         )
-        self.delete_if_exists(bsm=bsm)
+        self.delete(bsm=bsm)
         return count

@@ -30,4 +30,5 @@ from .list_object_versions import (
 from .delete_object import (
     delete_object,
     delete_dir,
+    delete_object_versions,
 )

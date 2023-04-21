@@ -4,17 +4,20 @@
 Smart open library integration.
 
 .. _bsm: https://github.com/aws-samples/boto-session-manager-project
+.. _smart_open: https://github.com/RaRe-Technologies/smart_open
 """
 
 import typing as T
 
 from func_args import NOTHING, resolve_kwargs
 
-from .resolve_s3_client import resolve_s3_client
+from ..metadata import warn_upper_case_in_metadata_key
 from ..aws import context
 from ..compat import smart_open, compat
 from ..type import MetadataType, TagType
 from ..tag import encode_url_query
+
+from .resolve_s3_client import resolve_s3_client
 
 if T.TYPE_CHECKING:  # pragma: no cover
     from .s3path import S3Path
@@ -46,8 +49,24 @@ class OpenerAPIMixin:
         """
         Open S3Path as a file-liked object.
 
+        Example::
+
+            >>> import json
+            >>> with S3Path("s3://bucket/data.json").open("w") as f:
+            ...     json.dump({"a": 1}, f)
+
+            >>> with S3Path("s3://bucket/data.json").open("r") as f:
+            ...     data = json.load(f)
+
         :param mode: "r", "w", "rb", "wb".
         :param version_id: optional version id you want to read from.
+        :param buffering: See smart_open_.
+        :param encoding: See smart_open_.
+        :param errors: See smart_open_.
+        :param newline: See smart_open_.
+        :param closefd: See smart_open_.
+        :param opener: See smart_open_.
+        :param ignore_ext: See smart_open_.
         :param compression: whether do you want to compress the content.
         :param multipart_upload: do you want to use multi-parts upload,
             by default it is True.
@@ -57,7 +76,7 @@ class OpenerAPIMixin:
 
         :return: a file-like object that has ``read()`` and ``write()`` method.
 
-        See https://github.com/RaRe-Technologies/smart_open for more info.
+        See smart_open_ for more info.
         Also see https://github.com/RaRe-Technologies/smart_open/blob/develop/howto.md#how-to-access-s3-anonymously
         for S3 related info.
 
@@ -80,6 +99,8 @@ class OpenerAPIMixin:
         # set it to NOTHING in case human made a mistake
         if mode.startswith("r") is False:  # pragma: no cover
             version_id = NOTHING
+            if metadata is not NOTHING:
+                warn_upper_case_in_metadata_key(metadata)
         if version_id is not NOTHING:
             transport_params["version_id"] = version_id
 

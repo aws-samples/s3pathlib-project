@@ -30,6 +30,8 @@ class ExistsAPIMixin:
         bsm: T.Optional["BotoSesManager"] = None,
     ) -> bool:
         """
+        Test if an S3Path object actually exists in S3 bucket.
+
         - For S3 bucket: check if the bucket exists. If you don't have the
             access, then it raise exception.
         - For S3 object: check if the object exists
@@ -37,6 +39,13 @@ class ExistsAPIMixin:
             even if the folder doesn't have any object.
         - For versioning enabled bucket, you can explicitly check if a specific
             version exists, otherwise it will check the latest version.
+
+        Example:
+
+            >>> S3Path("bucket").exists()
+            >>> S3Path("bucket/file.txt").exists()
+            >>> S3Path("bucket/folder/").exists()
+            >>> S3Path("bucket/file.txt").exists(version_id="v123456")
 
         .. versionadded:: 1.0.1
 

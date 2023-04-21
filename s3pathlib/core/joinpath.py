@@ -17,59 +17,6 @@ class JoinPathAPIMixin:
     """
     A mixin class that implements the join path operator.
     """
-
-    def join_path(self: "S3Path", *others: "S3Path") -> "S3Path":
-        """
-        Join with other relative path to form a new path
-
-        Example::
-
-            # create some s3path
-            >>> p1 = S3Path("bucket", "folder", "subfolder", "file.txt")
-            >>> p2 = p1.parent
-            >>> relpath1 = p1.relative_to(p2)
-
-            # preview value
-            >>> p1
-            S3Path('s3://bucket/folder/subfolder/file.txt')
-            >>> p2
-            S3Path('s3://bucket/folder/subfolder/')
-            >>> relpath1
-            S3Path('file.txt')
-
-            # join one relative path
-            >>> p2.join_path(relpath1)
-            S3Path('s3://bucket/folder/subfolder/file.txt')
-
-            # join multiple relative path
-            >>> p3 = p2.parent
-            >>> relpath2 = p2.relative_to(p3)
-            >>> p3.join_path(relpath2, relpath1)
-            S3Path('s3://bucket/folder/subfolder/file.txt')
-
-        :param others: many relative path
-
-        :return: a new :class:`S3Path`
-
-        .. versionadded:: 1.0.1
-        """
-        warn_deprecate(
-            func_name="S3Path.join_path",
-            version="2.0.1",
-            message="S3Path.joinpath",
-        )
-        args = [
-            self,
-        ]
-        for relp in others:
-            if relp.is_relpath() is False:
-                msg = (
-                    "you can only join with relative path! " "{} is not a relative path"
-                ).format(relp)
-                raise TypeError(msg)
-            args.append(relp)
-        return self._from_parts(args)
-
     def joinpath(self: "S3Path", *other: T.Union[str, "S3Path"]) -> "S3Path":
         """
         Join with other relative path or string parts.

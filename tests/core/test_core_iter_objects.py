@@ -23,7 +23,7 @@ class IterObjectsAPIMixin(BaseTest):
         cls.s3dir_test_iter_objects = (
             cls.get_s3dir_root().joinpath("test_iter_objects").to_dir()
         )
-        cls.s3dir_test_iter_objects.delete_if_exists()
+        cls.s3dir_test_iter_objects.delete()
         cls.s3dir_test_iter_objects.upload_dir(
             local_dir=dir_here.joinpath("test_iter_objects").abspath,
             pattern="**/*.txt",

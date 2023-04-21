@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 
-import typing as T
+"""
+Resolve what s3 client to use for API call.
+"""
 
-from boto_session_manager import BotoSesManager
+import typing as T
 
 from ..aws import Context
 
 if T.TYPE_CHECKING:  # pragma: no cover
+    from boto_session_manager import BotoSesManager
     from mypy_boto3_s3 import S3Client
 
 

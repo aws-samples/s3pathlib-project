@@ -18,7 +18,7 @@ class CopyAPIMixin(BaseTest):
         p_src.write_text("a")
 
         p_dst = S3Path(p_src, "copy-object", "after.py")
-        p_dst.delete_if_exists()
+        p_dst.delete()
 
         assert p_dst.exists() is False
 
@@ -36,7 +36,7 @@ class CopyAPIMixin(BaseTest):
     def _test_copy_dir(self):
         # before state
         p_src = S3Path(self.s3dir_root, "copy-dir", "before").to_dir()
-        p_src.delete_if_exists()
+        p_src.delete()
         assert p_src.count_objects() == 0
 
         dir_to_upload = dir_here.joinpath("test_upload_dir").abspath
@@ -47,7 +47,7 @@ class CopyAPIMixin(BaseTest):
         )
 
         p_dst = S3Path(self.s3dir_root, "copy-dir", "after").to_dir()
-        p_dst.delete_if_exists()
+        p_dst.delete()
         assert p_dst.count_objects() == 0
 
         # invoke api
@@ -63,7 +63,7 @@ class CopyAPIMixin(BaseTest):
     def _test_move_to(self):
         # before state
         p_src = S3Path(self.s3dir_root, "move-to", "before").to_dir()
-        p_src.delete_if_exists()
+        p_src.delete()
         assert p_src.count_objects() == 0
 
         dir_to_upload = dir_here.joinpath("test_upload_dir").abspath
@@ -74,7 +74,7 @@ class CopyAPIMixin(BaseTest):
         )
 
         p_dst = S3Path(self.s3dir_root, "move-to", "after/")
-        p_dst.delete_if_exists()
+        p_dst.delete()
 
         assert p_dst.count_objects() == 0
 
@@ -89,8 +89,8 @@ class CopyAPIMixin(BaseTest):
     def _test_copy_with_metadata_and_tagging(self):
         p_src = S3Path(self.s3dir_root, "copy_object", "src.txt")
         p_dst = S3Path(self.s3dir_root, "copy_object", "dst.txt")
-        p_src.delete_if_exists()
-        p_dst.delete_if_exists()
+        p_src.delete()
+        p_dst.delete()
 
         p_src.write_text(
             "hello",

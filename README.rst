@@ -5,6 +5,9 @@
 .. image:: https://github.com/aws-samples/s3pathlib-project/workflows/CI/badge.svg
     :target: https://github.com/aws-samples/s3pathlib-project/actions?query=workflow:CI
 
+.. image:: https://img.shields.io/badge/codecov-100%25-brightgreen
+    :target: https://github.com/aws-samples/s3pathlib-project/actions?query=workflow:CI
+
 .. image:: https://img.shields.io/pypi/v/s3pathlib.svg
     :target: https://pypi.python.org/pypi/s3pathlib
 
@@ -16,6 +19,9 @@
     
 .. image:: https://img.shields.io/pypi/dm/s3pathlib.svg
     :target: https://pypi.python.org/pypi/s3pathlib
+
+.. image:: https://img.shields.io/badge/STAR_Me_on_GitHub!--None.svg?style=social
+    :target: https://github.com/aws-samples/s3pathlib-project
 
 ------
 
@@ -40,22 +46,20 @@
 
 Welcome to ``s3pathlib`` Documentation
 ==============================================================================
-
-``s3pathlib`` is the python package provides the Pythonic objective oriented programming (OOP) interface to manipulate AWS S3 object / directory. The api is similar to the ``pathlib`` `standard library <https://docs.python.org/3/library/pathlib.html>`_ and very intuitive for human.
+`s3pathlib <https://s3pathlib.readthedocs.io/en/latest/>`_ is a Python package that offers an object-oriented programming (OOP) interface to work with AWS S3 objects and directories. Its API is designed to be similar to the standard library `pathlib <https://docs.python.org/3/library/pathlib.html>`_ and is user-friendly. The package also `supports versioning <https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html>`_ in AWS S3.
 
 .. note::
 
-    You may not viewing the full document, `FULL DOCUMENT IS HERE <https://s3pathlib.readthedocs.io/en/latest/>`_
+    You may not be viewing the full document, `FULL DOCUMENT IS HERE <https://s3pathlib.readthedocs.io/en/latest/>`_
 
 
 Quick Start
 ------------------------------------------------------------------------------
 .. note::
 
-    `COMPREHENSIVE DOCUMENT guide / features / best practice can be found at HERE <https://s3pathlib.readthedocs.io/en/latest/#full-table-of-content>`_
+    `COMPREHENSIVE DOCUMENT guide / features / best practice can be found at HERE <https://s3pathlib.readthedocs.io/en/latest/#comprehensive-guide>`_
 
-
-**Import the library, declare a S3 object**
+**Import the library, declare an S3Path object**
 
 .. code-block:: python
 
@@ -64,6 +68,10 @@ Quick Start
 
     # construct from string, auto join parts
     >>> p = S3Path("bucket", "folder", "file.txt")
+    # construct from S3 URI works too
+    >>> p = S3Path("s3://bucket/folder/file.txt")
+    # construct from S3 ARN works too
+    >>> p = S3Path("arn:aws:s3:::bucket/folder/file.txt")
     >>> p.bucket
     'bucket'
     >>> p.key
@@ -91,6 +99,7 @@ Quick Start
     ... )
 
     >>> p = S3Path("bucket", "folder", "file.txt")
+    >>> p.write_text("a lot of data ...")
     >>> p.etag
     '3e20b77868d1a39a587e280b99cec4a8'
     >>> p.size
@@ -124,8 +133,8 @@ Native S3 Write API (those operation that change the state of S3) only operate o
     >>> p1.copy_to(p2, overwrite=True)
 
     # delete all objects in the folder, recursively, to clean up your test bucket
-    >>> p.delete_if_exists()
-    >>> p2.delete_if_exists()
+    >>> p.delete()
+    >>> p2.delete()
 
 **S3 Path Filter**
 
@@ -133,8 +142,8 @@ Ever think of filter S3 object by it's attributes like: dirname, basename, file 
 
 .. code-block:: python
 
-    >>> root = S3Path("bucket") # assume you have a lots of files in this bucket
-    >>> iterproxy = root.iter_objects().filter(
+    >>> s3bkt = S3Path("bucket") # assume you have a lots of files in this bucket
+    >>> iterproxy = s3bkt.iter_objects().filter(
     ...     S3Path.size >= 10_000_000, S3Path.ext == ".csv" # add filter
     ... )
 
@@ -177,13 +186,14 @@ Ever think of filter S3 object by it's attributes like: dirname, basename, file 
     >>> with p.open("w") as f:
     ...     df.to_csv(f)
 
+Now that you have a basic understanding of s3pathlib, let's read the `full document <https://s3pathlib.readthedocs.io/en/latest/#comprehensive-guide>`_ to explore its capabilities in greater depth.
+
 
 Getting Help
 ------------------------------------------------------------------------------
 Please use the ``python-s3pathlib`` tag on Stack Overflow to get help.
 
 Submit a ``I want help`` issue tickets on `GitHub Issues <https://github.com/aws-samples/s3pathlib-project/issues/new/choose>`_
-
 
 
 Contributing

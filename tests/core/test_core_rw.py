@@ -51,7 +51,7 @@ class ReadAndWriteAPIMixin(BaseTest):
 
     def _test_text_bytes_io_with_metadata_and_tags(self):
         p = S3Path(self.s3dir_root, "write_with_metadata_and_tags", "hello.txt")
-        p.delete_if_exists()
+        p.delete()
         p.clear_cache()
 
         # --- put object without metadata and tags
@@ -120,7 +120,7 @@ class ReadAndWriteAPIMixin(BaseTest):
         # --- test with a file
         # prepare, clear off all existing files
         p = S3Path(s3dir_root, "test.txt")
-        p.delete_if_exists()
+        p.delete()
         assert p.exists() is False
 
         # touch it, then it should exist
@@ -138,7 +138,7 @@ class ReadAndWriteAPIMixin(BaseTest):
         # --- test with a folder
         # prepare, clear off all existing files
         p = S3Path(s3dir_root, "folder/")
-        p.delete_if_exists()
+        p.delete()
         with pytest.raises(exc.S3PathIsNotFileError):
             p.touch()
 
@@ -148,7 +148,7 @@ class ReadAndWriteAPIMixin(BaseTest):
         # --- test with a file
         # prepare and clear off all existing files
         p_root = S3Path(s3dir_root, "file.txt")
-        p_root.delete_if_exists()
+        p_root.delete()
 
         with pytest.raises(exc.S3PathIsNotFolderError):
             p_root.mkdir()
@@ -156,7 +156,7 @@ class ReadAndWriteAPIMixin(BaseTest):
         # --- test with a folder
         # prepare and clear off all existing files
         p_root = S3Path(s3dir_root, "folder/")
-        p_root.delete_if_exists()
+        p_root.delete()
 
         # case 1, exists_ok = False, parents = True
         p_f3 = S3Path(p_root, "f1", "f2", "f3/")

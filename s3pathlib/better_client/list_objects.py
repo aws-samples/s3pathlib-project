@@ -74,21 +74,34 @@ class ListObjectsV2OutputTypeDefIterproxy(IterProxy["ListObjectsV2OutputTypeDef"
         """
         return CommonPrefixTypeDefIterproxy(self._yield_common_prefixes())
 
+    def extract_contents_and_common_prefixes(
+        self, response: dict
+    ) -> T.Tuple[
+        T.List["ObjectTypeDef"],
+        T.List["CommonPrefixTypeDef"],
+    ]:
+        return (
+            response.get("Contents", []),
+            response.get("CommonPrefixes", []),
+        )
+
     def contents_and_common_prefixs(
         self,
     ) -> T.Tuple[T.List["ObjectTypeDef"], T.List["CommonPrefixTypeDef"]]:
         """
-        Return the list of object contents and folders.
+        Return the full list of object contents and folders.
 
         .. versionadded:: 2.0.1
         """
         contents = list()
         common_prefixs = list()
         for response in self:
-            for content in response.get("Contents", []):
-                contents.append(content)
-            for common_prefix in response.get("CommonPrefixes", []):
-                common_prefixs.append(common_prefix)
+            (
+                _contents,
+                _common_prefixs,
+            ) = self.extract_contents_and_common_prefixes(response)
+            contents.extend(_contents)
+            common_prefixs.extend(_common_prefixs)
         return contents, common_prefixs
 
 
