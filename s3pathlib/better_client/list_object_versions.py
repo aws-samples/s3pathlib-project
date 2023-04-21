@@ -45,7 +45,7 @@ class DeleteMarkerEntryTypeDefIterproxy(IterProxy["DeleteMarkerEntryTypeDef"]):
 
 class CommonPrefixTypeDefIterproxy(IterProxy["CommonPrefixTypeDef"]):
     """
-    An iterproxy that yields the "CommonPrefixes" part of the ListObjectsV2_ response.
+    An iterproxy that yields the "CommonPrefixes" part of the ListObjectVersions_ response.
 
     .. versionadded:: 2.1.1
     """
@@ -55,7 +55,7 @@ class ListObjectVersionsOutputTypeDefIterproxy(
     IterProxy["ListObjectVersionsOutputTypeDef"]
 ):
     """
-    An iterproxy that yields the original ListObjectsV2_ response.
+    An iterproxy that yields the original ListObjectVersions_ response.
     It has two utility methods to get the contents and common prefixes.
 
     .. versionadded:: 2.1.1

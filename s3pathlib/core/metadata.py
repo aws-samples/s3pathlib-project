@@ -147,9 +147,8 @@ class MetadataAPIMixin:
     @FilterableProperty
     def expire_at(self: "S3Path") -> datetime:
         """
-        Only available if you turned on TTL
+        Only available if you turned on TTL.
 
-                version_id=self.version_id,
         Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_Object.html
 
         .. versionadded:: 1.0.1
@@ -159,6 +158,8 @@ class MetadataAPIMixin:
     @property
     def metadata(self: "S3Path") -> dict:
         """
+        Access the metadata of the object.
+
         Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_Object.html
 
         .. versionadded:: 1.0.1

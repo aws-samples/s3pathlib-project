@@ -29,15 +29,13 @@ if T.TYPE_CHECKING:  # pragma: no cover
 
 class S3PathIterProxy(IterProxy["S3Path"]):
     """
-    An iterator proxy utility class provide client side in-memory filter.
-    It is highly inspired by sqlalchemy Result Proxy that depends on SQL server
-    side filter.
+    An iterator proxy utility class provide client side in-memory filter. It is
+    highly inspired by sqlalchemy Result Proxy that depends on SQL server side filter.
 
-    Allow client side in-memory filtering for iterator object that yield
-    :class:`S3Path`.
+    Allow client side in-memory filtering for iterator object that yield :class:`S3Path`.
 
     It is a special variation of :class:`s3pathlib.iterproxy.IterProxy`,
-    See :class:`s3pathlib.iterproxy.IterProxy` for more details
+    See :class:`s3pathlib.iterproxy.IterProxy` for more details.
 
     .. versionadded:: 1.0.3
     """

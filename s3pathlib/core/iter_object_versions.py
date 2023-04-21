@@ -2,6 +2,9 @@
 
 """
 List object versions related API.
+
+.. _bsm: https://github.com/aws-samples/boto-session-manager-project
+.. _ListObjectVersions: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/paginator/ListObjectVersions.html
 """
 
 import typing as T
@@ -33,7 +36,17 @@ class IterObjectVersionsAPIMixin:
         bsm: T.Optional["BotoSesManager"] = None,
     ) -> S3PathIterProxy:
         """
+        Recursively iterate objects under this prefix, yield :class:`S3Path`.
+
+        :param batch_size: Number of s3 object returned per paginator,
+            valid value is from 1 ~ 1000. large number can reduce IO.
+        :param limit: Total number of s3 object to return.
+        :param delimiter: See ListObjectVersions_.
+        :param encoding_type: See ListObjectVersions_.
+        :param expected_bucket_owner: See ListObjectVersions_.
         :param bsm: See bsm_.
+
+        .. versionadded:: 2.1.1
         """
         s3_client = resolve_s3_client(context, bsm)
         bucket = self.bucket
