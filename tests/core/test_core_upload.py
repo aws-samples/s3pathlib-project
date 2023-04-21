@@ -16,7 +16,7 @@ class UploadAPIMixin(BaseTest):
     def _test_upload_file(self):
         # before state
         p = S3Path(self.s3dir_root, "upload-file", "test.py")
-        p.delete_if_exists()
+        p.delete()
         assert p.exists() is False
 
         # invoke api
@@ -37,7 +37,7 @@ class UploadAPIMixin(BaseTest):
     def _test_upload_dir(self):
         # before state
         p = S3Path(self.s3dir_root, "upload-dir/")
-        p.delete_if_exists()
+        p.delete()
         assert p.count_objects() == 0
 
         # invoke api

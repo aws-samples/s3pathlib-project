@@ -121,7 +121,7 @@ class ListObjectVersionsOutputTypeDefIterproxy(
         T.List["CommonPrefixTypeDef"],
     ]:
         """
-        Return the list of object versions, delete markers and folders.
+        Return the full list of object versions, delete markers and folders.
 
         .. versionadded:: 2.0.1
         """
@@ -129,9 +129,14 @@ class ListObjectVersionsOutputTypeDefIterproxy(
         delete_markers = list()
         common_prefixes = list()
         for response in self:
-            versions.extend(response.get("Versions", []))
-            delete_markers.extend(response.get("DeleteMarkers", []))
-            common_prefixes.extend(response.get("CommonPrefixes", []))
+            (
+                versions_,
+                delete_markers_,
+                common_prefixes_,
+            ) = self.extract_versions_and_delete_markers_and_common_prefixes(response)
+            versions.extend(versions_)
+            delete_markers.extend(delete_markers_)
+            common_prefixes.extend(common_prefixes_)
         return versions, delete_markers, common_prefixes
 
     def iterate_key_and_version(self) -> T.Iterator[T.Tuple[str, str]]:
@@ -166,12 +171,7 @@ def paginate_list_object_versions(
         ...     bucket="my-bucket",
         ...     prefix="my-folder",
         ... )
-        >>> for versions, delete_markers, common_prefixes in proxy.versions_and_delete_markers_and_common_prefixes():
-        ...
-        {"Key": "1.json", "Versions": "v1", "ETag": "...", "Size": 123, "LastModified": datetime(2015, 1, 1), "StorageClass": "...", "Owner", {...}}
-        {"Key": "2.json", "ETag": "...", "Size": 123, "LastModified": datetime(2015, 1, 1), "StorageClass": "...", "Owner", {...}}
-        {"Key": "3.json", "ETag": "...", "Size": 123, "LastModified": datetime(2015, 1, 1), "StorageClass": "...", "Owner", {...}}
-        ...
+        >>> (versions, delete_markers, common_prefixes) = proxy.versions_and_delete_markers_and_common_prefixes()
 
     :param s3_client: ``boto3.session.Session().client("s3")`` object.
     :param bucket: See ListObjectVersions_.

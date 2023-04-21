@@ -52,6 +52,10 @@ New APIs:
 
 - completely rewrite the documentation in Jupyter notebook to provide interactive reading experience.
 
+**Imcompatible Change**
+
+- removed :meth:`~s3pathlib.core.joinpath.JoinPathAPIMixin.join_path`.
+
 
 1.4.1 (2023-02-16)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

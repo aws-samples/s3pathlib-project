@@ -9,7 +9,6 @@ from datetime import datetime
 
 from .. import utils
 from ..constants import IS_DELETE_MARKER
-from ..metadata import warn_upper_case_in_metadata_key
 from ..better_client.head_object import head_object
 from ..aws import context
 

@@ -25,8 +25,8 @@ class SyncAPIMixin(BaseTest):
         path2 = dir_here.joinpath("dir2")
         path0 = dir_here.joinpath("test_upload_dir")
 
-        s3path1.delete_if_exists()
-        s3path2.delete_if_exists()
+        s3path1.delete()
+        s3path2.delete()
         path1.remove_if_exists()
         path2.remove_if_exists()
 

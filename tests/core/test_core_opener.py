@@ -27,7 +27,7 @@ class OpenerAPIMixin(BaseTest):
         s3path = S3Path(self.s3dir_root, "log.txt")
 
         # multi part upload
-        s3path.delete_if_exists()
+        s3path.delete()
         with s3path.open(
             "w",
             multipart_upload=True,
@@ -40,7 +40,7 @@ class OpenerAPIMixin(BaseTest):
         assert s3path.get_tags()[1] == {"project": "s3pathlib"}
 
         # normal upload
-        s3path.delete_if_exists()
+        s3path.delete()
         with s3path.open(
             "w",
             multipart_upload=False,

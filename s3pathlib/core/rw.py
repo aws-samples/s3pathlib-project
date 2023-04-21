@@ -16,6 +16,7 @@ from datetime import datetime
 from func_args import NOTHING, resolve_kwargs
 
 from .. import exc
+from ..metadata import warn_upper_case_in_metadata_key
 from ..type import TagType, MetadataType
 from ..tag import encode_url_query
 from ..aws import context
@@ -170,7 +171,7 @@ class ReadAndWriteAPIMixin:
 
         Example:
 
-            >>> s3path = S3Path.from_s3_uri("s3://my-bucket/my-file.txt")
+            >>> s3path = S3Path("s3://my-bucket/my-file.txt")
             >>> s3path.write_text("hello", metadata={"creator": "me"})
             >>> s3path.read_text()
             'hello'
@@ -281,7 +282,7 @@ class ReadAndWriteAPIMixin:
 
         Example:
 
-            >>> s3path = S3Path.from_s3_uri("s3://my-bucket/my-file.txt")
+            >>> s3path = S3Path("s3://my-bucket/my-file.txt")
             >>> s3path.write_bytes(b"hello", metadata={"creator": "me"})
             >>> s3path.size
             5
@@ -335,6 +336,8 @@ class ReadAndWriteAPIMixin:
             add ``metadata`` and ``tags`` parameters.
         """
         s3_client = resolve_s3_client(context, bsm)
+        if metadata is not NOTHING:
+            warn_upper_case_in_metadata_key(metadata)
         response = s3_client.put_object(
             **resolve_kwargs(
                 Bucket=self.bucket,
@@ -431,7 +434,7 @@ class ReadAndWriteAPIMixin:
 
         Example:
 
-            >>> s3path = S3Path.from_s3_uri("s3://my-bucket/my-file.txt")
+            >>> s3path = S3Path("s3://my-bucket/my-file.txt")
             >>> s3path.write_text("hello", metadata={"creator": "me"})
             >>> s3path.size
             5
@@ -569,7 +572,7 @@ class ReadAndWriteAPIMixin:
 
         Example:
 
-            >>> s3path = S3Path.from_s3_uri("s3://my-bucket/my-file.txt")
+            >>> s3path = S3Path("s3://my-bucket/my-file.txt")
             >>> s3path.write_text("hello", metadata={"creator": "me"})
             >>> s3path.size
             5
@@ -675,6 +678,11 @@ class ReadAndWriteAPIMixin:
     ):
         """
         Make an S3 folder (empty "/" file)
+
+        Example:
+
+            >>> s3dir = S3Path("s3://my-bucket/my-folder/").to_dir()
+            >>> s3dir.to_dir(exist_ok=True)
 
         :param exist_ok: If True, it won't raise error when the S3 folder already exists.
         :param parents: If True, all parent folders will be created.

@@ -155,7 +155,9 @@ class DeleteAPIMixin(BaseTest):
         assert len(s3dir.list_object_versions().all()) == 0
 
     def test(self):
-        self._test_delete_if_exists()
+        with pytest.warns():
+            self._test_delete_if_exists()
+            
         self._test_delete()
 
         if self.use_mock is False:  # moto has a bug for deleting object with versioning

@@ -75,11 +75,11 @@ class RelativePathAPIMixin:
         raise ``ValueError``.
 
         ``-`` is a syntax sugar for ``relative_to``. See more information at
-        :meth:`~S3Path.__sub__`.
+        :meth:`~RelativePathAPIMixin.__sub__`.
 
-        The relative path usually works with :meth:`join_path` to form a new
-        path. Or you can use the ``/`` syntax sugar as well. See more
-        information at :meth:`~S3Path.__truediv__`.
+        The relative path usually works with
+        :meth:`~s3pathlib.core.joinpath.JoinPathAPIMixin.joinpath` to form a new
+        path. Or you can use the ``/`` syntax sugar as well.
 
         Examples::
 
@@ -91,6 +91,9 @@ class RelativePathAPIMixin:
 
             >>> S3Path("bucket", "a").relative_to(S3Path("bucket", "a/b/c")).parts
             ValueError ...
+
+            >>> S3Path("bucket") / S3Path("new_bucket/file.txt").relative_to(S3Path("new_bucket"))
+            S3Path('s3://bucket/file.txt')
 
         :param other: other :class:`S3Path` instance.
 
